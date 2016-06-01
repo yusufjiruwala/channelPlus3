@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-dependencies/2.3.0/validation-api-1.0.0.GA-sources.jar"/>
+	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-dependencies/2.3.0/validation-api-1.0.0.GA.jar"/>
+	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-user/2.3.0/gwt-user.jar"/>
+	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-dev/2.3.0/gwt-dev.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/SearchField.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/dynamicJasper"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/PortalLayout-1.3.1.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/ojdbc14_g.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/jfreechart-1.0.14.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/jdtcore-3.1.0.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/jcommon-1.0.15.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/iText-2.1.7.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/ContextMenu3.1.0.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/commons-logging-1.0.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/commons-digester-1.8.1.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="/Volumes/myfiles/yaali/others/LIABRARIES/jasperreports-5.0.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
