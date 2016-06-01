@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="338a75c0-4d89-4fe3-acc5-35cca4ab92dc">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["voucherStyle.jrtx"]]></template>
+	<parameter name="COMPANY_IMAGE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["COMPANY_LOGO.bmp"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_NAMEA" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["CHAINEL INFOSYSTEM PVT LTD"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_NAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["CHAINEL INFOSYSTEM PVT LTD"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_SPECSA" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Software Consultancy"
+]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_SPECS" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Software Consultancy"  ]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT *FROM DUAL]]>
+	</queryString>
+	<field name="DUMMY" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="87" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="2cf1b8b6-11cf-4dd1-a07d-dce996653e20" style="strCompanySpec" x="307" y="31" width="248" height="52"/>
+				<textElement textAlignment="Right">
+					<font fontName="DejaVu Sans" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{COMPANY_SPECSA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="32e35bd1-aa5f-4d3e-a64c-021d36df9122" style="strCompanyName" x="0" y="-1" width="282" height="30"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{COMPANY_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="ef021e7d-6f5b-4208-aa55-ec4dad2d7982" style="strCompanySpec" x="0" y="29" width="246" height="52"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{COMPANY_SPECS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="5443af49-e7b1-4359-bf67-bd3417a1aba7" style="strCompanyName" x="282" y="0" width="271" height="30"/>
+				<textElement textAlignment="Right">
+					<font fontName="DejaVu Sans" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{COMPANY_NAMEA}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement uuid="4f5324cf-30fb-41fc-9f12-d52cec037e35" x="246" y="29" width="61" height="54"/>
+				<imageExpression><![CDATA["company_logo.bmp"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+</jasperReport>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptVou992" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["voucherStyle.jrtx"]]></template>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\yaali\\products\\channelPlus_others\\channel_reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_NAME" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="COMPANY_NAMEA" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="COMPANY_SPECS" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="COMPANY_SPECSA" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="KEYFLD" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VOU_TITLE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="VOU_TITLEA" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="DETAIL_REP" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["rptVou_992_details.jasper"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TOTAL_IN_WORDS" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select acvoucher1.*,name from acvoucher1,acaccount where vou_code=1
+and acaccount.accno=acvoucher1.codeacc
+AND ACVOUCHER1.KEYFLD=$P{KEYFLD}]]>
+	</queryString>
+	<field name="KEYFLD" class="java.math.BigDecimal"/>
+	<field name="PERIODCODE" class="java.lang.String"/>
+	<field name="NO" class="java.math.BigDecimal"/>
+	<field name="VOU_CODE" class="java.math.BigDecimal"/>
+	<field name="TYPE" class="java.math.BigDecimal"/>
+	<field name="VOU_DATE" class="java.sql.Timestamp"/>
+	<field name="CODE" class="java.lang.String"/>
+	<field name="CODEAMT" class="java.math.BigDecimal"/>
+	<field name="DESCR" class="java.lang.String"/>
+	<field name="DEBAMT" class="java.math.BigDecimal"/>
+	<field name="CRDAMT" class="java.math.BigDecimal"/>
+	<field name="DUEDATE" class="java.sql.Timestamp"/>
+	<field name="CREATDT" class="java.sql.Timestamp"/>
+	<field name="FLAG" class="java.math.BigDecimal"/>
+	<field name="USERNM" class="java.lang.String"/>
+	<field name="YEAR" class="java.lang.String"/>
+	<field name="RCVFROM" class="java.lang.String"/>
+	<field name="SLSMN" class="java.math.BigDecimal"/>
+	<field name="CODEACC" class="java.lang.String"/>
+	<field name="CHEQUENO" class="java.lang.String"/>
+	<field name="ISCHANGE" class="java.lang.String"/>
+	<field name="ISNEW" class="java.lang.String"/>
+	<field name="BOOKSERIALNO" class="java.lang.String"/>
+	<field name="INVOICE_CODE" class="java.math.BigDecimal"/>
+	<field name="INVOICE_TYPE" class="java.math.BigDecimal"/>
+	<field name="INVKEYFLD" class="java.math.BigDecimal"/>
+	<field name="REFERNO" class="java.math.BigDecimal"/>
+	<field name="REFERCODE" class="java.math.BigDecimal"/>
+	<field name="REFERTYPE" class="java.math.BigDecimal"/>
+	<field name="PRINTCOUNT" class="java.math.BigDecimal"/>
+	<field name="COSTCENT" class="java.lang.String"/>
+	<field name="REFERKEYFLD" class="java.math.BigDecimal"/>
+	<field name="FCCODE" class="java.lang.String"/>
+	<field name="FCRATE" class="java.math.BigDecimal"/>
+	<field name="FCDEBAMT" class="java.math.BigDecimal"/>
+	<field name="FCCRDAMT" class="java.math.BigDecimal"/>
+	<field name="FCCODEAMT" class="java.math.BigDecimal"/>
+	<field name="FC_MAIN_1" class="java.lang.String"/>
+	<field name="FC_MAIN_RATE_1" class="java.math.BigDecimal"/>
+	<field name="NAME" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="144">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="strCompanyName" x="0" y="0" width="282" height="30"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{COMPANY_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="strCompanyName" x="282" y="1" width="271" height="30"/>
+				<textElement textAlignment="Right">
+					<font fontName="DejaVu Sans" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{COMPANY_NAMEA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="strCompanySpec" x="307" y="32" width="248" height="52"/>
+				<textElement textAlignment="Right">
+					<font fontName="DejaVu Sans" size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{COMPANY_SPECSA}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="strCompanySpec" x="0" y="30" width="246" height="52"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{COMPANY_SPECS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="strTitle" x="0" y="112" width="555" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{VOU_TITLE}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement x="246" y="30" width="61" height="54"/>
+				<imageExpression class="java.lang.String"><![CDATA["company_logo.bmp"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="1" width="100" height="20"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<text><![CDATA[Voucher #:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="307" y="1" width="94" height="20"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<text><![CDATA[Voucher Date:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="21" width="100" height="20"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<text><![CDATA[Bank A/C:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="41" width="100" height="20"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<text><![CDATA[Description:]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="strHeader" x="103" y="2" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{NO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="strHeader" x="104" y="22" width="452" height="20"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{CODEACC} +"- "+ $F{NAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="strHeader" x="103" y="41" width="452" height="20"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCR}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement style="strHeader" x="401" y="2" width="152" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{VOU_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="53" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="51"/>
+				<subreportParameter name="KEYFLD">
+					<subreportParameterExpression><![CDATA[$P{KEYFLD}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TOTAL_IN_WORDS">
+					<subreportParameterExpression><![CDATA[$P{TOTAL_IN_WORDS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{DETAIL_REP}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="21" splitType="Stretch">
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="0" width="40" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="435" y="0" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="118" splitType="Stretch">
+			<staticText>
+				<reportElement x="31" y="33" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Prepared By:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="207" y="33" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Reviewed By:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="16" y="88" width="115" height="1"/>
+			</line>
+			<line>
+				<reportElement x="208" y="88" width="119" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="411" y="33" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Approved By:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="401" y="87" width="119" height="1"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

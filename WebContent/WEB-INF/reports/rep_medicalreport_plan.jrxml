@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rep_medicalreport_plan" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["/Users/yusufjiruwala/Documents/workspace/channelPlus/reports/voucherStyle.jrtx"]]></template>
+	<parameter name="MEDICAL_NO" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT *FROM CLQ_PATIENTS WHERE MEDICAL_NO=$P{MEDICAL_NO}]]>
+	</queryString>
+	<field name="MEDICAL_NO" class="java.lang.String"/>
+	<field name="E_FIRST_NM" class="java.lang.String"/>
+	<field name="E_SECOND_NM" class="java.lang.String"/>
+	<field name="E_LAST_NM" class="java.lang.String"/>
+	<field name="E_FAMILY_NM" class="java.lang.String"/>
+	<field name="A_FIRST_NM" class="java.lang.String"/>
+	<field name="A_SECOND_NM" class="java.lang.String"/>
+	<field name="A_LAST_NM" class="java.lang.String"/>
+	<field name="A_FAMILY_NM" class="java.lang.String"/>
+	<field name="E_MOTHER_NM" class="java.lang.String"/>
+	<field name="A_MOTHER_NM" class="java.lang.String"/>
+	<field name="SEX_CODE" class="java.lang.String"/>
+	<field name="DOFBIRTH" class="java.sql.Timestamp"/>
+	<field name="COUNTRY" class="java.lang.String"/>
+	<field name="LOCAL_ADDRESS" class="java.lang.String"/>
+	<field name="BIRTH_PLACE" class="java.lang.String"/>
+	<field name="IS_VIP" class="java.lang.String"/>
+	<field name="SECURITY_LEVEL_NO" class="java.math.BigDecimal"/>
+	<field name="TEL" class="java.lang.String"/>
+	<field name="EXTENSION" class="java.lang.String"/>
+	<field name="MOBILE_NO" class="java.lang.String"/>
+	<field name="RELIGION" class="java.lang.String"/>
+	<field name="IS_SMOKER" class="java.lang.String"/>
+	<field name="MARITAL_STATUS" class="java.lang.String"/>
+	<field name="OLD_MEDICAL" class="java.lang.String"/>
+	<field name="EMAIL" class="java.lang.String"/>
+	<field name="CUST_CODE" class="java.lang.String"/>
+	<field name="AC_NO" class="java.lang.String"/>
+	<field name="FLAG" class="java.lang.String"/>
+	<field name="ID_TYPE" class="java.lang.String"/>
+	<field name="ID_NO" class="java.lang.String"/>
+	<field name="CREATED_DATE" class="java.sql.Timestamp"/>
+	<field name="CREATED_USER_BY" class="java.lang.String"/>
+	<field name="LAST_MODIFIED_DATE" class="java.sql.Timestamp"/>
+	<field name="LAST_DOC" class="java.math.BigDecimal"/>
+	<field name="LAST_ORDER" class="java.math.BigDecimal"/>
+	<field name="REP_REFERED_BY" class="java.lang.String"/>
+	<field name="REP_ALLERGIES" class="java.lang.String"/>
+	<field name="REP_MEDICAL_HISTORY" class="java.lang.String"/>
+	<field name="REP_SURGICAL_HISTORY" class="java.lang.String"/>
+	<field name="REP_INVESTIGATION_DONE" class="java.lang.String"/>
+	<field name="REP_HISTORY_OF_PRESENT_ILLNESS" class="java.lang.String"/>
+	<field name="REP_PROV_DIAGNOSIS" class="java.lang.String"/>
+	<field name="REP_NEW_INVESTIGATION" class="java.lang.String"/>
+	<field name="REP_NEW_MEDICATION" class="java.lang.String"/>
+	<field name="REP_PROCEDURE" class="java.lang.String"/>
+	<field name="REP_PHYSIOTHERAPY" class="java.lang.String"/>
+	<field name="REP_RECOMMENDATION" class="java.lang.String"/>
+	<field name="INVOICE_TYPE" class="java.math.BigDecimal"/>
+	<field name="LOCATION_CODE" class="java.lang.String"/>
+	<field name="NATIONALITY" class="java.lang.String"/>
+	<field name="POSTAL_CODE" class="java.lang.String"/>
+	<field name="LAST_ORDER_NO" class="java.math.BigDecimal"/>
+	<field name="LAST_VISIT_DATE" class="java.sql.Timestamp"/>
+	<detail>
+		<band height="271" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="2" width="555" height="23" backcolor="#CCCCCC"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="262" y="5" width="100" height="20"/>
+				<textElement>
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Plan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="26" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Prov Diagnosis]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement style="strHeader" x="133" y="26" width="420" height="36"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<pen lineWidth="0.25" lineColor="#999999"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<leftPen lineWidth="0.25" lineColor="#999999"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<rightPen lineWidth="0.25" lineColor="#999999"/>
+				</box>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{REP_PROV_DIAGNOSIS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="68" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[New Investigation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="109" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Procedure ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="152" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Physio Therapy]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="195" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Recommendation]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement style="strHeader" x="133" y="68" width="420" height="36"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<pen lineWidth="0.25" lineColor="#999999"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<leftPen lineWidth="0.25" lineColor="#999999"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<rightPen lineWidth="0.25" lineColor="#999999"/>
+				</box>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{REP_NEW_INVESTIGATION}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement style="strHeader" x="133" y="109" width="420" height="36"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<pen lineWidth="0.25" lineColor="#999999"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<leftPen lineWidth="0.25" lineColor="#999999"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<rightPen lineWidth="0.25" lineColor="#999999"/>
+				</box>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{REP_PROCEDURE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement style="strHeader" x="133" y="195" width="420" height="36"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<pen lineWidth="0.25" lineColor="#999999"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<leftPen lineWidth="0.25" lineColor="#999999"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<rightPen lineWidth="0.25" lineColor="#999999"/>
+				</box>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{REP_RECOMMENDATION}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement style="strHeader" x="133" y="152" width="420" height="36"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
+					<pen lineWidth="0.25" lineColor="#999999"/>
+					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<leftPen lineWidth="0.25" lineColor="#999999"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#999999"/>
+					<rightPen lineWidth="0.25" lineColor="#999999"/>
+				</box>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{REP_PROCEDURE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

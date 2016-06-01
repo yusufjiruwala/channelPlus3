@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptClqVoucher" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ca8abc89-d024-4aa9-bbf4-3a1faee409f2">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["voucherStyle.jrtx"]]></template>
+	<style name="Row" style="frameDetails" forecolor="#FFFFFF" backcolor="#FFFFFF">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2==0]]></conditionExpression>
+			<style mode="Opaque" forecolor="#FFFFFF" backcolor="#E6DAC3"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="INVOICE_KEYFLD" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_NAME" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="COMPANY_SPECS" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="COMPANY_SPECSA" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select clq_visits.*,clq_patients.e_first_nm|| ' '||e_second_nm||' '||e_family_nm patient_nm,salesp.name dr_name,items.descr,CLQ_PATIENTS.MOBILE_NO,TEL
+from clq_visits,clq_patients,salesp,items where  clq_visits.keyfld=$P{INVOICE_KEYFLD}
+and salesp.no=drno and clq_visits.medical_no=clq_patients.medical_no and items.reference=followup_item]]>
+	</queryString>
+	<field name="KEYFLD" class="java.math.BigDecimal"/>
+	<field name="TIME_OF_ARRIVAL" class="java.sql.Timestamp"/>
+	<field name="MEDICAL_NO" class="java.lang.String"/>
+	<field name="DATE_OF_ARRIVAL" class="java.sql.Timestamp"/>
+	<field name="DRNO" class="java.math.BigDecimal"/>
+	<field name="INV_TYPE" class="java.math.BigDecimal"/>
+	<field name="FOLLOWUP_ITEM" class="java.lang.String"/>
+	<field name="FLAG" class="java.lang.String"/>
+	<field name="ORD_NO" class="java.math.BigDecimal"/>
+	<field name="SALEINV" class="java.math.BigDecimal"/>
+	<field name="NEXT_BOOK_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="PREV_BOOK_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="ORD_AMT" class="java.math.BigDecimal"/>
+	<field name="FOLLOWUP_FEES" class="java.math.BigDecimal"/>
+	<field name="RECIPT_JV_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="SALEINV_MEDICAL" class="java.math.BigDecimal"/>
+	<field name="LOCATION_CODE" class="java.lang.String"/>
+	<field name="FOLLOWUP_INV_TYPE" class="java.math.BigDecimal"/>
+	<field name="MEDICAL_INV_TYPE" class="java.math.BigDecimal"/>
+	<field name="PAY_TYPE_1" class="java.math.BigDecimal"/>
+	<field name="PAY_TYPE_2" class="java.math.BigDecimal"/>
+	<field name="PAY_AMT_1" class="java.math.BigDecimal"/>
+	<field name="PAY_AMT_2" class="java.math.BigDecimal"/>
+	<field name="PAY_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="FOLLOWUP_DISC" class="java.math.BigDecimal"/>
+	<field name="FOLLOWUP_DISC_DESCR" class="java.lang.String"/>
+	<field name="MEDICAL_DISC" class="java.math.BigDecimal"/>
+	<field name="MEDICAL_DISC_DESCR" class="java.lang.String"/>
+	<field name="PATIENT_NM" class="java.lang.String"/>
+	<field name="DR_NAME" class="java.lang.String"/>
+	<field name="DESCR" class="java.lang.String"/>
+	<field name="MOBILE_NO" class="java.lang.String"/>
+	<field name="TEL" class="java.lang.String"/>
+	<title>
+		<band height="127" splitType="Stretch">
+			<line>
+				<reportElement uuid="a231292c-72dd-44d9-9241-4a87f3d61aef" x="4" y="121" width="551" height="1"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e539a098-78d4-4e11-bddb-eb5190f974f4" x="10" y="41" width="272" height="63"/>
+				<textElement>
+					<font fontName="DejaVu Serif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{COMPANY_SPECS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="26dfb882-571f-4162-8a64-e97e6220d7cf" style="strCompanyName" x="10" y="10" width="555" height="31"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{COMPANY_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="322139d6-2b47-454e-91dd-ceca63df96b0" x="282" y="41" width="273" height="63"/>
+				<textElement textAlignment="Right">
+					<font fontName="DejaVu Serif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{COMPANY_SPECSA}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="15" splitType="Stretch"/>
+	</pageHeader>
+	<detail>
+		<band height="268" splitType="Stretch">
+			<textField pattern="">
+				<reportElement uuid="e3fb26a5-a8e6-4f8d-a763-c25b506d38de" style="strHeader" x="97" y="10" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{KEYFLD}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="0a2e7f77-051e-4ff2-9229-bfb36b25eec2" style="strHeader" x="305" y="70" width="78" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="c2153f3a-9272-45a3-9c29-4fd392499cf1" style="strHeader" x="97" y="50" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{MEDICAL_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="0363fc92-45d8-45c7-8b02-acbd3ec3c769" style="labelHeader" x="10" y="50" width="72" height="20"/>
+				<textElement/>
+				<text><![CDATA[Medical No #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="388138be-eeaf-43e6-b69a-3b89022cbe91" style="strHeader" x="263" y="234" width="105" height="20"/>
+				<textElement markup="none"/>
+				<text><![CDATA[Total Amount]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement uuid="d2f53521-7c8c-4c5b-9b8b-8e05f236d5c8" style="strHeader" x="406" y="70" width="149" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{MOBILE_NO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.000;(-#,##0.000)">
+				<reportElement uuid="aa4e4be1-6f3a-49a0-beb9-50b365ffdc1d" style="strHeader" x="383" y="212" width="172" height="20"/>
+				<textElement textAlignment="Right" markup="none"/>
+				<textFieldExpression><![CDATA[$F{ORD_AMT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="bdec6fb5-dbc6-435c-9ef4-08eee8327a0b" style="labelHeader" x="282" y="10" width="86" height="20"/>
+				<textElement/>
+				<text><![CDATA[Visit Time:]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement uuid="a14a2ce6-afa1-4578-bcd4-e4108cda127b" style="strHeader" x="383" y="108" width="172" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{DESCR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="dd89666c-9ab8-4d82-80f7-9d9fe3d3d841" style="labelHeader" x="11" y="70" width="71" height="20"/>
+				<textElement/>
+				<text><![CDATA[Patient Name:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e3a4d5b1-fa77-4c37-b1bf-453918606280" style="strHeader" x="263" y="108" width="105" height="20"/>
+				<textElement markup="none"/>
+				<text><![CDATA[Follow up Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c47e81b5-164c-4db2-8ee3-3dfd7720bd2b" style="labelHeader" x="282" y="70" width="23" height="20"/>
+				<textElement/>
+				<text><![CDATA[Tel:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6a2767ce-69a8-4d2e-846d-ee32415660a7" style="strHeader" x="263" y="128" width="105" height="20"/>
+				<textElement markup="none"/>
+				<text><![CDATA[Follow up Fees]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement uuid="1c196036-7dda-47a5-b1f9-b64200ae9ac3" style="strHeader" x="383" y="10" width="172" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{TIME_OF_ARRIVAL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.000;(#,##0.000)">
+				<reportElement uuid="8e8bfff3-3d5a-4ffc-93be-675033ed7bfe" style="strHeader" x="383" y="128" width="172" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{FOLLOWUP_FEES}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="61a3d6aa-7f83-4f98-8a8e-fa5818f551a2" style="strHeader" x="263" y="212" width="105" height="20"/>
+				<textElement markup="none"/>
+				<text><![CDATA[Medical Invoice Amt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="389d1451-29df-41b3-8c05-c9a244671547" style="labelHeader" x="383" y="70" width="23" height="20"/>
+				<textElement/>
+				<text><![CDATA[Cell:]]></text>
+			</staticText>
+			<textField pattern="#,##0.000;(#,##0.000)">
+				<reportElement uuid="f7d97085-bce4-4d33-94a1-45f6670bfeda" style="strHeader" x="383" y="236" width="172" height="20"/>
+				<textElement textAlignment="Right" markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[BigDecimal.valueOf($F{ORD_AMT}.doubleValue()
+    + ($F{FOLLOWUP_FEES}.doubleValue()
+ - $F{FOLLOWUP_DISC}.doubleValue()))]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="125ebab9-f05d-4a30-b62a-bd2d71e3924d" style="strHeader" x="97" y="30" width="271" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{DR_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="87dbdd11-6b78-450a-bfef-588cf964564a" style="labelHeader" x="10" y="10" width="72" height="20"/>
+				<textElement/>
+				<text><![CDATA[Transaction #]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement uuid="68487149-edbb-41b4-8c81-ab25afc7b78c" style="strHeader" x="97" y="70" width="185" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{PATIENT_NM}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="994140e8-6393-4821-b344-094545426acc" style="labelHeader" x="10" y="30" width="72" height="20"/>
+				<textElement/>
+				<text><![CDATA[Doctor]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="cf686e84-1fa9-4600-a79d-06f1ee24c465" x="0" y="232" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="95516641-be5b-4ed9-a284-e8a0dbd9b525" x="2" y="256" width="555" height="1"/>
+			</line>
+			<textField pattern="#,##0.000;(#,##0.000)">
+				<reportElement uuid="b67863ab-abf7-43b4-bbe0-2b5c833574ac" style="strHeader" x="383" y="148" width="172" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{FOLLOWUP_DISC}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="38fc706f-ae5d-4fc7-a02f-d4b4c86cb2b5" style="strHeader" x="263" y="148" width="105" height="20"/>
+				<textElement markup="none"/>
+				<text><![CDATA[Follow up Discount]]></text>
+			</staticText>
+			<textField pattern="#,##0.000;(#,##0.000)">
+				<reportElement uuid="7700bab2-ad6b-4496-b25c-a9fda11b484b" style="strHeader" x="385" y="168" width="172" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[BigDecimal.valueOf($F{FOLLOWUP_FEES}.doubleValue()
+    - $F{FOLLOWUP_DISC}.doubleValue())]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+</jasperReport>

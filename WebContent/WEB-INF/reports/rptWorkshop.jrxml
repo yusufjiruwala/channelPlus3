@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptWorkshop" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3b6ec347-4799-4d4f-b479-9c751507c1ae">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["voucherStyle.jrtx"]]></template>
+	<style name="Row_lvl" mode="Opaque" markup="none" fontSize="10">
+		<box leftPadding="3" rightPadding="3"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[]]></conditionExpression>
+			<style mode="Opaque" backcolor="#CCCCCC"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[]]></conditionExpression>
+			<style mode="Opaque" backcolor="#CCCCCC"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[]]></conditionExpression>
+			<style mode="Opaque" forecolor="#000000" backcolor="#CCCCCC"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[]]></conditionExpression>
+			<style mode="Opaque" forecolor="#000000" backcolor="#CCCCCC"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="PORD_NO" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[5]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_SPECSA" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Software Consultancy"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_SPECS" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Software Consultancy"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_IMAGE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["COMPANY_LOGO.bmp"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_NAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["CHAINEL INFOSYSTEM PVT LTD"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_NAMEA" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["CHAINEL INFOSYSTEM PVT LTD"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\yaali\\products\\channelPlus_others\\channel_reports\\repserver\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="NUM_FORMAT" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["#,##0.000;-#,##0.000"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select order1.*,locations.name location_name ,salesp.name empname,
+ord_job_types.descr job_type_descr,invoicetype.descr typedescr
+,(SELECT MAX(DESCR) FROM ITEMS WHERE REFERENCE=ORDACC) ITEM_NAME
+ from order1 ,locations,salesp,ord_job_types,invoicetype
+where ord_no=$P{PORD_NO} and ord_code=106 and order1.location_code=locations.code
+and salesp.no(+)=ord_empno
+and ord_type=ord_job_types.no
+and invoicetype.location_code=order1.location_code
+and invoicetype.no=ORD_DISCAMT]]>
+	</queryString>
+	<field name="PERIODCODE" class="java.lang.String"/>
+	<field name="ORD_NO" class="java.math.BigDecimal"/>
+	<field name="ORD_CODE" class="java.math.BigDecimal"/>
+	<field name="ORD_REF" class="java.lang.String"/>
+	<field name="ORD_REFNM" class="java.lang.String"/>
+	<field name="ORD_DATE" class="java.sql.Timestamp"/>
+	<field name="ORD_SHIP" class="java.lang.String"/>
+	<field name="ORD_SHPDT" class="java.sql.Timestamp"/>
+	<field name="ORD_AMT" class="java.math.BigDecimal"/>
+	<field name="ORD_DISCAMT" class="java.math.BigDecimal"/>
+	<field name="ORD_FLAG" class="java.math.BigDecimal"/>
+	<field name="ORD_EMPNO" class="java.math.BigDecimal"/>
+	<field name="YEAR" class="java.lang.String"/>
+	<field name="REMARKS" class="java.lang.String"/>
+	<field name="PAYTERM" class="java.lang.String"/>
+	<field name="VALIDATIY" class="java.lang.String"/>
+	<field name="ATTN" class="java.lang.String"/>
+	<field name="KEYFLD" class="java.math.BigDecimal"/>
+	<field name="DELIVEREDQTY" class="java.math.BigDecimal"/>
+	<field name="ORDERDQTY" class="java.math.BigDecimal"/>
+	<field name="SALEINV" class="java.math.BigDecimal"/>
+	<field name="ONAME" class="java.lang.String"/>
+	<field name="LOCATION_CODE" class="java.lang.String"/>
+	<field name="COSTCENT" class="java.lang.String"/>
+	<field name="ORD_TYPE" class="java.math.BigDecimal"/>
+	<field name="RECIPT_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="PUR_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="LCNO" class="java.lang.String"/>
+	<field name="ORDACC" class="java.lang.String"/>
+	<field name="APPROVED_BY" class="java.lang.String"/>
+	<field name="APPROVED_TIME" class="java.sql.Timestamp"/>
+	<field name="LAST_MODIFIED_TIME" class="java.sql.Timestamp"/>
+	<field name="LAST_MODIFYED_BY" class="java.lang.String"/>
+	<field name="DELIVERED_FREEQTY" class="java.math.BigDecimal"/>
+	<field name="PUR_ADJUST_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="HAVE_ADJUSTMENT" class="java.lang.String"/>
+	<field name="ADJUST_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="ADJUST_CURRENCY" class="java.lang.String"/>
+	<field name="ADJUST_RATE" class="java.math.BigDecimal"/>
+	<field name="ADJUST_DATE" class="java.sql.Timestamp"/>
+	<field name="ADJUST_DESCR" class="java.lang.String"/>
+	<field name="PUR_AND_SRV" class="java.lang.String"/>
+	<field name="STRA" class="java.math.BigDecimal"/>
+	<field name="SAL_AND_ISS" class="java.lang.String"/>
+	<field name="ISSUE_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="ORD_REFERENCE" class="java.math.BigDecimal"/>
+	<field name="LOCATION_NAME" class="java.lang.String"/>
+	<field name="EMPNAME" class="java.lang.String"/>
+	<field name="JOB_TYPE_DESCR" class="java.lang.String"/>
+	<field name="TYPEDESCR" class="java.lang.String"/>
+	<field name="ITEM_NAME" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="247" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="fb8bd95a-c73d-4dfa-910d-1912445b5ba5" style="labelPara" x="14" y="121" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Location]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="1ef81bc1-0067-4d39-b9e2-70c70bdd779c" style="strPara" x="82" y="121" width="135" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{LOCATION_CODE} + " - " +$F{LOCATION_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="274cd94d-5c09-4197-9741-c8d6b1d3d943" style="labelPara" x="299" y="121" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Ord No]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="3bf6fe81-5f6d-4dbe-9eb6-67455163618a" style="strPara" x="367" y="121" width="135" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORD_NO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="e1087159-1e17-4ac5-9c0a-85cebf4cbf4f" style="strPara" x="82" y="135" width="135" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ORD_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="3d9fa226-6bcc-4119-b6fb-4eb0d32921ca" style="labelPara" x="14" y="135" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Ord Date]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="013b55c6-42cd-4e9c-aa38-c7f2791200e9" style="strPara" x="367" y="135" width="135" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{JOB_TYPE_DESCR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d629ec62-d196-4fdb-b04a-fec0928cb6b5" style="labelPara" x="299" y="135" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Job Type]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="af5e2e18-ad6f-4ccf-a69d-388fa29350ff" style="strPara" x="82" y="163" width="420" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{LCNO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e21993d4-3a63-453e-80e9-dca5331a4588" style="labelPara" x="14" y="163" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Item Serial]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6cfa0ebc-2348-49f3-8670-0461ce2f35f5" style="labelPara" x="14" y="177" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Employee]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="4bbc9cd0-20be-4952-a936-daf8851d511b" style="strPara" x="82" y="177" width="420" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ORD_EMPNO}+" - "+$F{EMPNAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="869e9745-d602-4fed-97f5-f41335ba3e44" style="labelPara" x="14" y="191" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Customer]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="dda2eb76-86e2-4194-8cc0-e12aa640c66a" style="strPara" x="82" y="191" width="420" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORD_REF}+" - "+ $F{ORD_REFNM}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="c1ad2dd6-5d61-4f58-8976-15e3845d05ce" style="strPara" x="82" y="149" width="135" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TYPEDESCR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="b8fc005e-854f-4220-9db7-bfe39da521df" style="labelPara" x="14" y="149" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Invoice Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="850ab25a-62e8-4ddc-8b29-fc70cc555718" style="labelPara" x="299" y="149" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Delivered]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="144affb8-cbfc-4958-9a60-26ce4a074dec" style="strPara" x="367" y="149" width="135" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORD_SHPDT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="b16bdb52-68d5-48b3-a8c1-472bab54f487" style="strTitle" x="2" y="83" width="553" height="23"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Job Order]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2b7bb5c9-6b6a-4877-ac68-c1cc99bb7e48" style="labelPara" x="14" y="205" width="68" height="18"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="03d045e7-9a1c-4738-9deb-54b017cb3b2a" style="strPara" x="82" y="205" width="420" height="18"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORDACC}+" - "+$F{ITEM_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="16b64bc7-1ba0-4511-8548-03ee9c4e17d2" style="strPara" x="82" y="223" width="420" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement verticalAlignment="Top">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REMARKS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="c5e9eca5-c9bb-4485-baf3-434fc42df88f" style="labelPara" x="14" y="223" width="68" height="14"/>
+				<box leftPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Remarks]]></text>
+			</staticText>
+			<subreport>
+				<reportElement uuid="d1d4f7b0-88af-44fa-bd7f-c337c6f61d04" x="0" y="0" width="555" height="83"/>
+				<subreportParameter name="COMPANY_IMAGE">
+					<subreportParameterExpression><![CDATA[$P{COMPANY_IMAGE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="COMPANY_NAMEA">
+					<subreportParameterExpression><![CDATA[$P{COMPANY_NAMEA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="COMPANY_NAME">
+					<subreportParameterExpression><![CDATA[$P{COMPANY_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="COMPANY_SPECSA">
+					<subreportParameterExpression><![CDATA[$P{COMPANY_SPECSA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="COMPANY_SPECS">
+					<subreportParameterExpression><![CDATA[$P{COMPANY_SPECS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report1.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<subreport>
+				<reportElement uuid="8223fef4-5d9c-42ff-81d1-402e8cba4541" x="2" y="0" width="555" height="24"/>
+				<subreportParameter name="PORD_NO">
+					<subreportParameterExpression><![CDATA[$P{PORD_NO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "rptWorkshop_items.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="17">
+			<subreport>
+				<reportElement uuid="1f5f7ba2-d5da-4954-a267-1777d2509324" x="2" y="0" width="555" height="17"/>
+				<subreportParameter name="PORD_NO">
+					<subreportParameterExpression><![CDATA[$P{PORD_NO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "rptWorkshop_services.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="50">
+			<staticText>
+				<reportElement uuid="796d25b8-f653-4349-90cd-4b092e01e308" x="271" y="20" width="50" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="159d9ca0-df95-4eb2-a30e-da795b738874" style="strColHeader_color" x="321" y="20" width="147" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORD_AMT}]]></textFieldExpression>
+				<patternExpression><![CDATA[$P{NUM_FORMAT}]]></patternExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

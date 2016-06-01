@@ -1,0 +1,524 @@
+@CHARSET "windows-1256";
+
+@import "../reindeer/styles.css";
+
+.v-tree-node-caption-disabled {
+	color: graytext;
+	font-style: italic;
+}
+
+.loginHead {
+	color: #00C;
+	font-size: 25px;
+	font-family: "Times New Roman", Times, serif;
+	height: 35px;
+}
+
+.formTitle {
+	font-size: 20px;
+	color: #00C;
+	font-family: "Times New Roman", Times, serif;
+}
+
+.v-label-profile:HOVER {
+	color: maroon;
+	font-weight: bold;
+	font-size: 14px;
+	background-color: silver;
+}
+
+.v-label-profile {
+	color: inherit;
+	font-size: 12px;
+	text-transform: none;
+	padding: 5px;
+	text-decoration: underline;
+	margin: none;
+	height: 12px;
+	text-transform: none;
+	font-weight: bold;
+	background-color: aqua;
+	text-align: center;
+}
+
+.v-label-profilesel {
+	color: aqua;
+	font-size: 14px;
+	text-transform: none;
+	padding: 5px;
+	text-decoration: underline;
+	margin: none;
+	height: 12px;
+	text-transform: none;
+	font-weight: bold;
+	background-color: gray;
+	text-align: center;
+}
+
+.v-label-lov_field:HOVER {
+	color: blue;
+}
+
+.v-label-lov_field {
+	background-color: white;
+	padding: 5px;
+	text-decoration: underline;
+	margin: 1px;
+	text-transform: none;
+	border-color: #9D9D9D #D6D6D6 #D6D6D6 #B6B6B6;
+	border-width: 1px solid #B6B6B6;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.v-table-cell-content-white {
+	color: blue;
+}
+
+.v-table-cell-content-category {
+	font-weight: bold;
+	color: blue;
+}
+
+.v-table-cell-content-center_checkbox {
+	text-align: center;
+}
+
+.v-select-optiongroup-horizontalgrouo .v-select-option {
+	display: inline-block;
+	border: 1px dotted olive;
+	height: 25px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.financialWindow {
+	background-color: white;
+}
+
+.v-table-cell-content-leftalign {
+	text-align: left;
+}
+
+.leftalign {
+	text-align: left;
+}
+
+.v-table-cell-content-rightalign {
+	text-align: right;
+}
+
+.rightalign {
+	text-align: right;
+}
+
+.v-table-cell-content-centeralign {
+	text-align: center;
+}
+
+.centeralign {
+	text-align: right;
+}
+
+.v-table-cell-content-trialbalMain {
+	color: rgb(70, 70, 70);
+	font-weight: bold;
+	fon-size: 10px;
+}
+
+.v-table-cell-content-yellowrow {
+	background-color: yellow !important;
+	color: black;
+}
+
+.v-table-cell-content-blue_back_row {
+	background-color: blue;
+	color: white;
+}
+
+.v-table-cell-content-blue_front_row {
+	color: blue;
+}
+
+.v-table-cell-content-red_front_row {
+	color: red;
+}
+
+.v-table-cell-content-red_back_row {
+	background-color: red;
+}
+
+.v-table-cell-content-red_front_row {
+	color: red;
+}
+
+.v-table-cell-content-gray_back_row {
+	background-color: gray;
+}
+
+.v-table-cell-content-silver_back_row {
+	background-color: silver;
+	color: black;
+}
+
+.v-table-cell-content-blinkrow {
+	text-decoration: blink;
+}
+
+.v-table-caption-container {
+	
+}
+
+.v-table-body {
+	border: 1px solid gray;
+}
+
+.v-table-cell-wrapper {
+	font-size: 13px;
+	font-family: Times New Roman;
+}
+
+.v-textfield.v-readonly {
+	background: url("textfield/img/bg.png") repeat-x scroll 0 0 #FFFFFF;
+	border-color: #9D9D9D #D6D6D6 #D6D6D6 #B6B6B6;
+	border-width: 1px solid #B6B6B6;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.netAmtStyle {
+	float: right;
+	text-align: right;
+	font-size: 15px;
+	font-weight: bolder;
+}
+
+.v-select-optiongroup-horizontalgrouo .v-select-option {
+	display: inline-block;
+	border: 1px dotted olive;
+	vertical-align: middle;
+	text-align: center;
+	height: 25px;
+}
+
+.subGroupStyle {
+	font-style: italic;
+	font-weight: bold;
+	font-size: 20px;
+	color: maroon;
+}
+
+.subGroupHeadStyle {
+	font-style: italic;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+* For the title bar and black border around the view * /
+.v-verticallayout-catfinder {
+	background: black;
+}
+
+/* Padding to create a border around the view */
+.v-verticallayout-applayout .v-verticallayout-margin {
+	padding: 3px;
+}
+
+/* The main title */
+.applayout .v-label-title {
+	font-family: sans-serif;
+	font-size: 14pt;
+	color: navy;
+	line-height: 24pt;
+	background: orange;
+	margin: none;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	margin: none;
+}
+
+.applayout .v-label-rtl {
+	float: right;
+}
+
+.v-captiontext-title1 {
+	font-size: 8pt;
+	height: 13pt;
+	margin: none;
+	color: navy;
+	background: orange;
+}
+
+.v-verticallayout-title1 {
+	color: navy;
+	background: orange;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: navy;
+	margin: none;
+}
+
+.v-verticallayout-formLayout {
+	background-color: #e2e2e2 !important;;
+}
+
+.v-horizontallayout-formLayout {
+	background-color: #e2e2e2 !important;
+}
+
+.v-verticallayout-formGrayLayout {
+	background-color: #d3ffd8 !important;;
+}
+
+.v-verticallayout-vborder {
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	margin: 50px;
+}
+
+.v-gridlayout-vborder {
+	border-style: solid;
+	border-width: 1px;
+	margin-left: 5px;
+}
+
+.applayout .v-label-titlecomment {
+	font-size: 12pt;
+	color: white;
+	background: black;
+}
+
+/* The horizontal area */
+.applayout .v-horizontallayout .v-horizontallayout-spacing-on {
+	background: gray;
+	padding-left: 1px;
+}
+
+.v-horizontallayout-rtl {
+	
+}
+
+;
+/* The menu tree panel */
+.applayout .v-panel-content-menucontainer .v-panel-caption-menucontainer .v-panel-caption-detailspanel
+	{
+	padding: 3px;
+	font-size: 12pt;
+	background-color: aqua;
+	line-height: 10pt;
+	height: 26px;
+	border-style: inset;
+	border-width: 1px;
+	line-height: 10pt;
+}
+
+.applayout .v-panel-content-formLayout .v-panel-caption-formLayout .v-panel-caption-formLayout
+	{
+	background-color: #e2e2e2;
+}
+
+/* The details caption. */
+.applayout .v-panel-caption-detailspanel {
+	font-size: 12pt;
+}
+
+.applayout .v-panel-borderpanel {
+	border-style: solid;
+	border-color: silver;
+}
+
+.applayout .treecontainer, .applayout
+	.v-panel, .applayout .v-caption {
+	
+}
+
+.applayout .v-horizontallayout-spacing-on {
+	padding-left: 4px;
+}
+
+.v-label-rtl {
+	direction: rtl;
+}
+
+.v-datefield-rtl {
+	direction: rtl;
+}
+
+.v-textfield-rtl {
+	text-align: right;
+}
+
+.v-caption-rtl .v-captiontext {
+	float: right;
+}
+
+.v-horizontallayout-rtl {
+	direction: rtl;
+}
+
+.v-verticallayout-rtl {
+	direction: rtl;
+}
+
+.v-gridlayout-rtl {
+	direction: rtl;
+}
+
+.v-splitpanel-horizontal-rtl {
+	direction: rtl;
+}
+
+.v-panel-content-menucontainer-rtl {
+	direction: rtl;
+}
+
+.v-panel-content-rtl {
+	direction: rtl;
+}
+
+.v-panel-rtl {
+	direction: rtl;
+}
+
+.v-nativebutton-toolbar {
+	display: block;
+	border: none;
+	text-align: center;
+	background: transparent;
+}
+
+.v-verticallayout-toolpanel {
+	border: 2px outset silver;
+	background: silver;
+}
+
+.v-verticallayout-headpanel {
+	background: yellow;
+}
+
+.v-textfield-headpanel {
+	background: yellow;
+}
+
+.v-datefield-textfield-headpanel {
+	background: yellow;
+}
+
+.v-horizontallayout-headpanel {
+	background: yellow;
+}
+
+.v-verticallayout-whitetpanel {
+	border: 2px outset silver;
+	background: white;
+}
+
+.v-horizontallayout-toolpanel {
+	border: 2px outset silver;
+	background: silver;
+}
+
+.v-horizontallayout-toolpane_light {
+	border: 1px outset silver;
+	background: #dfdfdf;
+}
+
+.v-horizontallayout-profilebar {
+	border: 1px outset silver;
+	background: silver;
+}
+
+.v-window-light .v-window-outerheader {
+	background: gray;
+	height: 12px;
+	text-align: left;
+}
+
+.v-window-light .v-window-header {
+	color: black;
+	font-size: small;
+}
+
+.v-app input.v-textfield, .v-window input.v-textfield, .v-app textarea.v-textarea,
+	.v-window textarea.v-textarea {
+	padding: 3px 3px 4px;
+}
+
+.v-app .v-textfield-focus, .v-filterselect-focus,
+	v-filterselect-prompt-focus, v-filterselect-button-focus, .v-window .v-textfield-focus,
+	.v-popupview-popup .v-textfield-focus, .v-app .v-textarea-focus,
+	.v-window .v-textarea-focus, .v-popupview-popup .v-textarea-focus {
+	border-color: #5b97d0;
+	border-top-color: #4f83b4;
+	border-bottom-color: #5ca0df;
+	outline: none;
+	background-color: aqua;
+}
+
+.v-textfield-yellowField {
+	background-color: yellow !important;
+}
+
+.v-textfield-aquaField {
+	background-color: aqua !important;
+}
+
+.v-textfield-redField {
+	color: red !important;
+}
+
+.v-app .v-label-yellowLabel {
+	background-color: yellow !important;
+	text-align: center;
+}
+
+input.v-textfield-prompt, textarea.v-textarea-prompt {
+	font-style: normal;
+	color: #999;
+}
+
+.v-textfield-no_border, .v-datefield-no_border .v-datefield-textfield {
+	border: 0px !important;
+	margin: 0 !important;
+	-moz-border-radius: 0px !important;
+	-webkit-border-radius: 0px !important;
+	border-radius: 0px !important;
+}
+
+.v-textfield-numberStyle {
+	text-align: right;
+}
+
+.v-horizontallayout-top_line {
+	border: 1px solid #bcbdbe !important;
+	border-top-color: black !important;
+}
+
+.v-nativebutton-text_right {
+	text-align: right !important;
+}
+
+.v-nativebutton-text_left {
+	text-align: left !important;
+}
+
+.v-nativebutton-text_center {
+	text-align: center !important;
+}
+
+.v-textfield-text_right {
+	text-align: right !important;
+}
+
+.v-textfield-text_left {
+	text-align: left !important;
+}
+
+.v-textfield-text_center {
+	text-align: center !important;
+}
+
+.v-datefield-text_right .v-datefield-textfield {
+	background-color: yellow !important;
+}

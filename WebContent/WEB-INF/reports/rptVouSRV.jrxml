@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptVouSRV" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.callouts" value="##Tue Dec 21 14:38:44 AST 2010"/>
+	<template><![CDATA["voucherStyle.jrtx"]]></template>
+	<style name="Row" style="frameDetails" forecolor="#FFFFFF" backcolor="#FFFFFF">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2==0]]></conditionExpression>
+			<style mode="Opaque" forecolor="#FFFFFF" backcolor="#E6DAC3"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="LOCATION_NAME" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="ORDER_ACCOUNT" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="ORDER_NO" class="java.lang.Float" isForPrompting="false"/>
+	<parameter name="SRV_NO" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="INVOICE_KEYFLD" class="java.lang.Float" isForPrompting="false"/>
+	<parameter name="ORD_DATE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="ORD_REFNAME" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="STORE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="COMPANY_NAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["CHANNEL CO"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_SPECS" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="IMAGE_PATH" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="INVOICE_DATE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select ord_no,invoice2.keyfld,refer,ord_refer,nvl(items.descra,ITEMS.DESCR) DESCR,
+((invoice2.allqty)/ord_pack) rcvd_qty,ORD_PACKD,ORD_PACK,
+((invoice2.free_allqty)/ord_pack) rcvd_freeqty,
+ invoice2.prd_date,invoice2.exp_date,
+ ORD_ALLQTY/ORD_PACK ORD_TOTPK,ORD_FREEALLQTY/ORD_PACK ORD_TOTPKFREE
+ from order2,items,invoice2 where  reference=ord_refer
+  and ord_code=103 and invoice2.orderno=ord_no and invoice2.slsmnxx=ord_pos
+  and invoice2.keyfld=$P{INVOICE_KEYFLD}
+  order by ord_pos]]>
+	</queryString>
+	<field name="ORD_NO" class="java.math.BigDecimal"/>
+	<field name="KEYFLD" class="java.math.BigDecimal"/>
+	<field name="REFER" class="java.lang.String"/>
+	<field name="ORD_REFER" class="java.lang.String"/>
+	<field name="DESCR" class="java.lang.String"/>
+	<field name="RCVD_QTY" class="java.math.BigDecimal"/>
+	<field name="ORD_PACKD" class="java.lang.String"/>
+	<field name="ORD_PACK" class="java.math.BigDecimal"/>
+	<field name="RCVD_FREEQTY" class="java.math.BigDecimal"/>
+	<field name="PRD_DATE" class="java.sql.Timestamp"/>
+	<field name="EXP_DATE" class="java.sql.Timestamp"/>
+	<field name="ORD_TOTPK" class="java.math.BigDecimal"/>
+	<field name="ORD_TOTPKFREE" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="71" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement style="strCompanyName" x="0" y="0" width="354" height="31"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{COMPANY_NAME}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="70" width="555" height="1"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="31" width="354" height="39"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{COMPANY_SPECS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="92" splitType="Stretch">
+			<staticText>
+				<reportElement style="strTitle" x="0" y="1" width="555" height="22"/>
+				<textElement/>
+				<text><![CDATA[Store Recipt Voucher]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="strHeader" x="71" y="46" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOCATION_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="strHeader" x="448" y="46" width="107" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ORDER_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="46" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[Location :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="69" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[Order Date:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="182" y="46" width="79" height="20"/>
+				<textElement/>
+				<text><![CDATA[Ord. Account :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="390" y="46" width="53" height="20"/>
+				<textElement/>
+				<text><![CDATA[Ord S/n:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="390" y="69" width="53" height="20"/>
+				<textElement/>
+				<text><![CDATA[Ord Ref:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="182" y="69" width="79" height="20"/>
+				<textElement/>
+				<text><![CDATA[Recieved Date:]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="strHeader" x="71" y="69" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ORD_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="strHeader" x="263" y="46" width="124" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ORDER_ACCOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="strHeader" x="263" y="69" width="124" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{INVOICE_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="strHeader" x="448" y="69" width="107" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ORD_REFNAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="23" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[SRV No:]]></text>
+			</staticText>
+			<textField pattern="###0;-###0">
+				<reportElement style="strHeader" x="71" y="23" width="107" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{SRV_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="390" y="23" width="52" height="20"/>
+				<textElement/>
+				<text><![CDATA[Store:]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="strHeader" x="448" y="23" width="107" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{STORE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<frame>
+				<reportElement style="frameColHeader" mode="Opaque" x="0" y="0" width="555" height="19"/>
+				<box>
+					<topPen lineWidth="1.25"/>
+					<bottomPen lineWidth="1.25"/>
+				</box>
+			</frame>
+			<staticText>
+				<reportElement style="strColHeader" x="0" y="1" width="67" height="20"/>
+				<textElement/>
+				<text><![CDATA[Item Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="66" y="1" width="143" height="20"/>
+				<textElement/>
+				<text><![CDATA[Item Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="210" y="1" width="57" height="20"/>
+				<textElement/>
+				<text><![CDATA[Pack D.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="267" y="1" width="57" height="20"/>
+				<textElement/>
+				<text><![CDATA[Pack]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="324" y="1" width="67" height="20"/>
+				<textElement/>
+				<text><![CDATA[Ord. Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="391" y="1" width="57" height="20"/>
+				<textElement/>
+				<text><![CDATA[Rcvd Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="448" y="1" width="57" height="20"/>
+				<textElement/>
+				<text><![CDATA[Rcvd Free]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<frame>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="555" height="20"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5" lineColor="#000000"/>
+				</box>
+			</frame>
+			<textField>
+				<reportElement style="strDetails" x="67" y="0" width="143" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="strDetails" x="210" y="0" width="57" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ORD_PACKD}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="267" y="0" width="57" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ORD_PACK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="324" y="0" width="67" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{ORD_TOTPK}.floatValue()+$F{ORD_TOTPKFREE}.floatValue()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="391" y="0" width="57" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{RCVD_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="strDetails" x="0" y="0" width="67" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{REFER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="448" y="0" width="57" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{RCVD_FREEQTY}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement x="224" y="0" width="86" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Recieved By:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="312" y="20" width="193" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

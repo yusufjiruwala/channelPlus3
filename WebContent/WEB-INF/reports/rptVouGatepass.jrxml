@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptVouGatepass" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="126"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["voucherStyle.jrtx"]]></template>
+	<style name="Row" style="frameDetails" forecolor="#FFFFFF" backcolor="#FFFFFF">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2==0]]></conditionExpression>
+			<style mode="Opaque" forecolor="#FFFFFF" backcolor="#E6DAC3"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="COMPANY_SPECS" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="IMAGE_PATH" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_NAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["CHANNEL CO"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="KEYFLD" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[1000002]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TRANS_DATE" class="java.sql.Timestamp" isForPrompting="false"/>
+	<parameter name="LOCATION_NAME" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="LOCATION_CODE" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="DESCR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["DESCRIPTION SHOULD BE LONGER"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SALES_NAME" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="VEHICLE_NO" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select cp_gatepass2.* ,nvl(items.descra,items.descr) descr,
+((RET_ALLQTY+SALE_ALLQTY)-(DLV_ALLQTY+SALERET_ALLQTY))/CP_GATEPASS2.PACK ADJUST_QTY from items,cp_gatepass2
+where reference=refer and
+cp_gatepass2.keyfld=$P{KEYFLD}
+ORDER BY ITEMPOS]]>
+	</queryString>
+	<field name="KEYFLD" class="java.math.BigDecimal"/>
+	<field name="PERIODCODE" class="java.lang.String"/>
+	<field name="LOCATION_CODE" class="java.lang.String"/>
+	<field name="ITEMPOS" class="java.math.BigDecimal"/>
+	<field name="REFER" class="java.lang.String"/>
+	<field name="PACKD" class="java.lang.String"/>
+	<field name="UNITD" class="java.lang.String"/>
+	<field name="PACK" class="java.math.BigDecimal"/>
+	<field name="SALE_ALLQTY" class="java.math.BigDecimal"/>
+	<field name="SALERET_ALLQTY" class="java.math.BigDecimal"/>
+	<field name="RET_ALLQTY" class="java.math.BigDecimal"/>
+	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
+	<field name="RET_PKQTY" class="java.math.BigDecimal"/>
+	<field name="RET_QTY" class="java.math.BigDecimal"/>
+	<field name="TRANS_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="RET_TRANS_KEYFLD" class="java.math.BigDecimal"/>
+	<field name="DLV_QTY" class="java.math.BigDecimal"/>
+	<field name="DLV_PKQTY" class="java.math.BigDecimal"/>
+	<field name="DLV_ALLQTY" class="java.math.BigDecimal"/>
+	<field name="DLV_PRD_DATE" class="java.sql.Timestamp"/>
+	<field name="DLV_EXP_DATE" class="java.sql.Timestamp"/>
+	<field name="DLV_FROM_STORE" class="java.math.BigDecimal"/>
+	<field name="STRNO" class="java.math.BigDecimal"/>
+	<field name="SENT" class="java.lang.String"/>
+	<field name="FLAG" class="java.math.BigDecimal"/>
+	<field name="DESCR" class="java.lang.String"/>
+	<field name="ADJUST_QTY" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="70" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement style="strCompanyName" x="-1" y="0" width="790" height="31"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{COMPANY_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="-1" y="31" width="790" height="39"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{COMPANY_SPECS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="83" splitType="Stretch">
+			<staticText>
+				<reportElement style="strTitle" x="0" y="0" width="802" height="22"/>
+				<textElement/>
+				<text><![CDATA[Gate pass]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="22" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[No:]]></text>
+			</staticText>
+			<textField pattern="###0;-###0">
+				<reportElement style="strHeader" x="71" y="22" width="107" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$P{KEYFLD}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="0" y="63" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[Description:]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement style="strHeader" x="71" y="63" width="595" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{DESCR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="452" y="22" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[Location:]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="strHeader" x="523" y="22" width="143" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOCATION_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="201" y="22" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement style="strHeader" x="272" y="22" width="143" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$P{TRANS_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="452" y="43" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[Driver/Sales]]></text>
+			</staticText>
+			<textField pattern="###0;-###0">
+				<reportElement style="strHeader" x="523" y="43" width="143" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{SALES_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="labelHeader" x="201" y="42" width="66" height="20"/>
+				<textElement/>
+				<text><![CDATA[Vehicle No:]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement style="strHeader" x="272" y="43" width="143" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{VEHICLE_NO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="18" splitType="Stretch">
+			<frame>
+				<reportElement style="headerColored" mode="Opaque" x="3" y="1" width="798" height="17" backcolor="#FFFFCC"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+			</frame>
+			<staticText>
+				<reportElement style="strColHeader" x="11" y="0" width="55" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Pos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="66" y="0" width="62" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Item Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="128" y="0" width="190" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[DESCR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="387" y="0" width="42" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Dlv. P.Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="482" y="0" width="34" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Sold Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="518" y="0" width="41" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[S.Ret]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="558" y="0" width="54" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Ret. Pk Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="653" y="0" width="34" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Adj.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="685" y="0" width="52" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Prd. Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="744" y="0" width="52" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Exp Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="613" y="0" width="42" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Ret. U.Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="436" y="0" width="42" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Dlv.U.Qt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="strColHeader" x="318" y="0" width="50" height="15"/>
+				<textElement>
+					<font fontName="Arial"/>
+				</textElement>
+				<text><![CDATA[Pack]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="-1" y="2" width="802" height="20"/>
+				<box>
+					<bottomPen lineWidth="0.5" lineColor="#000000"/>
+				</box>
+			</frame>
+			<textField>
+				<reportElement x="0" y="1" width="55" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{ITEMPOS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="55" y="1" width="62" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{REFER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="117" y="1" width="190" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="385" y="1" width="43" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{DLV_PKQTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="478" y="1" width="34" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{SALE_ALLQTY}/$F{PACK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="512" y="1" width="41" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{SALERET_ALLQTY}/$F{PACK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="553" y="1" width="54" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{RET_PKQTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="649" y="1" width="34" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{ADJUST_QTY}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement style="strDetails" x="686" y="1" width="52" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{DLV_PRD_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement style="strDetails" x="746" y="1" width="52" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{DLV_EXP_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="607" y="1" width="42" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{RET_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="308" y="1" width="78" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{PACKD}+"x"+$F{PACK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="numQtyCenter" x="433" y="1" width="42" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="10"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{DLV_QTY}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement x="51" y="18" width="232" height="20"/>
+				<textElement/>
+				<text><![CDATA[Store Keeper______________________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="478" y="18" width="232" height="20"/>
+				<textElement/>
+				<text><![CDATA[Sales Person______________________________]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="433" y="0" width="80" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="513" y="0" width="40" height="20"/>
+				<textElement>
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="197" height="20"/>
+				<textElement>
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

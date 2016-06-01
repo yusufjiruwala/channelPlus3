@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptBudgetPl" language="groovy" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<queryString language="SQL">
+		<![CDATA[select *from v_rep_budget_pl
+order by posx]]>
+	</queryString>
+	<field name="KEYFLD" class="java.lang.String"/>
+	<field name="TITLE" class="java.lang.String"/>
+	<field name="BUDGET_VAL" class="java.math.BigDecimal"/>
+	<field name="B_RATE_FROM" class="java.math.BigDecimal"/>
+	<field name="ACTUAL_VAL" class="java.math.BigDecimal"/>
+	<field name="A_RATE_FROM" class="java.math.BigDecimal"/>
+	<field name="BUDGET_VAL2" class="java.math.BigDecimal"/>
+	<field name="ACTUAL_VAL2" class="java.math.BigDecimal"/>
+	<field name="PATH" class="java.lang.String"/>
+	<field name="CHILDCOUNT" class="java.math.BigDecimal"/>
+	<field name="LEVELNO" class="java.math.BigDecimal"/>
+	<field name="POSX" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
