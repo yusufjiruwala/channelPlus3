@@ -147,19 +147,28 @@ public class utilsVaadinPrintHandler {
 
 	public static void printSO(double on, String templFile, Connection con)
 			throws Exception {
-		Map<String, Object> mapPara = new HashMap<String, Object>();
+		Map<String, Object> mapPara = new HashMap<String, Object>();		
 		String cmp = utils
 				.getSqlValue(
-						"select lcno from order1 where ord_code=106 and"
+						"select lcno from order1 where ord_code=106 and "
 								+ " ord_no = (select ord_reference from order1 where ord_code=111 and ord_no="
 								+ on + ")", con);
 
 		getCompanyPara(con, mapPara, cmp);
 		mapPara.put("P_ORD", on + "");
-		mapPara.put("CURRENCY_FORMAT", Channelplus3Application.getInstance()
-				.getFrmUserLogin().FORMAT_MONEY);
+		String fmt = QueryExe.getSqlValue("select max(FORMAT_J2EE) from "
+				+ " currency c,order1 o where ord_code=111 and ord_no=" + on
+				+ " and c.code=o.ord_fc_descr", con, "")
+				+ "";		
+		if (fmt == null || fmt.isEmpty())
+			mapPara.put("CURRENCY_FORMAT", Channelplus3Application
+					.getInstance().getFrmUserLogin().FORMAT_MONEY);
+		else
+			mapPara.put("CURRENCY_FORMAT", fmt);
+		
 		utilsVaadin.showReport("/reports/" + templFile + ".jasper", mapPara,
 				con, Channelplus3Application.getInstance());
+		
 	}
 
 	public static void printLGFRPayment(double kf, Connection con)
@@ -187,7 +196,6 @@ public class utilsVaadinPrintHandler {
 		Map<String, Object> mapPara = new HashMap<String, Object>();
 		mapPara.put("COMPANY_NAME", utils.COMPANY_NAME);
 		mapPara.put("COMPANY_SPECS", utils.COMPANY_SPECS);
-		mapPara.put("COMPANY_SPECSA", utils.COMPANY_SPECSA);
 		mapPara.put("INVOICE_KEYFLD", keyfld);
 		utilsVaadin.showReport("/reports/rptClqVoucher.jasper", mapPara, con,
 				Channelplus3Application.getInstance());
@@ -198,7 +206,6 @@ public class utilsVaadinPrintHandler {
 		Map<String, Object> mapPara = new HashMap<String, Object>();
 		mapPara.put("COMPANY_NAME", utils.COMPANY_NAME);
 		mapPara.put("COMPANY_SPECS", utils.COMPANY_SPECS);
-		mapPara.put("COMPANY_SPECSA", utils.COMPANY_SPECSA);
 		mapPara.put("ORDER_NO", on);
 		ResultSet rst = utils
 				.getSqlRS(

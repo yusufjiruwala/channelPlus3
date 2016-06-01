@@ -135,7 +135,7 @@ public class frmPays implements transactionalForm {
 	public final String MODE_FORM_RECIPTS1 = "FORM_RECIPTS1";
 	public final String MODE_FORM_RECIPTS2 = "FORM_RECIPTS2";
 	public final String MODE_FORM_CLOSE = "CLOSE";
-	public final String MODE_FORM_PO = "FORM_SALE";	
+	public final String MODE_FORM_PO = "FORM_SALE";
 
 	public String mode_current = "@";
 	// ------------------------------------------------------------------------------------------------------------------------------------
@@ -164,7 +164,7 @@ public class frmPays implements transactionalForm {
 	private double varInfoURefund = 0;
 	private double varInfoBal = 0;
 	private double varInfoSaleBal = 0;
-	
+
 	// ------------------------------------------------------------------------------------------------------------------------------------
 	// command buttons
 	// ------------------------------------------------------------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ public class frmPays implements transactionalForm {
 					setCurrentMode(MODE_SEL_PAYS);
 				}
 			});
-	
+
 	private NativeButton cmdRecipts = ControlsFactory.CreateCustomButton(
 			"Issue document", "img/radio_button.png", "Assign Recipts",
 			"link title3", new ClickListener() {
@@ -207,7 +207,7 @@ public class frmPays implements transactionalForm {
 					setCurrentMode(MODE_SEL_PAYS);
 				}
 			});
-	
+
 	private NativeButton cmdClose = ControlsFactory.CreateCustomButton(
 			"Issue document", "img/radio_button.png",
 			"Closing Payments & Generate Sales", "link title3",
@@ -1340,8 +1340,8 @@ public class frmPays implements transactionalForm {
 				txtTotRepay, "expand=2,readonly=true,align_text=end");
 
 		inf.addLine();
-		inf.addComponentsRow("caption=Saleable,width=100%,align=start,expand=2",
-				txtTotDue,
+		inf.addComponentsRow(
+				"caption=Saleable,width=100%,align=start,expand=2", txtTotDue,
 				"expand=2,readonly=true,style=yellowField,align_text=end");
 		inf.addLine();
 
@@ -1820,13 +1820,14 @@ public class frmPays implements transactionalForm {
 				+ " ORD_FLAG, YEAR, REMARKS,"
 				+ " ATTN, DELIVEREDQTY, ORDERDQTY, ONAME,"
 				+ " LOCATION_CODE, ORD_TYPE, RECIPT_KEYFLD,"
-				+ " PUR_KEYFLD, LCNO, ORDACC, ORD_REFERENCE , STRA , PAY_KEYFLD )"
+				+ " PUR_KEYFLD, LCNO, ORDACC, ORD_REFERENCE , STRA , PAY_KEYFLD ,ORD_FC_DESCR)"
 				+ " VALUES  ( "
 				+ ":PERIODCODE, :ORD_NO, :ORD_CODE, :ORD_REF, :ORD_REFNM,"
 				+ ":ORD_DATE, :ORD_AMT, :ORD_DISCAMT,"
 				+ ":ORD_FLAG, '2003', :REMARKS, :ATTN, 0, 0, 'DE',"
 				+ ":LOCATION_CODE, 2, null,"
-				+ "	null, null, :ORDACC, :ORD_REFERENCE, :STRA, :PK )";
+				+ "	null, null, :ORDACC, :ORD_REFERENCE, :STRA, :PK, (SELECT NVL(MAX(VALUE),'KWD')"
+				+ "      FROM CP_USER_PROFILES WHERE VARIABLE='DEFAULT_CURRENCY') )";
 
 		String sq2 = " INSERT INTO ORDER2 ( "
 				+ " PERIODCODE, ORD_NO, ORD_CODE,"
@@ -1837,14 +1838,18 @@ public class frmPays implements transactionalForm {
 				+ " ORD_FLAG, YEAR, DESCR,"
 				+ " KEYFLD, DELIVEREDQTY, SALEINV, "
 				+ " ORD_REQ_DATE, LOCATION_CODE, ORD_TYPE,"
-				+ " ORD_RCPTNO , PAYMENT_REFERENCE ) "
+				+ " ORD_RCPTNO , PAYMENT_REFERENCE,ORD_FC_DESCR) "
 				+ " VALUES " // values
 				+ " ( :PERIODCODE, :ORD_NO, :ORD_CODE, "
-				+ " :ORD_POS, :ORD_DATE, :ORD_REFER," + " :ORD_PRICE, 0, 1 , "
-				+ " 0, 1, :ORD_PACK, " + " :ORD_PACKD, :ORD_UNITD , 0,"
-				+ " 2, '2003', :DESCR, " + " NULL, 0, NULL,"
+				+ " :ORD_POS, :ORD_DATE, :ORD_REFER,"
+				+ " :ORD_PRICE, 0, 1 , "
+				+ " 0, 1, :ORD_PACK, "
+				+ " :ORD_PACKD, :ORD_UNITD , 0,"
+				+ " 2, '2003', :DESCR, "
+				+ " NULL, 0, NULL,"
 				+ " NULL , :LOCATION_CODE,  2,"
-				+ "  :ORD_RCPTNO , :PAYMENT_REFERENCE )  ";
+				+ "  :ORD_RCPTNO , :PAYMENT_REFERENCE , (SELECT NVL(MAX(VALUE),'KWD')"
+				+ "      FROM CP_USER_PROFILES WHERE VARIABLE='DEFAULT_CURRENCY'))  ";
 
 		con.setAutoCommit(false);
 		QueryExe qe = new QueryExe(sq, con);
@@ -2217,7 +2222,8 @@ public class frmPays implements transactionalForm {
 			double repaid = tbl_rcpt2.data.getSummaryOf("AMT_REPAID",
 					localTableModel.SUMMARY_SUM);
 
-			if ((varInfoBal + repaid) != (varInfoSaleBal + refund))
+			if (utils.round((varInfoBal + repaid), 2) != utils.round(
+					(varInfoSaleBal + refund), 2))
 				throw new Exception("Saleable # Balance , " + varInfoSaleBal
 						+ " < > " + varInfoBal);
 		}
@@ -2248,7 +2254,7 @@ public class frmPays implements transactionalForm {
 			if (mode_current.equals(MODE_FORM_REFUNDS))
 				load_refunds();
 			if (mode_current.equals(MODE_FORM_PO))
-				load_sale();
+				load_PO();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -2257,14 +2263,13 @@ public class frmPays implements transactionalForm {
 		}
 	}
 
-	private void load_sale() throws SQLException {
+	private void load_PO() throws SQLException {
 		tbl_rcpt3.data
 				.executeQuery(
 						"select L.* , (l.amt_actual+l.amt_repaid) -amt_refund "
 								+ " AMT_SALEABLE from lg_pays_rcpt L where KEYFLD_PAY IN ("
 								+ QRYSES + ") ORDER BY KEYFLD_PAY,RCPT_NO",
 						true);
-
 		for (int i = 0; i < tbl_rcpt3.data.getRowCount(); i++) {
 
 			double slr = ((BigDecimal) tbl_rcpt3.data.getFieldValue(i,

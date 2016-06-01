@@ -6,14 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import mondrian.olap.Result;
 
 import com.doc.views.TableView;
 import com.doc.views.TableView.SelectionListener;
@@ -69,6 +69,7 @@ public class frmPurOrd implements transactionalForm {
 	public Window standAloneWnd = null;
 	public String standAloneType = "";
 	public double standAloneNo = -1;
+	private SimpleDateFormat sdf = new SimpleDateFormat(utils.FORMAT_SHORT_DATE);
 
 	private Connection con = null;
 	List<FieldInfo> lstfldinfo = new ArrayList<FieldInfo>();
@@ -87,6 +88,9 @@ public class frmPurOrd implements transactionalForm {
 
 	private HorizontalLayout buttonLayout = new HorizontalLayout();
 	private HorizontalLayout content1Layout = new HorizontalLayout();
+
+	private String strDefaultCurrency = "KWD";
+	private String strCurrencyFormat = "";
 
 	private HorizontalLayout noLayout = new HorizontalLayout();
 	private HorizontalLayout dateLayout = new HorizontalLayout();
@@ -134,6 +138,7 @@ public class frmPurOrd implements transactionalForm {
 					"100%",
 					"select code,name from c_ycust where issupp='Y' and flag=1 order by path",
 					"CODE", "NAME");
+
 	private ComboBox txtStore = ControlsFactory.CreateListField(null, "STRA",
 			"select no,name from store order by no", lstfldinfo);
 
@@ -242,8 +247,7 @@ public class frmPurOrd implements transactionalForm {
 				throw new Exception("Issued qty on this purchase !");
 
 			validateData();
-			DecimalFormat df = new DecimalFormat(Channelplus3Application
-					.getInstance().getFrmUserLogin().FORMAT_MONEY);
+			DecimalFormat df = new DecimalFormat(strCurrencyFormat);
 			con.setAutoCommit(false);
 
 			QueryExe qe = new QueryExe(con);
@@ -420,9 +424,15 @@ public class frmPurOrd implements transactionalForm {
 
 	public void load_data() {
 		try {
+			strDefaultCurrency = Channelplus3Application.getInstance()
+					.getFrmUserLogin().getMapVars().get("DEFAULT_CURRENCY");
+			utils.findFieldInfoByObject(txtFcDescr, lstfldinfo).defaultValue = strDefaultCurrency;
 
 			utilsVaadin.resetValues(basicLayout, false, false);
 			utilsVaadin.setDefaultValues(lstfldinfo, false);
+
+			strCurrencyFormat = getCurrencyFormat();
+
 			varPurKeyfld = "";
 			varSRVKeyfld = "";
 			varPurSrv = "N";
@@ -475,20 +485,46 @@ public class frmPurOrd implements transactionalForm {
 					chkFlag.setValue(true);
 				}
 
-				if ((!varPurKeyfld.isEmpty() || !varSRVKeyfld.isEmpty())
-						&& varPurSrv.equals("N")) {
-					cmdSave.setEnabled(false);
-					cmdDelete.setEnabled(false);
+				/*
+				 * if ((!varPurKeyfld.isEmpty() || !varSRVKeyfld.isEmpty()) &&
+				 * varPurSrv.equals("N")) { cmdSave.setEnabled(false);
+				 * cmdDelete.setEnabled(false); }
+				 */
+				// finding recipt in sales or sales return
+				ResultSet rs = QueryExe.getSqlRS(
+						"select ord_rcptno , ord_reference from joined_order "
+								+ " where ord_code=103 and ord_no='"
+								+ txtNo.getValue() + "'", con);
+				if (rs != null && rs.first()) {
+					rs.beforeFirst();
+					while (rs.next()) {
+						String rn = rs.getString("ORD_RCPTNO");
+						String rf = rs.getString("ORD_REFERENCE");
+						double cnt = Double
+								.valueOf(QueryExe
+										.getSqlValue(
+												" select nvl(count(*),0) from joined_order "
+														+ "  where ord_code!=103 and ord_reference='"
+														+ rf
+														+ "' and ord_rcptno='"
+														+ rn + "'", con, "0")
+										+ "");
+						if (cnt > 0) {
+							parentLayout.getWindow().showNotification("",
+									" Recipt Found !,  # " + rn);
+							cmdSave.setEnabled(false);
+							cmdDelete.setEnabled(false);
+						}
+					}
 				}
-
 				if (varOrdFlag.equals("1")) {
 					cmdSave.setEnabled(false);
 					cmdDelete.setEnabled(false);
 				}
 
-				if (!varPayKeyflds.isEmpty()) {
-					cmdSave.setEnabled(false);
-				}
+				// if (!varPayKeyflds.isEmpty()) {
+				// cmdSave.setEnabled(false);
+				// }
 
 				txtNo.setEnabled(false);
 				fetch_query();
@@ -496,9 +532,9 @@ public class frmPurOrd implements transactionalForm {
 
 				if (table.data.getRowCount() > 0)
 					txtItemsKind.setReadOnly(true);
-				cmdSave.setEnabled(false);
-				if (check_any_qty_issued() > 0)
-					cmdSave.setEnabled(false);
+				// cmdSave.setEnabled(false);
+				// if (check_any_qty_issued() > 0)
+				// cmdSave.setEnabled(false);
 			} else {
 				load_parametes();
 			}
@@ -825,6 +861,8 @@ public class frmPurOrd implements transactionalForm {
 
 		txtCust.setImmediate(true);
 		txtDiscAmt.setImmediate(true);
+		txtFcDescr.setImmediate(true);
+		txtFcDescr.addStyleName("uptxt");
 
 		txtCust.setShowDisplayWithValue(false);
 		txtCust.setShowValueOnly(true);
@@ -837,6 +875,12 @@ public class frmPurOrd implements transactionalForm {
 		txtAmt.addStyleName("netAmtStyle yellowField");
 		txtTotal.addStyleName("netAmtStyle yellowField");
 		txtDiscAmt.addStyleName("netAmtStyle yellowField");
+
+		utils.findFieldInfoByObject(txtAmt, lstfldinfo).format = strCurrencyFormat;
+		utils.findFieldInfoByObject(txtAmt, lstfldinfo).fieldType = Parameter.DATA_TYPE_NUMBER;
+
+		utils.findFieldInfoByObject(txtDiscAmt, lstfldinfo).format = strCurrencyFormat;
+		utils.findFieldInfoByObject(txtDiscAmt, lstfldinfo).fieldType = Parameter.DATA_TYPE_NUMBER;
 
 		txtAmt.setReadOnly(true);
 		txtTotal.setReadOnly(true);
@@ -1194,11 +1238,17 @@ public class frmPurOrd implements transactionalForm {
 					if (txtDiscAmt.getValue() != null
 							&& !txtDiscAmt.getValue().toString().isEmpty())
 						ds = Double.valueOf(txtDiscAmt.getValue().toString());
-					DecimalFormat df = new DecimalFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
+					DecimalFormat df = new DecimalFormat(strCurrencyFormat);
 					utilsVaadin.setValueByForce(txtDiscAmt, df.format(ds));
 					calc_summary();
+				}
+			});
+
+			txtFcDescr.addListener(new ValueChangeListener() {
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					change_fc_rate();
 				}
 			});
 
@@ -1230,8 +1280,17 @@ public class frmPurOrd implements transactionalForm {
 					+ " and ord_no=" + ordno + "; end;", con);
 			if (!varPayKeyflds.isEmpty()) {
 				utils.execSql(
-						"update lg_pays set po_ord_no=null, flag=1 WHERE keyfld in ("
-								+ varPayKeyflds + ")", con);
+						" declare "
+								+ " cursor kfs is select *from lg_pays where keyfld in ("
+								+ varPayKeyflds
+								+ "); "
+								+ " begin "
+								+ " for x in kfs loop "
+								+ " delete from acvoucher2 where keyfld=x.close_jv;"
+								+ " delete from acvoucher1 where keyfld=x.close_jv;"
+								+ " end loop; "
+								+ " update lg_pays set po_ord_no=null, flag=1 WHERE keyfld in ("
+								+ varPayKeyflds + ");end;", con);
 			}
 			con.commit();
 		} catch (Exception e) {
@@ -1254,8 +1313,7 @@ public class frmPurOrd implements transactionalForm {
 		if (txtDiscAmt.getValue() != null
 				&& !txtDiscAmt.getValue().toString().isEmpty())
 			ds = Double.valueOf(txtDiscAmt.getValue().toString());
-		DecimalFormat df = new DecimalFormat(Channelplus3Application
-				.getInstance().getFrmUserLogin().FORMAT_MONEY);
+		DecimalFormat df = new DecimalFormat(strCurrencyFormat);
 		// utilsVaadin.setValueByForce(txtDiscAmt, df.format(ds));
 		utilsVaadin.setValueByForce(txtAmt, df.format(d));
 		utilsVaadin.setValueByForce(txtTotal, df.format(d - ds));
@@ -1388,6 +1446,17 @@ public class frmPurOrd implements transactionalForm {
 		if (txtType.getValue() == null)
 			throw new SQLException("Type must have value");
 
+		if (txtDate.getValue() == null)
+			throw new SQLException("Date should have value !");
+
+		Date dt = (Date) QueryExe.getSqlValue(
+				"select ord_date from order1 where ord_code=106 "
+						+ " and ord_no='" + txtShimp.getValue() + "'", con,
+				null);
+		if (dt.compareTo((Date) txtDate.getValue()) > 0)
+			throw new SQLException("Date is less than job order date # "
+					+ sdf.format(dt));
+
 		if (QRYSES.isEmpty()) {
 			String ord = utils.getSqlValue(
 					"select ord_no from order1 where ord_code=" + varOrdCode
@@ -1405,7 +1474,6 @@ public class frmPurOrd implements transactionalForm {
 			if (ord_flg < 0)
 				throw new SQLException(
 						"Not found this order due to delete by other user");
-
 		}
 
 		for (int i = 0; i < table.data.getRows().size(); i++) {
@@ -1421,8 +1489,7 @@ public class frmPurOrd implements transactionalForm {
 					|| txtDiscAmt.getValue().toString().isEmpty())
 				txtDiscAmt.setValue("0.000");
 
-			DecimalFormat df = new DecimalFormat(Channelplus3Application
-					.getInstance().getFrmUserLogin().FORMAT_MONEY);
+			DecimalFormat df = new DecimalFormat(strCurrencyFormat);
 
 			double discInv = df.parse(txtDiscAmt.getValue() + "").doubleValue();
 			double InvAmt = df.parse(txtAmt.getValue() + "").doubleValue();
@@ -1531,6 +1598,47 @@ public class frmPurOrd implements transactionalForm {
 			Channelplus3Application.getInstance().getMainWindow()
 					.removeWindow(wnd);
 			e.printStackTrace();
+		}
+
+	}
+
+	private String getCurrencyFormat() throws SQLException {
+		String s = QueryExe
+				.getSqlValue(
+						"select max(format_j2ee) from currency where code='"
+								+ txtFcDescr.getValue() + "'",
+						con,
+						Channelplus3Application.getInstance().getFrmUserLogin().FORMAT_MONEY)
+				+ "";
+		return s;
+	}
+
+	private void change_fc_rate() {
+		try {
+			strCurrencyFormat = getCurrencyFormat();
+			String cv = QueryExe.getSqlValue(
+					"select nvl(max(rate),1) from currency where code='"
+							+ txtFcDescr.getValue() + "'", con, "1")
+					+ "";
+			txtFcRate.setValue(cv);
+			calc_summary();
+			utils.findFieldInfoByObject(txtAmt, lstfldinfo).format = strCurrencyFormat;
+			utils.findFieldInfoByObject(txtDiscAmt, lstfldinfo).format = strCurrencyFormat;
+			try {
+				double a = utilsVaadin.getFieldInfoDoubleValue(txtAmt,
+						lstfldinfo);
+				double d = utilsVaadin.getFieldInfoDoubleValue(txtDiscAmt,
+						lstfldinfo);
+				utilsVaadin.settFormattedValue(txtAmt, lstfldinfo, a);
+				utilsVaadin.settFormattedValue(txtDiscAmt, lstfldinfo, d);
+
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
 		}
 
 	}

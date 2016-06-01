@@ -745,7 +745,7 @@ public class utilsVaadin {
 						&& !data.getFieldValue(i, lstItemCols.get(j).colname)
 								.toString().isEmpty()) {
 					ar[j] = new DateField("", new java.util.Date(
-							((Timestamp) data.getFieldValue(i,
+							((java.util.Date) data.getFieldValue(i,
 									lstItemCols.get(j).colname)).getTime()));
 				} else {
 					ar[j] = new DateField("");
@@ -824,11 +824,8 @@ public class utilsVaadin {
 								.isDateTime()
 						&& lstItemCols.get(j).col_class != DateField.class
 						&& !(ar[j] instanceof CheckBox)) {
-
-					Timestamp n = new Timestamp(
-							((java.util.Date) data.getFieldValue(i,
-									lstItemCols.get(j).colname)).getTime());
-
+					Date n = (Date) data.getFieldValue(i,
+							lstItemCols.get(j).colname);
 					if (n != null) {
 						((Property) ar[j]).setValue((new SimpleDateFormat(
 								lstItemCols.get(j).display_format)).format(n));
@@ -1235,6 +1232,7 @@ public class utilsVaadin {
 			if (itm == null) {
 				return;
 			}
+
 			Object o = itm.getItemProperty(columnProperty.descr).getValue();
 
 			if (columnProperty.col_class == DateField.class) {
@@ -1244,10 +1242,10 @@ public class utilsVaadin {
 					if (data.getFieldValue(rowno, columnProperty.colname) != null) {
 						((DateField) o).setReadOnly(false);
 						((Date) ((DateField) o).getValue())
-								.setTime((((Timestamp) data.getFieldValue(
-										rowno, columnProperty.colname))
-										.getTime()));
+								.setTime((((Date) data.getFieldValue(rowno,
+										columnProperty.colname)).getTime()));
 					}
+					
 					((DateField) o).setResolution(DateField.RESOLUTION_DAY);
 					if (columnProperty.display_format
 							.equals("SHORT_DATE_FORMAT")) {

@@ -1360,10 +1360,11 @@ public class frmJobOrder implements transactionalForm {
 		mapActionStrs.put("pays", "DE  Payments Handling..");
 
 		mapActionStrs.put("create_sr", "Create Sales Return ");
-		mapActionStrs.put("create_pr", "Create Purchase Return ");		
+		mapActionStrs.put("create_pr", "Create Purchase Return ");
 
 		con = Channelplus3Application.getInstance().getFrmUserLogin().getDbc()
 				.getDbConnection();
+
 		final AbstractOrderedLayout centralPanel = (AbstractOrderedLayout) this.parentLayout;
 
 		try {
@@ -1415,6 +1416,11 @@ public class frmJobOrder implements transactionalForm {
 											.getFrmUserLogin().FORMAT_MONEY);
 					qv.getLctb()
 							.getColByName("TOTAL_PURCHASE")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("COST_IN_HAND")
 							.setNumberFormat(
 									Channelplus3Application.getInstance()
 											.getFrmUserLogin().FORMAT_MONEY);
@@ -1824,8 +1830,7 @@ public class frmJobOrder implements transactionalForm {
 			((frmPurOrd) frm).show_stand_alone(wnd, "2", jobno + "", on);
 		if (frm instanceof frmSaleReturn)
 			((frmSaleReturn) frm).show_stand_alone(wnd, "2", jobno + "", on);
-		
-		
+
 	}
 
 	public void setParentLayout(AbstractLayout parentLayout) {

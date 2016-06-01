@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,8 +43,8 @@ import com.generic.utilsVaadinPrintHandler;
 import com.main.channelplus3.Channelplus3Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.AbstractOrderedLayout;
@@ -74,7 +75,7 @@ public class frmSaleOrd implements transactionalForm {
 	public Window standAloneWnd = null;
 	public String standAloneType = "";
 	public double standAloneNo = -1;
-
+	private SimpleDateFormat sdf = new SimpleDateFormat(utils.FORMAT_SHORT_DATE);
 	public String QRYSES = "";
 	private Connection con = null;
 	List<FieldInfo> lstfldinfo = new ArrayList<FieldInfo>();
@@ -92,7 +93,7 @@ public class frmSaleOrd implements transactionalForm {
 
 	private String strDefaultCurrency = "KWD";
 	private String strCurrencyFormat = "";
-	
+
 	private HorizontalLayout buttonLayout = new HorizontalLayout();
 	private HorizontalLayout content1Layout = new HorizontalLayout();
 	private HorizontalLayout checkLayout = new HorizontalLayout();
@@ -114,6 +115,7 @@ public class frmSaleOrd implements transactionalForm {
 	private HorizontalLayout discAmtLayout = new HorizontalLayout();
 	private HorizontalLayout typeLayout = new HorizontalLayout();
 	private boolean doing_query = false;
+
 	private HorizontalLayout netLayout = new HorizontalLayout();
 
 	private TextField txtNo = ControlsFactory.CreateTextField(null, "ORD_NO",
@@ -131,9 +133,11 @@ public class frmSaleOrd implements transactionalForm {
 
 	private DateField txtDate = ControlsFactory.CreateDateField(null,
 			"ORD_DATE", lstfldinfo);
+
 	private SearchField txtSalesPer = ControlsFactory.CreateSearchField(null,
 			"ORD_EMPNO", lstfldinfo, "100%",
 			"select no,name from salesp where flag=1", "NO", "NAME");
+
 	private SearchField txtCust = ControlsFactory
 			.CreateSearchField(
 					null,
@@ -147,7 +151,7 @@ public class frmSaleOrd implements transactionalForm {
 	private DateField txtShipingDate = ControlsFactory.CreateDateField(null,
 			"ORD_SHPDT", lstfldinfo);
 	private TextField txtFcDescr = ControlsFactory.CreateTextField(null,
-			"ORD_FC_DESCR", lstfldinfo, "100%","KWD");
+			"ORD_FC_DESCR", lstfldinfo, "100%", "KWD");
 	private TextField txtFcRate = ControlsFactory.CreateTextField(null,
 			"ORD_FC_RATE", lstfldinfo, "100%", "1");
 	private SearchField txtReference = ControlsFactory.CreateSearchField(null,
@@ -255,7 +259,6 @@ public class frmSaleOrd implements transactionalForm {
 	}
 
 	public void validateData() throws SQLException {
-
 		for (int j = 0; j < table.data.getRowCount(); j++) {
 			String rfr = table.data.getFieldValue(j, "ORD_REFER").toString();
 			String rcptno = table.data.getFieldValue(j, "ORD_RCPTNO")
@@ -299,9 +302,7 @@ public class frmSaleOrd implements transactionalForm {
 				if (qt <= 0)
 					throw new SQLException("Recipt No #  " + rcptno
 							+ " not in hand , QTY in HAND =" + qt);
-
 			}
-
 		}
 
 		if (txtStore.getValue() == null)
@@ -320,6 +321,16 @@ public class frmSaleOrd implements transactionalForm {
 			do_select_company();
 			throw new SQLException("Must assign company");
 		}
+
+		if (txtDate.getValue() == null)
+			throw new SQLException("Date should have value !");
+		Date dt = (Date) QueryExe.getSqlValue(
+				"select ord_date from order1 where ord_code=106 "
+						+ " and ord_no='" + txtReference.getValue() + "'", con,
+				null);
+		if (dt.compareTo((Date) txtDate.getValue()) > 0)
+			throw new SQLException("Date is less than job order date # "
+					+ sdf.format(dt));
 
 	}
 
@@ -434,7 +445,7 @@ public class frmSaleOrd implements transactionalForm {
 				double d = Double
 						.valueOf(QueryExe
 								.getSqlValue(
-										"select nvl(max(ord_price),0)"
+										"select nvl(max(ord_price*ORD_FC_rate),0)"
 												+ " from joined_order where ord_refer= :RFR and ord_rcptno= :RNO and ord_reference= :ON and ord_code=103 ",
 										con,
 										"0.0",
@@ -462,6 +473,7 @@ public class frmSaleOrd implements transactionalForm {
 									+ txtNo.getValue() + ") "
 									+ " group by ord_rcptno "
 									+ " having count(*)>1", con);
+
 			if (rsr != null) {
 				if (rsr.first()) {
 					String rn = rsr.getString("ord_rcptno");
@@ -476,19 +488,24 @@ public class frmSaleOrd implements transactionalForm {
 
 			con.commit();
 			save_successed = true;
+			String rfr = "";
 			if (cls) {
 				QRYSES = "";
 				parentLayout.getWindow().showNotification("Saved Successfully");
 			} else {
 				QRYSES = txtNo.getValue().toString();
+
 			}
 
+			double qh1 = 0;
 			if (standAloneMode) {
 				Channelplus3Application.getInstance().getMainWindow()
 						.removeWindow(standAloneWnd);
 				return;
 			}
+
 			load_data();
+
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
@@ -500,6 +517,31 @@ public class frmSaleOrd implements transactionalForm {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void check_after_closing() {
+		if (txtReference.getValue() == null)
+			return;
+		final double jon = Double.valueOf(txtReference.getValue() + "");
+		final double on = Double.valueOf(txtNo.getValue() + "");
+		Callback cb = new Callback() {
+
+			@Override
+			public void onDialogResult(boolean resultIsYes) {
+				if (!resultIsYes)
+					return;
+				try {
+					QueryExe.execute(
+							"update order1 set ord_flag=1 where ord_no='" + jon
+									+ "' and " + "ord_code=106", con);
+					con.commit();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+			}
+		};
+
 	}
 
 	private void sal_and_iss(Double ordno) throws SQLException {
@@ -515,12 +557,13 @@ public class frmSaleOrd implements transactionalForm {
 	public void load_data() {
 		try {
 			strDefaultCurrency = Channelplus3Application.getInstance()
-					.getFrmUserLogin().getMapVars().get("CURRENCY_TITLE");
+					.getFrmUserLogin().getMapVars().get("DEFAULT_CURRENCY");
 			utils.findFieldInfoByObject(txtFcDescr, lstfldinfo).defaultValue = strDefaultCurrency;
 			utilsVaadin.resetValues(basicLayout, false, false);
 			utilsVaadin.setDefaultValues(lstfldinfo, false);
-
+			change_fc_rate();
 			strCurrencyFormat = getCurrencyFormat();
+
 			doing_query = true;
 			varSalKeyfld = "";
 			varIssKeyfld = "";
@@ -558,7 +601,6 @@ public class frmSaleOrd implements transactionalForm {
 						ResultSet.CONCUR_READ_ONLY);
 				ResultSet rst = pstmt.executeQuery();
 				utilsVaadin.assignValues(rst, lstfldinfo);
-
 				varSalIss = rst.getString("SAL_AND_ISS");
 				varOrdFlag = rst.getString("ord_flag");
 				varSalKeyfld = utils.nvl(rst.getString("SALEINV"), "");
@@ -1063,6 +1105,7 @@ public class frmSaleOrd implements transactionalForm {
 		txtItemsKind.setNullSelectionAllowed(false);
 		txtItemsKind.setImmediate(true);
 		txtFcDescr.setImmediate(true);
+		txtFcDescr.addStyleName("uptxt");
 
 		txtCust.setShowDisplayWithValue(false);
 		txtCust.setShowValueOnly(true);
@@ -1296,11 +1339,9 @@ public class frmSaleOrd implements transactionalForm {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-
 				}
 			});
 			table.trig = new Triggers() {
-
 				public void beforeSumOnCalc(int recno) {
 
 				}
@@ -1563,17 +1604,44 @@ public class frmSaleOrd implements transactionalForm {
 
 				@Override
 				public void valueChange(ValueChangeEvent event) {
-					try {
-						strCurrencyFormat = getCurrencyFormat();
-						calc_summary();
-					} catch (SQLException ex) {
-						ex.printStackTrace();
-					}
-
+					event.getProperty().setValue(
+							event.getProperty().getValue().toString()
+									.toUpperCase());
+					change_fc_rate();
 				}
 			});
 			listnerAdded = true;
 		}
+	}
+
+	private void change_fc_rate() {
+		try {
+			strCurrencyFormat = getCurrencyFormat();
+			String cv = QueryExe.getSqlValue(
+					"select nvl(max(rate),1) from currency where code='"
+							+ txtFcDescr.getValue() + "'", con, "1")
+					+ "";
+			txtFcRate.setValue(cv);
+			calc_summary();
+			utils.findFieldInfoByObject(txtAmt, lstfldinfo).format = strCurrencyFormat;
+			utils.findFieldInfoByObject(txtDiscAmt, lstfldinfo).format = strCurrencyFormat;
+			try {
+				double a = utilsVaadin.getFieldInfoDoubleValue(txtAmt,
+						lstfldinfo);
+				double d = utilsVaadin.getFieldInfoDoubleValue(txtDiscAmt,
+						lstfldinfo);
+				utilsVaadin.settFormattedValue(txtAmt, lstfldinfo, a);
+				utilsVaadin.settFormattedValue(txtDiscAmt, lstfldinfo, d);
+
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+
 	}
 
 	public void change_item_descr() {
@@ -1801,7 +1869,7 @@ public class frmSaleOrd implements transactionalForm {
 
 		tbl.FetchSql("select distinct items.reference cost_item,items.descr cost_item_descr,"
 				+ " items.descr selling_descr,o2.ORD_RCPTNO RCPT_NO,"
-				+ " o2.ord_price cost, o1.ord_ref,o1.ord_refnm,o1.ord_no,o1.ord_reference,"
+				+ " (o2.ord_price*o2.ord_fc_rate) cost, o1.ord_ref,o1.ord_refnm,o1.ord_no,o1.ord_reference,"
 				+ " 0 fc_price,1 fc_rate,'"
 				+ strDefaultCurrency
 				+ "' fc_descr,o2.payment_reference,"
@@ -1965,7 +2033,7 @@ public class frmSaleOrd implements transactionalForm {
 										.getData().getFieldValue(i, "COST"));
 							}
 							table.refreshRow(lr);
-							
+
 							utilsVaadin.findColByCol("ORD_PRICE",
 									table.listFields).actionAfterUpdate
 									.onValueChange(lr, "ORD_PRICE", table.data

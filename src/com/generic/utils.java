@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,10 +29,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-
 import jxl.Sheet;
 import jxl.Workbook;
 
@@ -46,7 +43,7 @@ public class utils {
 	private static final String SUFFIX = ".jasper";
 	public static final String textCompanyName = "CHAINEL BI Suites";
 	public static final String textSpec1 = "Reports & Management";
-	public static final String textSpec2 = "Email:channel.sys@gmail.com";
+	public static final String textSpec2 = "http://www.chain-el.com";
 	public static String DBURL = "";
 	public static String DBUSER = "";
 	public static String DBPWD = "";
@@ -1110,5 +1107,14 @@ public class utils {
 		cl.set(Calendar.MILLISECOND, 0);
 		dt.setTime(cl.getTimeInMillis());
 
+	}
+
+	public static double round(double value, int places) {
+		if (places < 0)
+			throw new IllegalArgumentException();
+
+		BigDecimal bd = new BigDecimal(value);
+		bd = bd.setScale(places, RoundingMode.HALF_UP);
+		return bd.doubleValue();
 	}
 }

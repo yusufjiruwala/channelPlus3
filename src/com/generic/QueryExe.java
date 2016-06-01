@@ -26,7 +26,6 @@ public class QueryExe {
 		this.sqlStr = sqlStr;
 	}
 
-	
 	public Connection getCon() {
 		return con;
 	}

@@ -149,12 +149,13 @@ public class DBClass implements Serializable {
 			dbConnection = DriverManager.getConnection(dbUrl, dbUser, dbPwd);
 		}
 	}
-
+	
 	public void executeStatment() throws SQLException {
 		rs = ps.executeQuery();
 	}
-
-	public List<String> getColNames() {
+	
+	
+	public List<String> getColNames() {		
 		List<String> ls = new ArrayList<String>();
 		try {
 			parseStatment();
@@ -170,8 +171,9 @@ public class DBClass implements Serializable {
 					ex);
 		}
 		return ls;
-	}
+	}	
 
+	
 	public List<qryColumn> getColumnsList() {
 		List<qryColumn> lst = new ArrayList<qryColumn>();
 		try {
@@ -230,9 +232,8 @@ public class DBClass implements Serializable {
 				r.setRowStatus(Row.ROW_QUERIED);
 				for (int i = 0; i < rsm.getColumnCount(); i++) {
 					if ((filterstring == null || filterstring.length() == 0)
-							|| (rs.getObject(i + 1) != null && rs
-									.getObject(i + 1).toString()
-									.contains(filterstring))) {						
+							|| (rs.getObject(i + 1) != null && rs.getObject(
+									i + 1).toString().contains(filterstring))) {
 						fnd = true;
 					}
 					if (rs.getObject(i + 1) != null) {

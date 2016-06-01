@@ -130,6 +130,7 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 	public final static String FORM_LG_CONTRACT = "FORM_LG_CONTRACT";
 
 	private Label lblCompanyName = new Label(utils.textCompanyName);
+	private Label lblLogonUser = new Label("Logon User: " + utils.CPUSER);
 	private Label specifiecation = new Label(utils.textSpec1);
 	private Label specifiecation2 = new Label(utils.textSpec2);
 	public Map<String, transactionalForm> mapForms = new HashMap<String, transactionalForm>();
@@ -154,7 +155,7 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 	private frmCustomer cust = new frmCustomer();
 	private frmJobTypes jobtypes = new frmJobTypes();
 	private frmSerialUpload serialuploads = new frmSerialUpload();
-	private frmJobOrder jobord = (frmJobOrder) ControlsFactory.CreateForm(
+	public frmJobOrder jobord = (frmJobOrder) ControlsFactory.CreateForm(
 			new frmJobOrder(), centralPanel, mapForms, FORM_JOB_ORDER);
 	private frmClinicMain mainclinic = new frmClinicMain();
 
@@ -281,13 +282,13 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 		rst.beforeFirst();
 		profileBar.removeAllComponents();
 		while (rst.next()) {
-			menuItem mn = utilsVaadin.findNodeByValue(tree, rst
-					.getString("menu_code"), null);
+			menuItem mn = utilsVaadin.findNodeByValue(tree,
+					rst.getString("menu_code"), null);
 			if (mn != null) {
-				NativeButton bt = ControlsFactory.CreateCustomButton(rst
-						.getString("menu_title"), rst
-						.getString("shortcut_icon"), rst
-						.getString("menu_title"), "");
+				NativeButton bt = ControlsFactory.CreateCustomButton(
+						rst.getString("menu_title"),
+						rst.getString("shortcut_icon"),
+						rst.getString("menu_title"), "");
 				bt.setData(mn);
 				profileBar.addComponent(bt);
 				bt.addListener(new ClickListener() {
@@ -307,8 +308,11 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 		try {
 
 			int cp = Channelplus3Application.getInstance().getFrmUserLogin().CURRENT_PROFILENO;
-			PreparedStatement pss = Channelplus3Application.getInstance()
-					.getFrmUserLogin().getDbc().getDbConnection()
+			PreparedStatement pss = Channelplus3Application
+					.getInstance()
+					.getFrmUserLogin()
+					.getDbc()
+					.getDbConnection()
 					.prepareStatement(
 							"select initcap(module_name) module_name from cp_main_groups"
 									+ " WHERE (profiles like '%\"" + cp
@@ -374,15 +378,17 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 		titleBar2.setSizeFull();
 		specifiecation.setSizeFull();
 		specifiecation2.setSizeFull();
+		lblLogonUser.setSizeFull();
 		ResourceManager.addComponent(root, titleBar);
 		ResourceManager.addComponent(root, profileBar);
 
 		lblCompanyName.addStyleName("title");
+		lblLogonUser.addStyleName("title2");
 		specifiecation.addStyleName("title1");
 		specifiecation2.addStyleName("title2");
 
 		ResourceManager.addComponent(titleBar, lblCompanyName);
-		ResourceManager.addComponent(titleBar2, specifiecation);
+		ResourceManager.addComponent(titleBar2, lblLogonUser);
 		ResourceManager.addComponent(titleBar2, specifiecation2);
 		ResourceManager.addComponent(titleBar, titleBar2);
 		show_menus(profileBar);
@@ -598,24 +604,21 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 
 		localTableModel lc = new localTableModel();
 		try {
-			lc
-					.createDBClassFromConnection(Channelplus3Application
-							.getInstance().getFrmUserLogin().getDbc()
-							.getDbConnection());
-			lc
-					.executeQuery(
-							"select GROUP_CODE, MENU_CODE, MENU_TITLE, MENU_TITLEA, "
-									+ "TYPE_OF_EXEC, EXEC_LINE,"
-									+ " PROFILES, PARENT_MENUCODE, CHILDCOUNT,"
-									+ " MENU_PATH, EXPAND_NODE, RESERVED1, RESERVED2,"
-									+ " nvl(ICONFILE,lower('img/'||TYPE_OF_EXEC||'.png')) iconfile,"
-									+ " SHORTCUT, SHORTCUT_ICON,nvl(access_profile,'\"0\"') AP"
-									+ " from cp_main_menus,cp_security "
-									+ " where cp_main_menus.TYPE_OF_EXEC = TYPEOFSCREN(+) and exec_line=id(+) and "
-									+ " group_code='"
-									+ Channelplus3Application.getInstance()
-											.getFrmUserLogin().CURRENT_MENU_CODE
-									+ "' order by menu_path ", true);
+			lc.createDBClassFromConnection(Channelplus3Application
+					.getInstance().getFrmUserLogin().getDbc().getDbConnection());
+			lc.executeQuery(
+					"select GROUP_CODE, MENU_CODE, MENU_TITLE, MENU_TITLEA, "
+							+ "TYPE_OF_EXEC, EXEC_LINE,"
+							+ " PROFILES, PARENT_MENUCODE, CHILDCOUNT,"
+							+ " MENU_PATH, EXPAND_NODE, RESERVED1, RESERVED2,"
+							+ " nvl(ICONFILE,lower('img/'||TYPE_OF_EXEC||'.png')) iconfile,"
+							+ " SHORTCUT, SHORTCUT_ICON,nvl(access_profile,'\"0\"') AP"
+							+ " from cp_main_menus,cp_security "
+							+ " where cp_main_menus.TYPE_OF_EXEC = TYPEOFSCREN(+) and exec_line=id(+) and "
+							+ " group_code='"
+							+ Channelplus3Application.getInstance()
+									.getFrmUserLogin().CURRENT_MENU_CODE
+							+ "' order by menu_path ", true);
 			String stri = ((utils.findFieldInRS("cp_main_menus", "ICONFILE", lc
 					.getDbclass().getDbConnection()) ? "ICONFILE" : ""));
 			utilsVaadin.fillTree(tree, lc, "PARENT_MENUCODE", "MENU_CODE",
@@ -639,10 +642,8 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 						((VerticalLayout) wnd.getContent()).setMargin(true);
 						utilsVaadin.removeAllTreeWindows();
 						try {
-							utilsExe
-									.OpenForm(
-											(AbstractLayout) wnd.getContent(),
-											cm, true);
+							utilsExe.OpenForm(
+									(AbstractLayout) wnd.getContent(), cm, true);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -709,10 +710,10 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 				menuItem cm = ((menuItem) itemId);
 				if (cm.getPara4Val() != null
 						&& !cm.getPara4Val().toString().isEmpty()
-						&& (cm.getPara4Val().toString().indexOf(
-								"\"" + profileno + "\"") <= -1 && cm
-								.getPara4Val().toString().indexOf(
-										"\"" + 0 + "\"") <= -1)) {
+						&& (cm.getPara4Val().toString()
+								.indexOf("\"" + profileno + "\"") <= -1 && cm
+								.getPara4Val().toString()
+								.indexOf("\"" + 0 + "\"") <= -1)) {
 					return "disabled";
 				}
 				return null;
@@ -733,15 +734,15 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 				List<menuItem> mns = new ArrayList(tree.getItemIds());
 				List<menuItem> mns2 = mns;
 				if (tree.getValue() != null) {
-					mns2 = mns.subList(mns.indexOf(tree.getValue()) + 1, mns
-							.size());
+					mns2 = mns.subList(mns.indexOf(tree.getValue()) + 1,
+							mns.size());
 				}
 				for (Iterator<?> it = mns2.iterator(); it.hasNext();) {
 					menuItem mn = (menuItem) it.next();
 					if (mn.getDisplay().toUpperCase()
 							.contains(sr.toUpperCase())
-							|| mn.getId().toUpperCase().contains(
-									sr.toUpperCase())) {
+							|| mn.getId().toUpperCase()
+									.contains(sr.toUpperCase())) {
 						if (tree.getParent(mn) != null) {
 							tree.expandItem(tree.getParent(mn));
 						}
@@ -754,10 +755,10 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 					mns2 = mns.subList(0, mns.indexOf(tree.getValue()) - 1);
 					for (Iterator<?> it = mns2.iterator(); it.hasNext();) {
 						menuItem mn = (menuItem) it.next();
-						if (mn.getDisplay().toUpperCase().contains(
-								sr.toUpperCase())
-								|| mn.getId().toUpperCase().contains(
-										sr.toUpperCase())) {
+						if (mn.getDisplay().toUpperCase()
+								.contains(sr.toUpperCase())
+								|| mn.getId().toUpperCase()
+										.contains(sr.toUpperCase())) {
 							if (tree.getParent(mn) != null) {
 								tree.expandItem(tree.getParent(mn));
 							}
@@ -856,16 +857,15 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 		}
 
 		if (menusel.getPara1Val().toString().equals(TYPE_FORM)
-				&& !menusel.getPara1Val().toString().toUpperCase().startsWith(
-						"FORM")
+				&& !menusel.getPara1Val().toString().toUpperCase()
+						.startsWith("FORM")
 				&& mapForms.get(menusel.getPara2Val().toString()) != null) {
 			mapForms.get(menusel.getPara2Val().toString()).showInitView();
 		}
 
 		if (menusel.getPara1Val().toString().equals(QUICK_REP)) {
 			detailspanel.setCaption(((menuItem) event.getProperty().getValue())
-					.getDisplay()
-					+ " - " + menusel.getPara2Val().toString());
+					.getDisplay() + " - " + menusel.getPara2Val().toString());
 
 			qcfrm.setQRYSTR(menusel.getPara2Val().toString());
 			qcfrm.showInitView();
@@ -962,13 +962,10 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 		ResourceManager.addComponent(centralPanel, qv);
 		// centralPanel.addComponent(qv);
 		try {
-			qv
-					.setSqlquery("select acaccount.name order_no,ord_no,ord_ref,ord_refnm||' '||ord_ref ord_refnm,ord_amt-ord_discamt ord_amount"
-							+ " from order1,acaccount where acaccount.accno=order1.ordacc and ord_code=103  and ordacc is not null and ord_flag=0 order by ord_no");
-			qv
-					.createDBClassFromConnection(Channelplus3Application
-							.getInstance().getFrmUserLogin().getDbc()
-							.getDbConnection());
+			qv.setSqlquery("select acaccount.name order_no,ord_no,ord_ref,ord_refnm||' '||ord_ref ord_refnm,ord_amt-ord_discamt ord_amount"
+					+ " from order1,acaccount where acaccount.accno=order1.ordacc and ord_code=103  and ordacc is not null and ord_flag=0 order by ord_no");
+			qv.createDBClassFromConnection(Channelplus3Application
+					.getInstance().getFrmUserLogin().getDbc().getDbConnection());
 			qv.getListGroupsBy().add("ORDER_NO");
 			qv.reportSetting.doStandard();
 			qv.reportSetting.setTitle("Purchase Orders");
@@ -987,9 +984,11 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 				}
 
 				public void afterQuery() {
-					qv.getLctb().getColByName("ORD_AMOUNT").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("ORD_AMOUNT")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
 
 				}
 
@@ -1071,21 +1070,17 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 		// centralPanel.addComponent(qv);
 		ResourceManager.addComponent(centralPanel, qv);
 		try {
-			qv
-					.setSqlquery("select acaccount.name order_no, order1.ord_no, to_char(invoice_date,'dd/mm/rrrr') Closing_Date, "
-							+ " ord_ref,  ord_refnm||' '||ord_ref ord_refnm,"
-							+ " ord_amt-ord_discamt ord_amount, pur1.chg_kdamt Other_Expenses,"
-							+ " ((pur1.inv_amt-pur1.disc_amt)*rate)+chg_kdamt Kd_Amount, pur1.currency,  pur1.rate,  pur1.kdcost"
-							+ " from order1,acaccount,pur1 where "
-							+ " acaccount.accno=order1.ordacc and ord_code=103  and "
-							+ " ordacc is not null and  "
-							+ " pur1.orderno=order1.ord_no and "
-							+ " pur1.invoice_code=11 "
-							+ " order by order1.ord_no");
-			qv
-					.createDBClassFromConnection(Channelplus3Application
-							.getInstance().getFrmUserLogin().getDbc()
-							.getDbConnection());
+			qv.setSqlquery("select acaccount.name order_no, order1.ord_no, to_char(invoice_date,'dd/mm/rrrr') Closing_Date, "
+					+ " ord_ref,  ord_refnm||' '||ord_ref ord_refnm,"
+					+ " ord_amt-ord_discamt ord_amount, pur1.chg_kdamt Other_Expenses,"
+					+ " ((pur1.inv_amt-pur1.disc_amt)*rate)+chg_kdamt Kd_Amount, pur1.currency,  pur1.rate,  pur1.kdcost"
+					+ " from order1,acaccount,pur1 where "
+					+ " acaccount.accno=order1.ordacc and ord_code=103  and "
+					+ " ordacc is not null and  "
+					+ " pur1.orderno=order1.ord_no and "
+					+ " pur1.invoice_code=11 " + " order by order1.ord_no");
+			qv.createDBClassFromConnection(Channelplus3Application
+					.getInstance().getFrmUserLogin().getDbc().getDbConnection());
 			qv.getListGroupsBy().add("ORDER_NO");
 			qv.reportSetting.doStandard();
 			qv.reportSetting.setTitle("Periodic Purchase Cost");
@@ -1104,22 +1099,29 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 				}
 
 				public void afterQuery() {
-					qv.getLctb().getColByName("ORD_AMOUNT").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
-					qv.getLctb().getColByName("KD_AMOUNT").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
-					qv.getLctb().getColByName("OTHER_EXPENSES")
+					qv.getLctb()
+							.getColByName("ORD_AMOUNT")
 							.setNumberFormat(
 									Channelplus3Application.getInstance()
 											.getFrmUserLogin().FORMAT_MONEY);
-					qv.getLctb().getColByName("KDCOST").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("KD_AMOUNT")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("OTHER_EXPENSES")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("KDCOST")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
 
-					qv.getLctb().getColByName("ORD_AMOUNT").setTitle(
-							"Order Amount");
+					qv.getLctb().getColByName("ORD_AMOUNT")
+							.setTitle("Order Amount");
 					qv.getLctb().getColByName("KDCOST").setTitle("KD Cost");
 
 				}
@@ -1147,20 +1149,17 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 		qv.setSizeFull();
 		centralPanel.setHeight("100%");
 		try {
-			qv
-					.setSqlquery("select acaccount.name order_no, order1.ord_no, to_char(pur1.invoice_date,'dd/mm/rrrr') Closing_Date, "
-							+ " ord_ref,  ord_refnm||' '||ord_ref ord_refnm,"
-							+ " pur2.refer, nvl(items.descra,items.descr) descr, (pur2.price-pur2.disc_amt) price, "
-							+ " pur2.pkcost*pur2.pack pack_cost,"
-							+ " pur1.rate,pur1.kdcost,pur2.pkcost*pur2.allqty amount"
-							+ " from pur1,pur2,order1,acaccount,items "
-							+ " where order1.ord_no=pur1.orderno and order1.ord_code=103 and "
-							+ " pur2.keyfld=pur1.keyfld and items.reference=pur2.refer and "
-							+ " acaccount.accno=ordacc order by ord_ref,pur1.invoice_date");
-			qv
-					.createDBClassFromConnection(Channelplus3Application
-							.getInstance().getFrmUserLogin().getDbc()
-							.getDbConnection());
+			qv.setSqlquery("select acaccount.name order_no, order1.ord_no, to_char(pur1.invoice_date,'dd/mm/rrrr') Closing_Date, "
+					+ " ord_ref,  ord_refnm||' '||ord_ref ord_refnm,"
+					+ " pur2.refer, nvl(items.descra,items.descr) descr, (pur2.price-pur2.disc_amt) price, "
+					+ " pur2.pkcost*pur2.pack pack_cost,"
+					+ " pur1.rate,pur1.kdcost,pur2.pkcost*pur2.allqty amount"
+					+ " from pur1,pur2,order1,acaccount,items "
+					+ " where order1.ord_no=pur1.orderno and order1.ord_code=103 and "
+					+ " pur2.keyfld=pur1.keyfld and items.reference=pur2.refer and "
+					+ " acaccount.accno=ordacc order by ord_ref,pur1.invoice_date");
+			qv.createDBClassFromConnection(Channelplus3Application
+					.getInstance().getFrmUserLogin().getDbc().getDbConnection());
 			qv.reportSetting.doStandard();
 			qv.setShowGroupHead(true);
 			qv.getListGroupsBy().add("ORD_REFNM");
@@ -1195,21 +1194,31 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 				}
 
 				public void afterQuery() {
-					qv.getLctb().getColByName("price").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
-					qv.getLctb().getColByName("pack_cost").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
-					qv.getLctb().getColByName("rate").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
-					qv.getLctb().getColByName("kdcost").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
-					qv.getLctb().getColByName("amount").setNumberFormat(
-							Channelplus3Application.getInstance()
-									.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("price")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("pack_cost")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("rate")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("kdcost")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
+					qv.getLctb()
+							.getColByName("amount")
+							.setNumberFormat(
+									Channelplus3Application.getInstance()
+											.getFrmUserLogin().FORMAT_MONEY);
 					qv.getLctb().getColByName("KDCOST").setTitle("KD Cost");
 					qv.getLctb().getColByName("ORD_REFNM").setTitle("Supplier");
 				}

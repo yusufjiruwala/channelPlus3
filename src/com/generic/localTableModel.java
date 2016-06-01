@@ -767,15 +767,9 @@ public class localTableModel implements TableModel, Serializable {
 			if (s != null && s instanceof dataCell
 					&& ((dataCell) s).getValue() != null
 					&& ((dataCell) s).getValue().toString().length() > 0) {
-				if (((dataCell) s).getValue() instanceof java.sql.Timestamp)
-					s = (new SimpleDateFormat(visbleQrycols.get(columnIndex)
-							.getDateFormat())
-							.format((java.sql.Timestamp) ((dataCell) s)
-									.getValue()));
-				else
-					s = (new SimpleDateFormat(visbleQrycols.get(columnIndex)
-							.getDateFormat())
-							.format((java.util.Date) ((dataCell) s).getValue()));
+				s = (new SimpleDateFormat(visbleQrycols.get(columnIndex)
+						.getDateFormat()).format((java.sql.Date) ((dataCell) s)
+						.getValue()));
 			}
 		}
 		return s.toString();
@@ -939,12 +933,12 @@ public class localTableModel implements TableModel, Serializable {
 	public int locate(String col, String vl, int findOption) {
 		for (int i = 0; i < rows.size(); i++) {
 			if (findOption == FIND_EXACT
-					&& utils.nvl(getFieldValue(i, col), "").equals(vl)) {
+					&& getFieldValue(i, col).toString().equals(vl)) {
 				cursorNo = i;
 				return i;
 			}
 			if (findOption == FIND_LIKE
-					&& utils.nvl(getFieldValue(i, col), "").toUpperCase()
+					&& getFieldValue(i, col).toString().toUpperCase()
 							.contains(vl)) {
 				cursorNo = i;
 				return i;

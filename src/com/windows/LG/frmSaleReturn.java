@@ -107,7 +107,7 @@ public class frmSaleReturn implements transactionalForm {
 	private HorizontalLayout referenceLayout = new HorizontalLayout();
 	private HorizontalLayout content5Layout = new HorizontalLayout();
 	private HorizontalLayout content6Layout = new HorizontalLayout();
-	private HorizontalLayout amtLayout = new HorizontalLayout();;
+	private HorizontalLayout amtLayout = new HorizontalLayout();
 	private HorizontalLayout discAmtLayout = new HorizontalLayout();
 	private HorizontalLayout typeLayout = new HorizontalLayout();
 	private boolean doing_query = false;
@@ -131,6 +131,7 @@ public class frmSaleReturn implements transactionalForm {
 	private SearchField txtSalesPer = ControlsFactory.CreateSearchField(null,
 			"ORD_EMPNO", lstfldinfo, "100%",
 			"select no,name from salesp where flag=1", "NO", "NAME");
+
 	private SearchField txtCust = ControlsFactory
 			.CreateSearchField(
 					null,
@@ -139,10 +140,13 @@ public class frmSaleReturn implements transactionalForm {
 					"100%",
 					"select code,name from c_ycust where iscust='Y' and flag=1 order by path",
 					"code", "name");
+	
 	private TextField txtCustName = ControlsFactory.CreateTextField(null,
 			"ORD_REFNM", lstfldinfo);
+	
 	private DateField txtShipingDate = ControlsFactory.CreateDateField(null,
 			"ORD_SHPDT", lstfldinfo);
+	
 	private TextField txtFcDescr = ControlsFactory.CreateTextField(null,
 			"ORD_FC_DESCR", lstfldinfo, "100%", "KWD");
 	private TextField txtFcRate = ControlsFactory.CreateTextField(null,
@@ -250,7 +254,8 @@ public class frmSaleReturn implements transactionalForm {
 
 		for (int j = 0; j < table.data.getRowCount(); j++) {
 			String rfr = table.data.getFieldValue(j, "ORD_REFER").toString();
-			String rcptno = table.data.getFieldValue(j, "ORD_RCPTNO").toString();
+			String rcptno = table.data.getFieldValue(j, "ORD_RCPTNO")
+					.toString();
 
 			if (!rcptno.isEmpty()) {
 				String rf = "";
@@ -278,25 +283,29 @@ public class frmSaleReturn implements transactionalForm {
 				double isq = 0, sr = 0;
 
 				// ----------finding if any sales before
-				rst = QueryExe.getSqlRS(
-						"select nvl(sum(ORD_allqty),0) from JOINED_ORDER where ord_code=111 and ord_reference='"
-								+ txtReference.getValue()
-								+ "' and ord_rcptno='" + rcptno + "'", con);
+				rst = QueryExe
+						.getSqlRS(
+								"select nvl(sum(ORD_allqty),0) from JOINED_ORDER where ord_code=111 and ord_reference='"
+										+ txtReference.getValue()
+										+ "' and ord_rcptno='" + rcptno + "'",
+								con);
 				rst.first();
 				isq = rst.getDouble(1);
 				rst.close();
 
 				// ----------finding any sales return before.
-				rst = QueryExe.getSqlRS(
-						"select nvl(sum(ORD_allqty),0) from JOINED_ORDER where ord_code=122 and ord_reference='"
-								+ txtReference.getValue()
-								+ "' and ord_rcptno='" + rcptno + "'", con);
+				rst = QueryExe
+						.getSqlRS(
+								"select nvl(sum(ORD_allqty),0) from JOINED_ORDER where ord_code=122 and ord_reference='"
+										+ txtReference.getValue()
+										+ "' and ord_rcptno='" + rcptno + "'",
+								con);
 				rst.first();
 				sr = rst.getDouble(1);
 				rst.close();
 				if ((sr > 0 && isq <= 0) || (isq == 0))
 					throw new SQLException("Recipt NO  # " + rcptno
-							+ " can be returned !");				
+							+ " can be returned !");
 			}
 
 		}
@@ -459,7 +468,8 @@ public class frmSaleReturn implements transactionalForm {
 
 			table.insert_to_table("ORDER2", mp, "", "ORD_ITMAVER , SELECTION ");
 			// -----------------------------------------------------------------
-			//  checking for duplicate entry of recipt and procedure for sal_return
+			// checking for duplicate entry of recipt and procedure for
+			// sal_return
 			ResultSet rsr = QueryExe
 					.getSqlRS(
 							"select ord_rcptno,nvl(count(*),0) cnt from joined_order "
@@ -487,7 +497,7 @@ public class frmSaleReturn implements transactionalForm {
 			con.commit();
 			save_successed = true;
 			// -----------------------------------------------------------------
-			
+
 			if (cls) {
 				QRYSES = "";
 				parentLayout.getWindow().showNotification("Saved Successfully");
@@ -520,8 +530,9 @@ public class frmSaleReturn implements transactionalForm {
 					con);
 		else
 			utils.execSql("begin x_sal_return ('" + ordno + "',true); end;",
-					con);		
+					con);
 	}
+
 	public void load_data() {
 		try {
 			utilsVaadin.resetValues(basicLayout, false, false);
@@ -1786,7 +1797,6 @@ public class frmSaleReturn implements transactionalForm {
 										.getData().getFieldValue(i, "COST"));
 							}
 							table.refreshRow(lr);
-
 							utilsVaadin.findColByCol("ORD_PRICE",
 									table.listFields).actionAfterUpdate
 									.onValueChange(lr, "ORD_PRICE", table.data

@@ -53,7 +53,7 @@ public class frmDocs implements transactionalForm {
 	private Panel pnlList = new Panel(new VerticalLayout());
 	private TabSheet tbs = new TabSheet();
 
-	public final String MODE_MAIN_SCREEN = "@";
+	public final String MODE_MAIN_SCREEN = "@";	
 	public final String MODE_ISSUE_DOCS = "ISSUE_DOCS";
 	public final String MODE_DOC_PAYMENTS = "PAYMENTS";
 	public final String MODE_DOC_RECIPTS = "RECIPTS";
