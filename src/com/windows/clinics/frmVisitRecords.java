@@ -227,12 +227,6 @@ public class frmVisitRecords implements transactionalForm {
 	}
 
 	public void createView() {
-		utilsVaadin.showMessage(
-				parentLayout
-						.getWindow(),
-				"great.",
-				Notification.TYPE_ERROR_MESSAGE);
-
 		System.gc();
 		final VerticalLayout centralPanel = (VerticalLayout) this.parentLayout;
 		resetFormLayout();
