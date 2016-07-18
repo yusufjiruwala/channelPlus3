@@ -98,10 +98,14 @@ public class frmVisitRecords implements transactionalForm {
 
 	private List<ColumnProperty> lstItemCols = new ArrayList<ColumnProperty>();
 	private List<FieldInfo> lstfldinfo = new ArrayList<FieldInfo>();
+
 	private List<TextRemark> lstConsultTxts = new ArrayList<TextRemark>();
 	private List<TextRemark> lstPlanTxts = new ArrayList<TextRemark>();
+	private List<TextRemark> lstClinicalExam = new ArrayList<TextRemark>();
+
 	private Map<String, TextRemark> mapConsultTxts = new HashMap<String, TextRemark>();
 	private Map<String, TextRemark> mapPlanTxts = new HashMap<String, TextRemark>();
+	private Map<String, TextRemark> mapClinicExamTxts = new HashMap<String, TextRemark>();
 	private NativeButton cmdList = ControlsFactory.CreateCustomButton("Visits",
 			"img/details.png", "Show list", "");
 	private NativeButton cmdItemHistory = ControlsFactory.CreateCustomButton(
@@ -236,6 +240,7 @@ public class frmVisitRecords implements transactionalForm {
 		tbs.setSizeFull();
 		consultLayout.setWidth("100%");
 		planLayout.setWidth("100%");
+		clinicalLayout.setWidth("100%");
 		headLayout.setWidth("80%");
 		head1Layout.setWidth("100%");
 		txtDrName.setWidth("100%");
@@ -327,6 +332,7 @@ public class frmVisitRecords implements transactionalForm {
 			});
 			consultLayout.addListener(layoutClicker);
 			planLayout.addListener(layoutClicker);
+			clinicalLayout.addListener(layoutClicker);
 
 			cmdList.addListener(new ClickListener() {
 
@@ -645,6 +651,7 @@ public class frmVisitRecords implements transactionalForm {
 				List<TextRemark> lst = new ArrayList<TextRemark>();
 				lst.addAll(lstConsultTxts);
 				lst.addAll(lstPlanTxts);
+				lst.addAll(lstClinicalExam);
 				TextRemark tr = find_tr(lst, t);
 				show_selectionlist(tr);
 
@@ -654,18 +661,28 @@ public class frmVisitRecords implements transactionalForm {
 	};
 
 	public void createViewTexts() {
+		Map<String, VerticalLayout> ly = new HashMap<String, VerticalLayout>();
+		ly.put("C", consultLayout);
+		ly.put("L", clinicalLayout);
+		ly.put("P", planLayout);
 		consultLayout.removeAllComponents();
 		planLayout.removeAllComponents();
+		clinicalLayout.removeAllComponents();
 		consultLayout.addComponent(cmdPrintConsultation);
 		planLayout.addComponent(cmdPrintPlan);
+
 		try {
 			fetch_texts("C", lstConsultTxts);
 			fetch_texts("P", lstPlanTxts);
+			fetch_texts("L", lstClinicalExam);
 			mapConsultTxts = getMapOfList(lstConsultTxts);
 			mapPlanTxts = getMapOfList(lstPlanTxts);
+			mapClinicExamTxts = getMapOfList(lstClinicalExam);
+
 			List<TextRemark> lst = new ArrayList<TextRemark>();
 			lst.addAll(lstConsultTxts);
 			lst.addAll(lstPlanTxts);
+			lst.addAll(lstClinicalExam);
 			VerticalLayout l = null;
 			for (Iterator iterator = lst.iterator(); iterator.hasNext();) {
 				final TextRemark tr = (TextRemark) iterator.next();
@@ -681,7 +698,9 @@ public class frmVisitRecords implements transactionalForm {
 				tr.obj = tf;
 				tf.setTextChangeEventMode(TextChangeEventMode.LAZY);
 				tf.setTextChangeTimeout(800);
-				l = (tr.grp.equals("C") ? consultLayout : planLayout);
+				l = ly.get(tr.grp);
+				// l = (tr.grp.equals("C") ? consultLayout : planLayout);
+
 				HorizontalLayout h = new HorizontalLayout();
 				h.setSpacing(false);
 				h.setWidth("100%");
@@ -728,8 +747,8 @@ public class frmVisitRecords implements transactionalForm {
 			wndList.setContent(listlayout);
 			listlayout.setSizeFull();
 			listlayout.removeAllComponents();
-			final DBClass dbcx = new DBClass(con);			
-			final TableView tbl = new TableView(dbcx);			
+			final DBClass dbcx = new DBClass(con);
+			final TableView tbl = new TableView(dbcx);
 			tbl.setParentPanel(listlayout);
 			tbl.setCheckDefaultSelection(false);
 			tbl.setCheckSelectionField(true);
@@ -891,6 +910,7 @@ public class frmVisitRecords implements transactionalForm {
 		List<TextRemark> lst = new ArrayList<TextRemark>();
 		lst.addAll(lstConsultTxts);
 		lst.addAll(lstPlanTxts);
+		lst.addAll(lstClinicalExam);
 		TextRemark txr = find_tr(lst, tf);
 		if (txr == null) {
 			utilsVaadin.showMessage(parentLayout.getWindow(),
@@ -1245,6 +1265,7 @@ public class frmVisitRecords implements transactionalForm {
 				createViewTexts();
 				fetch_texts_values("C", mapConsultTxts);
 				fetch_texts_values("P", mapPlanTxts);
+				fetch_texts_values("L", mapClinicExamTxts);
 				ps.close();
 				String s = "";
 				ResultSet rsx = utils.getSqlRS(
@@ -1470,6 +1491,7 @@ public class frmVisitRecords implements transactionalForm {
 		List<TextRemark> lst = new ArrayList<TextRemark>();
 		lst.addAll(lstConsultTxts);
 		lst.addAll(lstPlanTxts);
+		lst.addAll(lstClinicalExam);
 
 		if (rst != null) {
 			rst.beforeFirst();

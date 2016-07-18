@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -1052,6 +1053,8 @@ public class frmClinicMain implements transactionalForm {
 		final Window wnd = ControlsFactory.CreateWindow("500px", "450px", true,
 				true);
 		Date dt = new Date();
+		final SimpleDateFormat sdf = new SimpleDateFormat(
+				utils.FORMAT_SHORT_DATE);
 		dt.setTime(System.currentTimeMillis());
 		Calendar cl = Calendar.getInstance();
 		cl.setTimeInMillis(((Date) txtTodayDate.getValue()).getTime());
@@ -1060,11 +1063,13 @@ public class frmClinicMain implements transactionalForm {
 		cl.set(Calendar.HOUR_OF_DAY, cl2.get(Calendar.HOUR_OF_DAY));
 		cl.set(Calendar.MINUTE, cl2.get(Calendar.MINUTE));
 		Date dtx = new Date();
+
 		dtx.setTime(cl.getTimeInMillis());
 		final DateField txtArrival = new DateField("Arrival Date", dtx);
 		HorizontalLayout pt = new HorizontalLayout();
 		HorizontalLayout bts = new HorizontalLayout();
 		HorizontalLayout p = new HorizontalLayout();
+		HorizontalLayout bl = new HorizontalLayout();
 		p.setWidth("100%");
 		final NativeButton btAddpat = new NativeButton("New Patient");
 		final TextField txtpatientName = new TextField("Patient Name");
@@ -1072,9 +1077,10 @@ public class frmClinicMain implements transactionalForm {
 		final TextField txtpatientTel = new TextField("Patient's Tel");
 		final TextField txtPrice = new TextField("Fees");
 		final TextField txtBalance = new TextField("Due Balance");
+		final TextField txtLastVisit = new TextField("Last visit");
 		final TextField txtDiscount = new TextField("Discount");
 		final TextField txtNetAmt = new TextField("Net amount");
-
+		final Label txtDaysAgo = new Label();
 		HorizontalLayout typeLayout = new HorizontalLayout();
 		final String varLocation = "001";
 
@@ -1101,12 +1107,14 @@ public class frmClinicMain implements transactionalForm {
 						null);
 
 		Button btAdd = new Button((isadd ? "Add" : "Update"));
+
 		Button btClose = new Button("Close");
 		txtArrival.setDateFormat("H:m a");
 		txtArrival.setResolution(DateField.RESOLUTION_MIN);
 		((VerticalLayout) wnd.getContent()).setMargin(true);
 		((VerticalLayout) wnd.getContent()).setSpacing(true);
 		wnd.getContent().addStyleName((isadd ? "" : "toolpanel"));
+
 		ResourceManager.addComponent(wnd.getContent(), btAddpat);
 		ResourceManager.addComponent(wnd.getContent(), txtArrival);
 		ResourceManager.addComponent(wnd.getContent(), pt);
@@ -1114,7 +1122,10 @@ public class frmClinicMain implements transactionalForm {
 		ResourceManager.addComponent(pt, bt);
 		ResourceManager.addComponent(pt, txtpatientName);
 		ResourceManager.addComponent(pt, txtpatientTel);
-		ResourceManager.addComponent(wnd.getContent(), txtBalance);
+		ResourceManager.addComponent(wnd.getContent(), bl);
+		ResourceManager.addComponent(bl, txtBalance);
+		ResourceManager.addComponent(bl, txtLastVisit);
+		ResourceManager.addComponent(bl, txtDaysAgo);
 		ResourceManager.addComponent(wnd.getContent(), txtProcedure);
 		ResourceManager.addComponent(wnd.getContent(), p);
 		ResourceManager.addComponent(wnd.getContent(), typeLayout);
@@ -1128,11 +1139,13 @@ public class frmClinicMain implements transactionalForm {
 		ResourceManager.addComponent(p, txtDiscount);
 		ResourceManager.addComponent(p, txtNetAmt);
 
+		bl.setComponentAlignment(txtDaysAgo, Alignment.BOTTOM_CENTER);
 		txtPrice.addStyleName("netAmtStyle");
 		txtBalance.addStyleName("netAmtStyle");
 		txtBalance.addStyleName("redField");
 		txtNetAmt.addStyleName("netAmtStyle");
 		txtDiscount.addStyleName("netAmtStyle");
+		txtLastVisit.addStyleName("yellowField");
 
 		txtArrival.focus();
 
@@ -1186,6 +1199,7 @@ public class frmClinicMain implements transactionalForm {
 		txtpatientName.setReadOnly(true);
 		txtpatientTel.setReadOnly(true);
 		txtBalance.setReadOnly(true);
+		txtLastVisit.setReadOnly(true);
 		txtProcedure.setImmediate(true);
 		txtDiscount.setImmediate(true);
 		txtNetAmt.setReadOnly(true);
@@ -1233,7 +1247,10 @@ public class frmClinicMain implements transactionalForm {
 									txtpatientName.setReadOnly(false);
 									txtpatientTel.setReadOnly(false);
 									txtBalance.setReadOnly(false);
+									txtLastVisit.setReadOnly(false);
 									double bal = 0;
+									String lastvisit = "";
+									String daysAgo = "";
 									String mn = tv.getData().getFieldValue(
 											tv.getSelectionValue(),
 											"MEDICAL_NO")
@@ -1247,6 +1264,12 @@ public class frmClinicMain implements transactionalForm {
 																+ mn + "'",
 														con, "0")
 												+ "");
+										lastvisit = QueryExe
+												.getSqlValue(
+														"select nvl(max(to_char(date_of_arrival,'dd/mm/rrrr')),'') from clq_visits where medical_no='"
+																+ mn + "'",
+														con, "")
+												+ "";
 									} catch (NumberFormatException
 											| SQLException e) {
 										// TODO Auto-generated catch block
@@ -1269,11 +1292,31 @@ public class frmClinicMain implements transactionalForm {
 															.getInstance()
 															.getFrmUserLogin().FORMAT_MONEY))
 													.format(bal));
-									utilsVaadin.showMessage("Balance " + bal);
+									txtLastVisit.setValue(lastvisit);
+									txtDaysAgo.setValue("");
+									if (!lastvisit.isEmpty()) {
+										try {
+											Date dt = sdf.parse(lastvisit);
+											Date nowdt = new Date(System
+													.currentTimeMillis());
+											int d = utils
+													.daysBetween(dt, nowdt);
+											txtDaysAgo.setValue(d
+													+ "  days ago !");
+											System.out.println(d);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+
+									}
+
+									utilsVaadin.showMessage("Balance " + bal
+											+ " ");
 									txtMedicalno.setReadOnly(true);
 									txtpatientName.setReadOnly(true);
 									txtpatientTel.setReadOnly(true);
 									txtBalance.setReadOnly(true);
+									txtLastVisit.setReadOnly(true);
 
 									if (Channelplus3Application.getInstance()
 											.getMainWindow().getChildWindows()
