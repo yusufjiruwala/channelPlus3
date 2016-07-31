@@ -273,6 +273,7 @@ public class frmSale implements transactionalForm {
 
 	public void save_data() {
 		save_data(true);
+		
 	}
 
 	public void save_data(boolean cls) {

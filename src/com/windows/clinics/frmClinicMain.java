@@ -11,7 +11,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,9 +37,13 @@ import com.generic.utilsVaadinPrintHandler;
 import com.main.channelplus3.Channelplus3Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.Action;
+import com.vaadin.event.Action.Handler;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -45,12 +51,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.Window.Notification;
 import com.windows.frmMainMenus;
 import com.windows.Masters.Purchase.frmPurchaseCost;
@@ -61,6 +65,7 @@ public class frmClinicMain implements transactionalForm {
 	private localTableModel data_visit = new localTableModel();
 	private localTableModel data_old_medi = new localTableModel();
 	private localTableModel data_medical_items = new localTableModel();
+	private Map<String, String> mapActionStrs = new HashMap<String, String>();
 
 	private AbstractLayout parentLayout = null;
 	private VerticalLayout mainLayout = new VerticalLayout();
@@ -263,6 +268,57 @@ public class frmClinicMain implements transactionalForm {
 		cmdDelMedi.setEnabled(false);
 
 		if (!listnerAdded) {
+
+			tbl_visit.addActionHandler(new Handler() {
+
+				@Override
+				public void handleAction(Action action, Object sender,
+						Object target) {
+					if (target == null)
+						return;
+					int rowno = Integer.valueOf(target.toString());
+					double kfld = Double.valueOf(utils.nvl(
+							data_visit.getFieldValue(rowno, "KEYFLD"), "-1"));
+					String slv = utils.nvl(
+							data_visit.getFieldValue(rowno, "SALEINV"), "");
+					if (action.getCaption().equals(mapActionStrs.get("unpost"))
+							&& !slv.isEmpty()) {
+						try {
+							unpost(kfld, rowno);
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+
+					if (action.getCaption().equals(mapActionStrs.get("remove"))
+							&& slv.isEmpty()) {
+						delete_visit(kfld, rowno);
+					}
+				}
+
+				@Override
+				public Action[] getActions(Object target, Object sender) {
+					if (target == null)
+						return null;
+					int rowno = Integer.valueOf(target.toString());
+					List<Action> acts = new ArrayList<Action>();
+
+					if (rowno < 0)
+						return null;
+					if (data_visit.getFieldValue(rowno, "SALEINV") != null
+							&& !data_visit.getFieldValue(rowno, "SALEINV")
+									.toString().isEmpty())
+						acts.add(new Action(mapActionStrs.get("unpost")));
+					if (data_visit.getFieldValue(rowno, "SALEINV") == null
+							|| data_visit.getFieldValue(rowno, "SALEINV")
+									.toString().isEmpty())
+						acts.add(new Action(mapActionStrs.get("remove")));
+
+					Action[] ac_ar = new Action[acts.size()];
+					return acts.toArray(ac_ar);
+
+				}
+			});
 			cmdUpdvisit.addListener(new ClickListener() {
 
 				public void buttonClick(ClickEvent event) {
@@ -312,9 +368,7 @@ public class frmClinicMain implements transactionalForm {
 								"Must select visited patient");
 						return;
 					}
-
 					final Integer rn = (Integer) tbl_visit.getValue();
-
 					String saleinv = utils.getSqlValue(
 							"select saleinv||saleinv_medical from clq_visits where keyfld="
 									+ data_visit.getFieldValue(rn, "KEYFLD"),
@@ -417,7 +471,6 @@ public class frmClinicMain implements transactionalForm {
 				}
 			});
 			cmdPost.addListener(new ClickListener() {
-
 				public void buttonClick(ClickEvent event) {
 					try {
 						show_payment_method2(false);
@@ -429,8 +482,8 @@ public class frmClinicMain implements transactionalForm {
 					}
 				}
 			});
-			cmdDelMedi.addListener(new ClickListener() {
 
+			cmdDelMedi.addListener(new ClickListener() {
 				public void buttonClick(ClickEvent event) {
 					delete_medical_item();
 				}
@@ -677,6 +730,8 @@ public class frmClinicMain implements transactionalForm {
 			utilsVaadin.applyColumns("CLQ.ARRIVALS_O", tbl_old_med,
 					lstOldMediCols, con);
 
+			mapActionStrs.put("unpost", "Un-post..");
+			mapActionStrs.put("remove", "Remove Visit..");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -1890,4 +1945,179 @@ public class frmClinicMain implements transactionalForm {
 		this.parentLayout = parentLayout;
 	}
 
+	private void unpost(final double kf, int rn) throws SQLException {
+		final Window wndx = ControlsFactory.CreateWindow("400px", "300px",
+				true, true);
+		String pn = utils
+				.nvl(data_visit.getFieldValue(rn, "PATIENTS_NAME"), "");
+
+		wndx.setCaption(pn);
+		double rk = -.1, s_m = -.1, s = -.1; // .......s.keyflds..for..recipt..sale.inv..sale..inv..medical..invoice
+		double ramt, s_mamt, samt = 0;// amounts
+		TextField txtrk = new TextField();
+		TextField txts_m = new TextField();
+		TextField txts = new TextField();
+		Button bt = new Button("Delete..");
+
+		FormLayoutManager fm = new FormLayoutManager();
+		fm.setMargin(true);
+		fm.setSpacing(true);
+		wndx.setContent(fm);
+		fm.addComponentsRow("caption=Following entries will be removed !");
+		fm.addComponentsRow("caption=Recipt JV,expand=1.5", txtrk,
+				"expand=2.5,width=100%");
+		fm.addComponentsRow("caption=Medical Amt,expand=1.5", txts_m,
+				"expand=2.5,width=100%");
+		fm.addComponentsRow("caption=Procedure Amt,expand=1.5", txts,
+				"expand=2.5,width=100%");
+		fm.addComponentsRow("height=30px");
+		fm.addComponentsRow(bt,
+				"align_text=left,caption=Delete/Unpost,width=200px");
+
+		txtrk.addStyleName("netAmtStyle yellowField");
+		txts.addStyleName("netAmtStyle yellowField");
+		txts_m.addStyleName("netAmtStyle yellowField");
+
+		txts.setReadOnly(true);
+		txtrk.setReadOnly(true);
+		txts_m.setReadOnly(true);
+
+		utilsVaadin.setValueByForce(txts, "0.000");
+		utilsVaadin.setValueByForce(txtrk, "0.000");
+		utilsVaadin.setValueByForce(txts_m, "0.000");
+
+		ResultSet rs = QueryExe.getSqlRS(
+				"select *from clq_visits where keyfld=" + kf, con);
+		if (rs == null)
+			throw new SQLException("Visit may be removed ! keyfld=" + kf);
+
+		rs.first();
+		rk = Double.valueOf(QueryExe.getSqlValue(
+				"select nvl(max(keyfld),-.1) from acvoucher2 where "
+						+ "refercode=20009 and referkeyfld=" + kf, con, "-.1")
+				+ "");
+		if (rs.getString("SALEINV") != null
+				&& !rs.getString("SALEINV").isEmpty())
+			s = rs.getDouble("SALEINV");
+		if (rs.getString("ORD_NO") != null && !rs.getString("ORD_NO").isEmpty())
+			s_m = rs.getDouble("ORD_NO");
+
+		rs.close();
+
+		ramt = Double.valueOf(QueryExe.getSqlValue(
+				"select sum(debit) from acvoucher2 where keyfld='" + rk + "'",
+				con, "0")
+				+ "");
+		samt = Double.valueOf(QueryExe.getSqlValue(
+				"select inv_amt-disc_amt from pur1 where keyfld='" + s + "'",
+				con, "0")
+				+ "");
+		s_mamt = Double.valueOf(QueryExe.getSqlValue(
+				"select ORD_AMT-ORD_DISCAMT from ORDER1 where ORD_NO='" + s_m
+						+ "' AND ORD_CODE=111", con, "0")
+				+ "");
+		DecimalFormat df = new DecimalFormat(utils.FORMAT_MONEY);
+		utilsVaadin.setValueByForce(txtrk, df.format(ramt));
+		utilsVaadin.setValueByForce(txts, df.format(samt));
+		utilsVaadin.setValueByForce(txts_m, df.format(s_mamt));
+
+		final double frkf = rk, fs = s, fs_m = s_m;
+
+		bt.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					con.setAutoCommit(false);
+					QueryExe.execute("begin unpost_visit(" + kf + "); end;",
+							con);
+					con.commit();
+					Channelplus3Application.getInstance().getMainWindow()
+							.removeWindow(wndx);
+					load_data();
+					utilsVaadin.showMessage("Unposted successfully");
+				} catch (SQLException e) {
+
+					e.printStackTrace();
+					Channelplus3Application
+							.getInstance()
+							.getMainWindow()
+							.showNotification("", e.getMessage(),
+									Notification.TYPE_ERROR_MESSAGE);
+					try {
+						con.rollback();
+					} catch (SQLException e1) {
+					}
+				}
+			}
+		});
+		//
+		// parentLayout.getWindow().addWindow(
+		// new YesNoDialog("Confirmation",
+		// "Do you want to remove sales and unpost ?  # " + kf
+		// + " #", cb, "350px", "-1px"));
+
+	}
+
+	private void delete_visit(final double kf, int rn) {
+		Callback cb = new Callback() {
+
+			@Override
+			public void onDialogResult(boolean resultIsYes) {
+				if (resultIsYes) {
+					ResultSet rs;
+					try {
+						double on = -.1;
+						rs = QueryExe.getSqlRS(
+								"select *from clq_visits where keyfld=" + kf,
+								con);
+
+						if (rs == null)
+							throw new SQLException(
+									"Visit may be removed ! keyfld=" + kf);
+						rs.first();
+						if (rs.getString("SALEINV") != null
+								&& !rs.getString("SALEINV").isEmpty())
+							throw new SQLException("Invoice existed " + kf);
+
+						if (rs.getString("ORD_NO") != null
+								&& !rs.getString("ORD_NO").isEmpty())
+							on = rs.getDouble("ord_no");
+						con.setAutoCommit(false);
+						QueryExe.execute(
+								" begin "
+										+ " delete from order1 where ord_no= :ON and ord_code=111 ;"
+										+ " delete from order2 where ord_no = :ON and ord_code=111 ; "
+										+ " delete from CLQ_TEXTS_VALUES where visit_keyfld= :KF ;"
+										+ " delete from CLQ_PICS where visit_keyfld = :KF; "
+										+ " delete from clq_visits where keyfld = :KF ; "
+										+ " end;  ", con, new Parameter("KF",
+										kf), new Parameter("ON", on));
+						rs.close();
+						con.commit();
+						load_data();
+						utilsVaadin.showMessage("Deleted successfully !");
+					} catch (SQLException e) {
+						e.printStackTrace();
+						Channelplus3Application
+								.getInstance()
+								.getMainWindow()
+								.showNotification("", e.getMessage(),
+										Notification.TYPE_ERROR_MESSAGE);
+						try {
+							con.rollback();
+						} catch (SQLException e1) {
+						}
+					}
+
+				}
+			}
+		};
+		String pn = utils
+				.nvl(data_visit.getFieldValue(rn, "PATIENTS_NAME"), "");
+		parentLayout.getWindow().addWindow(
+				new YesNoDialog("Confirmation",
+						"Do you want to remove visit for ' " + pn + " '  ?  # "
+								+ kf + " #", cb, "350px", "-1px"));
+	}
 }

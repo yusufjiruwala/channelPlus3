@@ -62,7 +62,7 @@ public class Channelplus3Application extends Application implements
 							parameters.get("user")[0]);
 				}
 				if (parameters.containsKey("password")) {
-					frmUserLogin.getTxtPwd().setValue( 
+					frmUserLogin.getTxtPwd().setValue(
 							parameters.get("password")[0]);
 					if (frmUserLogin.login()) {
 						if (parameters.containsKey("module")
@@ -73,7 +73,7 @@ public class Channelplus3Application extends Application implements
 									parameters.get("module")[0]);
 						}
 					}
-					
+
 					if (!parameters.containsKey("module")) {
 						frmUserLogin.show_module_selection();
 					}

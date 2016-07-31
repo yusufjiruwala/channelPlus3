@@ -92,7 +92,7 @@ public class frmSaleOrd implements transactionalForm {
 
 	private String strDefaultCurrency = "KWD";
 	private String strCurrencyFormat = "";
-	
+
 	private HorizontalLayout buttonLayout = new HorizontalLayout();
 	private HorizontalLayout content1Layout = new HorizontalLayout();
 	private HorizontalLayout checkLayout = new HorizontalLayout();
@@ -147,7 +147,7 @@ public class frmSaleOrd implements transactionalForm {
 	private DateField txtShipingDate = ControlsFactory.CreateDateField(null,
 			"ORD_SHPDT", lstfldinfo);
 	private TextField txtFcDescr = ControlsFactory.CreateTextField(null,
-			"ORD_FC_DESCR", lstfldinfo, "100%","KWD");
+			"ORD_FC_DESCR", lstfldinfo, "100%", "KWD");
 	private TextField txtFcRate = ControlsFactory.CreateTextField(null,
 			"ORD_FC_RATE", lstfldinfo, "100%", "1");
 	private SearchField txtReference = ControlsFactory.CreateSearchField(null,
@@ -1431,7 +1431,6 @@ public class frmSaleOrd implements transactionalForm {
 				}
 			});
 			cmdDelete.addListener(new ClickListener() {
-
 				public void buttonClick(ClickEvent event) {
 					try {
 						int ord_flg = Integer.valueOf(utils.getSqlValue(
@@ -1965,7 +1964,7 @@ public class frmSaleOrd implements transactionalForm {
 										.getData().getFieldValue(i, "COST"));
 							}
 							table.refreshRow(lr);
-							
+
 							utilsVaadin.findColByCol("ORD_PRICE",
 									table.listFields).actionAfterUpdate
 									.onValueChange(lr, "ORD_PRICE", table.data
