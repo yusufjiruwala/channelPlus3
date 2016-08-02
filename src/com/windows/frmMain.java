@@ -49,7 +49,6 @@ public class frmMain extends VerticalLayout implements ValueChangeListener {
 			new menuItem[] { new menuItem("ANALYTICAL", "Analytical Reports"),
 					new menuItem("ANA1", "Report1"),
 					new menuItem("EXIT", "Log Out") } };
-
 	private Window mainWindow = null;
 
 	public void createView() {
@@ -71,7 +70,7 @@ public class frmMain extends VerticalLayout implements ValueChangeListener {
 		addComponent(specifiecation2);
 		lblCompanyName.setStyleName("formTitle");
 		addComponent(mainLayout);
-
+		
 		// mainWindow.setContent(this);
 
 		tree = new Tree();

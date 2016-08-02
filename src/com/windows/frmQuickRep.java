@@ -1618,7 +1618,7 @@ public class frmQuickRep implements transactionalForm {
 			Parameter pp = utils.getParam(p.getName(), added_query_parameters);
 			if (pp != null) {
 				p.setValue(pp.getValue());
-			}
+			}			
 			qv.addParameter(p, true);
 		}
 
@@ -1884,9 +1884,9 @@ public class frmQuickRep implements transactionalForm {
 		con.setAutoCommit(false);
 
 		utils.execSql("delete from cp_rep_profiles where usernames='" + strUn
-				+ "' and report_name='" + strReport + "' and profile_name='"				
+				+ "' and report_name='" + strReport + "' and profile_name='"
 				+ strProfile + "'", con);
-		
+
 		QueryExe qe = new QueryExe(
 				"insert into cp_rep_profiles(usernames,report_name,profile_name,para_name,para_value,flag) values "
 						+ "( '"

@@ -944,6 +944,7 @@ public class frmVisitRecords implements transactionalForm {
 			qe.setParaValue("DT", varDt);
 			qe.setParaValue("VL", vl);
 			qe.execute();
+			qe.close();
 			con.commit();
 			synchronized (lbl) {
 				lbl.setValue("");
