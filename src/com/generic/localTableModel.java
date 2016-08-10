@@ -597,7 +597,7 @@ public class localTableModel implements TableModel, Serializable {
 			qrycols.clear();
 			qrycols.addAll(dbclass.getColumnsList());
 			appendRows(dbclass.convertRows(filterStr));
-			dbclass.getStatment().close();
+			dbclass.getResultset().close();
 			cursorNo = rows.size() - 1;
 		}
 	}

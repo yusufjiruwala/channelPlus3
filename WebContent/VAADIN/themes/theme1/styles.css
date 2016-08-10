@@ -131,6 +131,33 @@
 	color: black;
 }
 
+.v-table-cell-content-postedDR {
+	background-color: yellow !important;
+	color: black;
+}
+
+.v-table-cell-content-postedMEDICATION_VISIT {
+	background-color: orange !important;
+	color: black;
+}
+
+.v-table-cell-content-postedDUEPAY_VISIT {
+	background-color: green !important;
+	color: black;
+}
+
+.v-table-cell-content-unpostedDR {
+	color: maroon !important;
+}
+
+.v-table-cell-content-unpostedMEDICATION_VISIT {
+	color: blue !important;
+}
+
+.v-table-cell-content-unpostedDUEPAY_VISIT {
+	color: green !important;
+}
+
 .v-table-cell-content-blue_back_row {
 	background-color: blue;
 	color: white;
@@ -247,6 +274,12 @@
 	margin: none;
 	color: navy;
 	background: orange;
+}
+
+.v-label-title1 {
+	font-size: 14pt;
+	margin: none;
+	color: navy;
 }
 
 .v-verticallayout-title1 {

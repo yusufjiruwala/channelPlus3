@@ -96,6 +96,9 @@ public class frmClinicMain implements transactionalForm {
 
 	private NativeButton cmdAddvisit = ControlsFactory.CreateToolbarButton(
 			"img/newmenu.png", "Add new visiting..");
+	private NativeButton cmdManyAdd = ControlsFactory.CreateToolbarButton(
+			"img/manyadd.png", "Add other visiting..");
+
 	private NativeButton cmdDelvisit = ControlsFactory.CreateToolbarButton(
 			"img/remove.png", "Remove selected visiting recs");
 	private NativeButton cmdRefreshvisit = ControlsFactory.CreateToolbarButton(
@@ -235,7 +238,8 @@ public class frmClinicMain implements transactionalForm {
 		ResourceManager.addComponent(details2Layout, tbl_medical_items);
 
 		ResourceManager.addComponent(cmdvisitLayout1, cmdAddvisit);
-		// ResourceManager.addComponent(cmdvisitLayout1, cmdDelvisit);
+		ResourceManager.addComponent(cmdvisitLayout1, cmdManyAdd);
+		ResourceManager.addComponent(cmdvisitLayout1, cmdDelvisit);
 		ResourceManager.addComponent(cmdvisitLayout1, cmdRefreshvisit);
 		ResourceManager.addComponent(cmdvisitLayout1, cmdPatient);
 		ResourceManager.addComponent(cmdvisitLayout1, cmdPatientBasic);
@@ -268,9 +272,7 @@ public class frmClinicMain implements transactionalForm {
 		cmdDelMedi.setEnabled(false);
 
 		if (!listnerAdded) {
-
 			tbl_visit.addActionHandler(new Handler() {
-
 				@Override
 				public void handleAction(Action action, Object sender,
 						Object target) {
@@ -279,21 +281,29 @@ public class frmClinicMain implements transactionalForm {
 					int rowno = Integer.valueOf(target.toString());
 					double kfld = Double.valueOf(utils.nvl(
 							data_visit.getFieldValue(rowno, "KEYFLD"), "-1"));
-					String slv = utils.nvl(
-							data_visit.getFieldValue(rowno, "SALEINV"), "");
-					if (action.getCaption().equals(mapActionStrs.get("unpost"))
-							&& !slv.isEmpty()) {
-						try {
+					String slv = "", slvM = "";
+					try {
+						slv = utils.nvl(QueryExe.getSqlValue(
+								"select SALEINV FROM CLQ_VISITS WHERE KEYFLD='"
+										+ kfld + "'", con, ""), "");
+						slvM = utils.nvl(QueryExe.getSqlValue(
+								"select SALEINV_MEDICAL FROM CLQ_VISITS WHERE KEYFLD='"
+										+ kfld + "'", con, ""), "");
+						if (action.getCaption().equals(
+								mapActionStrs.get("unpost"))
+								&& !(slv + slvM).isEmpty()) {
 							unpost(kfld, rowno);
-						} catch (SQLException e) {
-							e.printStackTrace();
 						}
+
+						if (action.getCaption().equals(
+								mapActionStrs.get("remove"))
+								&& (slv + slvM).isEmpty()) {
+							delete_visit(kfld, rowno);
+						}
+					} catch (SQLException e1) {
+						e1.printStackTrace();
 					}
 
-					if (action.getCaption().equals(mapActionStrs.get("remove"))
-							&& slv.isEmpty()) {
-						delete_visit(kfld, rowno);
-					}
 				}
 
 				@Override
@@ -313,12 +323,18 @@ public class frmClinicMain implements transactionalForm {
 							|| data_visit.getFieldValue(rowno, "SALEINV")
 									.toString().isEmpty())
 						acts.add(new Action(mapActionStrs.get("remove")));
-
 					Action[] ac_ar = new Action[acts.size()];
 					return acts.toArray(ac_ar);
 
 				}
 			});
+
+			cmdManyAdd.addListener(new ClickListener() {
+				public void buttonClick(ClickEvent event) {
+					select_visit();
+				}
+			});
+
 			cmdUpdvisit.addListener(new ClickListener() {
 
 				public void buttonClick(ClickEvent event) {
@@ -356,7 +372,6 @@ public class frmClinicMain implements transactionalForm {
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
-
 				}
 			});
 
@@ -391,23 +406,29 @@ public class frmClinicMain implements transactionalForm {
 			tbl_visit.setCellStyleGenerator(new CellStyleGenerator() {
 
 				public String getStyle(Object itemId, Object propertyId) {
+
 					if (itemId != null) {
 						Integer rn = (Integer) itemId;
-						if (data_visit.getFieldValue(rn, "SALEINV") != null
-								&& !data_visit.getFieldValue(rn, "SALEINV")
-										.toString().isEmpty()) {
-							return "yellowrow";
-						}
 						if (data_visit.getFieldValue(rn, "FLAG") != null
 								&& data_visit.getFieldValue(rn, "FLAG")
 										.toString().equals("1_ACTIVE")) {
 							return "blinkrow";
 						}
 
+						if (data_visit.getFieldValue(rn, "PAY_KEYFLD") != null
+								&& !data_visit.getFieldValue(rn, "PAY_KEYFLD")
+										.toString().isEmpty()) {
+							return "posted"
+									+ data_visit.getFieldValue(rn, "KOV");
+						} else {
+							return "unposted"
+									+ data_visit.getFieldValue(rn, "KOV");
+						}
 					}
 					return null;
 				}
 			});
+
 			cmdRefreshvisit.addListener(new ClickListener() {
 
 				public void buttonClick(ClickEvent event) {
@@ -452,6 +473,7 @@ public class frmClinicMain implements transactionalForm {
 			cmdAddvisit.addListener(new ClickListener() {
 
 				public void buttonClick(ClickEvent event) {
+					// select_visit();
 					add_update_visit(true);
 
 				}
@@ -482,7 +504,37 @@ public class frmClinicMain implements transactionalForm {
 					}
 				}
 			});
+			cmdDelvisit.addListener(new ClickListener() {
 
+				@Override
+				public void buttonClick(ClickEvent event) {
+					if (tbl_visit.getValue() == null) {
+						return;
+					}
+
+					int rowno = Integer.valueOf(tbl_visit.getValue() + "");
+					double kfld = Double.valueOf(utils.nvl(
+							data_visit.getFieldValue(rowno, "KEYFLD"), "-1"));
+					String slv = "", slvM = "";
+					try {
+						slv = utils.nvl(QueryExe.getSqlValue(
+								"select SALEINV FROM CLQ_VISITS WHERE KEYFLD='"
+										+ kfld + "'", con, ""), "");
+						slvM = utils.nvl(QueryExe.getSqlValue(
+								"select SALEINV_MEDICAL FROM CLQ_VISITS WHERE KEYFLD='"
+										+ kfld + "'", con, ""), "");
+						if (!(slv + slvM).isEmpty())
+							unpost(kfld, rowno);
+
+						if ((slv + slvM).isEmpty())
+							delete_visit(kfld, rowno);
+
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+
+				}
+			});
 			cmdDelMedi.addListener(new ClickListener() {
 				public void buttonClick(ClickEvent event) {
 					delete_medical_item();
@@ -794,7 +846,8 @@ public class frmClinicMain implements transactionalForm {
 							"SELECT V.*,p.e_first_nm||' '||e_second_nm||' '||e_family_nm PATIENTS_NAME,"
 									+ " T.DESCR INV_TYPEDESCR_P, TM.DESCR INV_TYPEDESCR_M,"
 									+ " i.descr FOLLOWUP_ITEM_DESCR,p.location_code, p.invoice_type , "
-									+ " v.followup_disc, (v.FOLLOWUP_FEES - v.followup_disc)+V.ORD_AMT  net_amt "
+									+ " v.followup_disc, (v.FOLLOWUP_FEES - v.followup_disc)+V.ORD_AMT  net_amt,"
+									+ " pay_amt_1+pay_amt_2 total_payment "
 									+ "from clq_visits V,CLQ_PATIENTS P,invoicetype t,invoicetype tm,items i WHERE "
 									+ " V.MEDICAL_NO=P.MEDICAL_NO and v.LOCATION_CODE=t.LOCATION_CODE AND "
 									+ " v.drno='"
@@ -1080,10 +1133,967 @@ public class frmClinicMain implements transactionalForm {
 		});
 	}
 
+	public void select_visit() {
+		final Window wx = ControlsFactory.CreateWindow("500px", "100px", true,
+				true);
+		Button btDRVisit = new Button("Doctor's Visit");
+		Button btMedication = new Button("Medication");
+		Button btDuePay = new Button("Due Payment");
+		HorizontalLayout hz = new HorizontalLayout();
+		hz.addComponent(btDRVisit);
+		hz.addComponent(btDuePay);
+		hz.addComponent(btMedication);
+		((VerticalLayout) wx.getContent()).addComponent(hz);
+		hz.setSizeFull();
+		hz.setComponentAlignment(btDRVisit, Alignment.MIDDLE_CENTER);
+		hz.setComponentAlignment(btDuePay, Alignment.MIDDLE_CENTER);
+		hz.setComponentAlignment(btMedication, Alignment.MIDDLE_CENTER);
+		hz.setSpacing(true);
+		hz.setMargin(true);
+
+		btDRVisit.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				Channelplus3Application.getInstance().getMainWindow()
+						.removeWindow(wx);
+				add_update_visit(true);
+			}
+		});
+
+		btMedication.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Channelplus3Application.getInstance().getMainWindow()
+						.removeWindow(wx);
+				add_medication_visit();
+			}
+		});
+		btDuePay.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Channelplus3Application.getInstance().getMainWindow()
+						.removeWindow(wx);
+				try {
+					add_duepay_visit();
+				} catch (Exception e) {
+					utilsVaadin.showMessage(Channelplus3Application
+							.getInstance().getMainWindow(), e.getMessage(),
+							Notification.TYPE_ERROR_MESSAGE);
+					e.printStackTrace();
+				}
+
+			}
+		});
+	}
+
+	private void add_medication_visit() {
+		final SimpleDateFormat sdf = new SimpleDateFormat(
+				utils.FORMAT_SHORT_DATE);
+
+		final Window wx = ControlsFactory.CreateWindow("500px", "450px", true,
+				true);
+		wx.setCaption("Medication visit");
+		FormLayoutManager frm = new FormLayoutManager("100%", "-1px");
+		wx.setContent(frm);
+		frm.setSpacing(true);
+		frm.setMargin(true);
+		Date dt = new Date();
+
+		dt.setTime(System.currentTimeMillis());
+		Calendar cl = Calendar.getInstance();
+		cl.setTimeInMillis(((Date) txtTodayDate.getValue()).getTime());
+		Calendar cl2 = Calendar.getInstance();
+		cl2.setTimeInMillis(dt.getTime());
+		cl.set(Calendar.HOUR_OF_DAY, cl2.get(Calendar.HOUR_OF_DAY));
+		cl.set(Calendar.MINUTE, cl2.get(Calendar.MINUTE));
+		Date dtx = new Date();
+
+		dtx.setTime(cl.getTimeInMillis());
+
+		final Double varPrice = Double.valueOf(0);
+		final Double varAmt = Double.valueOf(0);
+
+		final DateField txtArrival = new DateField("Arrival Date", dtx);
+
+		final TextField txtpatientName = new TextField("Patient Name");
+		final TextField txtMedicalno = new TextField("Medical #");
+		final TextField txtpatientTel = new TextField("Patient's Tel");
+
+		final TextField txtItemCode = new TextField("Item code");
+		final TextField txtItemName = new TextField("Item Descr");
+		final TextField txtPrice = new TextField("Price");
+		final TextField txtQty = new TextField("Qty");
+		final TextField txtAmount = new TextField("Amount");
+		final TextField txtBalance = new TextField("Due Balance");
+		final TextField txtLastVisit = new TextField("Last visit");
+		final Label txtDaysAgo = new Label();
+		final ComboBox txtProcedure = ControlsFactory
+				.CreateListField(
+						"Procedure",
+						"proc",
+						"select reference,descr from items where itprice4=1 order by descr2",
+						null);
+
+		NativeButton bt0 = ControlsFactory.CreateToolbarButton("img/find.png",
+				"");
+
+		NativeButton bt = ControlsFactory.CreateToolbarButton("img/find.png",
+				"");
+
+		Button btClose = new Button("Save & Close");
+		txtPrice.setImmediate(true);
+		txtQty.setImmediate(true);
+		txtQty.setValue("1");
+		txtPrice.setValue("0.000");
+
+		txtArrival.setDateFormat("dd/mm/rrrr h:m a");
+		txtPrice.setStyleName("netAmtStyle");
+		txtQty.setStyleName("netAmtStyle");
+		txtLastVisit.addStyleName("yellowField");
+
+		frm.addComponentsRow(txtArrival, "width=100px");
+		frm.addComponentsRow(txtMedicalno,
+				"caption=Medical No,width=100%,expand=0.8,readonly=true", bt0,
+				"width=100%,expand=0.2", txtpatientName,
+				"width=100%,expand=2,readonly=true", txtpatientTel,
+				"expand=1,width=100%,readonly=true");
+		frm.addComponentsRow(txtBalance,
+				"caption=Balance,width=100%,expand=1,readonly=true",
+				txtLastVisit, "width=100%,expand=1,readonly=true", txtDaysAgo,
+				"width=100%,expand=2,style=yellowLabel");
+		frm.addComponentsRow(txtProcedure,
+				"caption=Procedure,width=200px,expand=1,enable=false");
+
+		frm.addLine();
+		frm.addComponentsRow(new Label("Enter here Item"),
+				"height=40px,style=title1");
+		frm.addComponentsRow(txtItemCode,
+				"caption=Item Code,width=100%,expand=0.8", bt,
+				"width=100%,expand=0.2", txtItemName, "width=100%,expand=3");
+		frm.addComponentsRow(txtPrice, "caption=Price,width=100%,expand=1",
+				txtQty, "caption=Qty,width=100%,expand=1", txtAmount,
+				"expand=2,width=100%,caption=Amount");
+		frm.addComponentsRow(btClose, "width=120px");
+
+		ValueChangeListener vlc = new ValueChangeListener() {
+			public void valueChange(ValueChangeEvent event) {
+				if (txtPrice.getValue() == null
+						|| txtPrice.getValue().toString().isEmpty()) {
+					txtPrice.setValue("0.000");
+				}
+				DecimalFormat dc = new DecimalFormat(Channelplus3Application
+						.getInstance().getFrmUserLogin().FORMAT_MONEY);
+				double pr = Double.valueOf(txtPrice.getValue().toString());
+				double qt = Double.valueOf(txtQty.getValue().toString());
+				double amt = pr * qt;
+				txtPrice.setValue(dc.format(pr));
+				utilsVaadin.setValueByForce(txtAmount, dc.format(amt));
+				utilsVaadin.setValueByForce(txtPrice, dc.format(pr));
+			}
+		};
+
+		txtPrice.addListener(vlc);
+		txtQty.addListener(vlc);
+		txtProcedure.setValue(utilsVaadin.findByValue(txtProcedure,
+				Channelplus3Application.getInstance().getFrmUserLogin()
+						.getMapVars().get("MEDICATION_VISIT_PROC")));
+		txtProcedure.setEnabled(false);
+
+		bt0.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				try {
+					final Window wnd2 = ControlsFactory.CreateWindow("70%",
+							"70%", true, true);
+					utilsVaadin.showSearch(
+							(VerticalLayout) wnd2.getContent(),
+							new TableView.SelectionListener() {
+								public void onSelection(TableView tv) {
+									if (tv.getSelectionValue() < 0) {
+										return;
+									}
+									txtMedicalno.setReadOnly(false);
+									txtpatientName.setReadOnly(false);
+									txtpatientTel.setReadOnly(false);
+									txtBalance.setReadOnly(false);
+									txtLastVisit.setReadOnly(false);
+									double bal = 0;
+									String lastvisit = "";
+
+									String mn = tv.getData().getFieldValue(
+											tv.getSelectionValue(),
+											"MEDICAL_NO")
+											+ "";
+									try {
+										bal = Double.valueOf(QueryExe
+												.getSqlValue(
+														"select "
+																+ "nvl(sum(debit-credit),0) from"
+																+ " acvoucher2 where cust_code='"
+																+ mn + "'",
+														con, "0")
+												+ "");
+										lastvisit = QueryExe
+												.getSqlValue(
+														"select nvl(max(to_char(date_of_arrival,'dd/mm/rrrr')),'') from clq_visits "
+																+ " where kov='DR' and  medical_no='"
+																+ mn + "'",
+														con, "")
+												+ "";
+									} catch (NumberFormatException
+											| SQLException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+
+									txtMedicalno.setValue(mn);
+									txtpatientName.setValue(tv.getData()
+											.getFieldValue(
+													tv.getSelectionValue(),
+													"PATIENT_NAME"));
+									txtpatientTel.setValue(tv.getData()
+											.getFieldValue(
+													tv.getSelectionValue(),
+													"TEL")
+											+ "");
+									txtBalance
+											.setValue((new DecimalFormat(
+													Channelplus3Application
+															.getInstance()
+															.getFrmUserLogin().FORMAT_MONEY))
+													.format(bal));
+									txtLastVisit.setValue(lastvisit);
+									txtDaysAgo.setValue("");
+									if (!lastvisit.isEmpty()) {
+										try {
+											Date dt = sdf.parse(lastvisit);
+											Date nowdt = new Date(System
+													.currentTimeMillis());
+											int d = utils
+													.daysBetween(dt, nowdt);
+											txtDaysAgo.setValue(d
+													+ "  days ago !");
+											System.out.println(d);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+
+									}
+
+									utilsVaadin.showMessage("Balance " + bal
+											+ " ");
+									txtMedicalno.setReadOnly(true);
+									txtpatientName.setReadOnly(true);
+									txtpatientTel.setReadOnly(true);
+									txtBalance.setReadOnly(true);
+									txtLastVisit.setReadOnly(true);
+
+									if (Channelplus3Application.getInstance()
+											.getMainWindow().getChildWindows()
+											.contains(wnd2)) {
+										Channelplus3Application.getInstance()
+												.getMainWindow()
+												.removeWindow(wnd2);
+									}
+
+								}
+							},
+							con,
+							"select e_first_nm||' '||e_second_nm||' '||e_family_nm patient_name , "
+									+ "medical_no,tel,mobile_no,id_no,e_mother_nm from clq_patients order by medical_no",
+							true);
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+
+			}
+		});
+		bt.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					final Window wnd2 = ControlsFactory.CreateWindow("70%",
+							"70%", true, true);
+
+					utilsVaadin.showSearch(
+							(VerticalLayout) wnd2.getContent(),
+							new TableView.SelectionListener() {
+								public void onSelection(TableView tv) {
+									if (tv.getSelectionValue() < 0) {
+										return;
+									}
+									txtItemCode.setReadOnly(false);
+									txtItemName.setReadOnly(false);
+
+									txtItemCode.setValue(tv.getData()
+											.getFieldValue(
+													tv.getSelectionValue(),
+													"REFERENCE"));
+									txtItemName.setValue(tv.getData()
+											.getFieldValue(
+													tv.getSelectionValue(),
+													"DESCR"));
+									txtPrice.setValue(tv.getData()
+											.getFieldValue(
+													tv.getSelectionValue(),
+													"PRICE1"));
+									txtItemCode.setReadOnly(true);
+									txtItemName.setReadOnly(true);
+
+									if (Channelplus3Application.getInstance()
+											.getMainWindow().getChildWindows()
+											.contains(wnd2)) {
+										Channelplus3Application.getInstance()
+												.getMainWindow()
+												.removeWindow(wnd2);
+									}
+
+								}
+							}, con,
+							"select reference,descr,price1 from items where childcounts=0"
+									+ " and itprice4=0 order by descr2 ", true);
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+					utilsVaadin.showMessage(wx, ex.getMessage(),
+							Notification.TYPE_ERROR_MESSAGE);
+				}
+			}
+		});
+		btClose.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					if (txtMedicalno.getValue() == null
+							|| txtMedicalno.getValue().toString().isEmpty())
+						throw new Exception("Patient not selected ! ");
+					if (txtItemCode.getValue() == null
+							|| txtItemCode.getValue().toString().isEmpty())
+						throw new Exception("Item not selected ! ");
+
+					String mn = QueryExe.getSqlValue(
+							"select medical_no from clq_patients where medical_no='"
+									+ txtMedicalno.getValue() + "'", con, "")
+							+ "";
+
+					double kf = Double.valueOf(QueryExe.getSqlValue(
+							"select nvl(max(keyfld),0)+1 from clq_visits", con,
+							"1")
+							+ "");
+
+					if (mn.isEmpty())
+						throw new Exception(
+								"Patient may have been removed by another user !");
+					if (txtProcedure.getValue() == null)
+						throw new Exception(
+								"Must have assign medication visit item in SETUP");
+
+					String sqlClq = "begin INSERT INTO CLQ_VISITS  (KEYFLD, TIME_OF_ARRIVAL, MEDICAL_NO, "
+							+ "DATE_OF_ARRIVAL, DRNO, FOLLOWUP_ITEM, FLAG, "
+							+ " FOLLOWUP_FEES,FOLLOWUP_INV_TYPE,MEDICAL_INV_TYPE , FOLLOWUP_DISC, KOV ) values ("
+							+ " :KEYFLD  , :TIME_OF_ARRIVAL, :MEDICAL_NO, "
+							+ ":DATE_OF_ARRIVAL, :DRNO, :FOLLOWUP_ITEM, '1_CREATED', "
+							+ " :PRICE ,:FOLLOWUP_INV_TYPE , :MEDICAL_INV_TYPE  , :FOLLOWUP_DISC , :KOV ); "
+							+ "update clq_patients set last_visit_date=:DATE_OF_ARRIVAL,"
+							+ "last_doc=:DRNO where medical_no=:MEDICAL_NO ;  end; ";
+
+					String sqlIns = "insert into order1(PERIODCODE,LOCATION_CODE,ORD_NO,ORD_CODE,ORD_TYPE,ORD_DISCAMT,ORD_SHPDT,"
+							+ "LCNO, ORD_EMPNO, REMARKS, SALEINV , LAST_MODIFIED_TIME ,ORD_FLAG ,ORD_DATE ,ORD_REF, ORD_REFNM ,ORD_AMT)  VALUES "
+							+ "( :PERIODCODE,:LOCATION_CODE,:ORD_NO , :ORD_CODE , :ORD_TYPE, :ORD_DISCAMT, :ORD_SHPDT, "
+							+ " :LCNO, :ORD_EMPNO, :REMARKS, :SALEINV , :LAST_MODIFIED_DATE , :ORD_FLAG , :ORD_DATE, :ORD_REF, :ORD_REFNM, :ORD_AMT )";
+
+					String sqlItems = "insert into order2 (PERIODCODE,LOCATION_CODE, ORD_DATE, ORD_NO,ORD_CODE,ORD_TYPE,ORD_POS,ORD_REFER,DESCR,ORD_PRICE,"
+							+ "ORD_PKQTY, ORD_ALLQTY, ORD_PACK, ORD_PACKD, ORD_UNITD, ORD_FLAG ,SALEINV) VALUES "
+							+ "(:PERIODCODE,:LOCATION_CODE, :ORD_DATE, :ORD_NO, :ORD_CODE,:ORD_TYPE,"
+							+ "(select nvl(max(ord_pos),0)+1 from order2 where ord_code=111 and ord_no=:ORD_NO and location_code=:LOCATION_CODE) ,"
+							+ ":ORD_REFER,:DESCR,:ORD_PRICE,"
+							+ ":ORD_PKQTY, :ORD_ALLQTY, :ORD_PACK, :ORD_PACKD, :ORD_UNITD, :ORD_FLAG ,:SALEINV)";
+
+					QueryExe qe = new QueryExe(sqlClq, con);
+					qe.setParaValue("KEYFLD", kf);
+					qe.setParaValue("TIME_OF_ARRIVAL", new java.sql.Timestamp(
+							((Date) txtArrival.getValue()).getTime()));
+					qe.setParaValue("MEDICAL_NO", txtMedicalno.getValue());
+					qe.setParaValue("DATE_OF_ARRIVAL", txtArrival.getValue());
+					qe.setParaValue("DRNO", txtDrNo.getValue());
+					qe.setParaValue("FOLLOWUP_ITEM", txtProcedure.getValue());
+					qe.setParaValue("PRICE", 0);
+					qe.setParaValue("FOLLOWUP_INV_TYPE", 1);
+					qe.setParaValue("MEDICAL_INV_TYPE", 1);
+					qe.setParaValue("FOLLOWUP_DISC", 0);
+					qe.setParaValue("KOV", "MEDICATION_VISIT");
+					qe.execute();
+					qe.close();
+
+					double on = 0;
+					String pcod = QueryExe
+							.getSqlValue(
+									"select repair.getsetupvalue_2('CURRENT_PERIOD') from dual",
+									con, "")
+							+ "";
+
+					String loc = QueryExe
+							.getSqlValue(
+									"select repair.getsetupvalue_2('DEFAULT_LOCATION') from dual",
+									con, "")
+							+ "";
+
+					on = Double.valueOf(utils.getSqlValue(
+							"select nvl(max(ord_no),0)+1 from order1 "
+									+ "where ord_code=111 ", con));
+					qe = new QueryExe(sqlIns, con);
+					qe.setParaValue("PERIODCODE", pcod);
+					qe.setParaValue("LOCATION_CODE", loc);
+					qe.setParaValue("ORD_NO", on);
+					qe.setParaValue("ORD_CODE", 111);
+					qe.setParaValue("ORD_DATE", txtTodayDate.getValue());
+					qe.setParaValue("ORD_TYPE", 1);
+					qe.setParaValue("ORD_DISCAMT", 0);
+					qe.setParaValue("ORD_SHPDT", txtTodayDate.getValue());
+					qe.setParaValue("ORDACC", txtProcedure.getValue());
+					qe.setParaValue("ORD_REF", mn);
+					qe.setParaValue("LCNO", kf);
+					qe.setParaValue("ORD_REFNM", txtpatientName.getValue());
+					qe.setParaValue("ORD_AMT", txtAmount.getValue());
+					qe.setParaValue("ORD_EMPNO", txtDrNo.getValue());
+					qe.setParaValue("REMARKS", "");
+					qe.setParaValue("SALEINV", null);
+					qe.setParaValue("LAST_MODIFIED_DATE", new java.util.Date(
+							System.currentTimeMillis()));
+					qe.setParaValue("ORD_FLAG", 2);
+					qe.execute();
+					qe.close();
+					QueryExe qeItem = new QueryExe(sqlItems, con);
+					qeItem.setParaValue("PERIODCODE", pcod);
+					qeItem.setParaValue("ORD_CODE", 111);
+					qeItem.setParaValue("LOCATION_CODE", loc);
+					qeItem.setParaValue("ORD_NO", on);
+					qeItem.setParaValue("ORD_TYPE", 1);
+					qeItem.setParaValue("ORD_DATE", txtTodayDate.getValue());
+					qeItem.setParaValue("ORD_REFER", txtItemCode.getValue());
+					qeItem.setParaValue("DESCR", txtItemName.getValue());
+					qeItem.setParaValue("ORD_PKQTY", txtQty.getValue());
+					qeItem.setParaValue("ORD_ALLQTY", txtQty.getValue());
+					qeItem.setParaValue("ORD_PRICE", txtPrice.getValue());
+					qeItem.setParaValue("ORD_PACK", 1);
+					qeItem.setParaValue("ORD_PACKD", "PCS");
+					qeItem.setParaValue("ORD_UNITD", "PCS");
+					qeItem.setParaValue("ORD_FLAG", 2);
+					qeItem.setParaValue("SALEINV", null);
+					qeItem.execute();
+					qeItem.close();
+					utils.execSql(
+							"update clq_visits set ord_no="
+									+ on
+									+ ",ord_amt= (select nvl(sum((ord_price/ord_pack)*ord_allqty),0) from "
+									+ " order2 where ord_no=" + on
+									+ " and ord_code=111 "
+									+ ")  where keyfld='" + kf + "'", con);
+					double totamt = Double.valueOf(utils.getSqlValue(
+							"select nvl(sum((ord_price/ord_pack)*ord_allqty),0) from "
+									+ " order2 where ord_no=" + on
+									+ " and ord_code=111 ", con));
+
+					con.commit();
+					Channelplus3Application.getInstance().getMainWindow()
+							.removeWindow(wx);
+					load_data();
+					int loc1 = data_visit.locate("KEYFLD", ((int) kf) + "",
+							localTableModel.FIND_EXACT);
+					tbl_visit.setValue(loc1);
+					if (tbl_visit.getValue() != null)
+						cmdPost.click();
+
+					utilsVaadin.showMessage(Channelplus3Application
+							.getInstance().getMainWindow(),
+							"Successfully generated , post visit to pay",
+							Notification.TYPE_HUMANIZED_MESSAGE);
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					utilsVaadin.showMessage(wx, ex.getMessage(),
+							Notification.TYPE_ERROR_MESSAGE);
+				}
+
+			}
+		});
+	}
+
+	private void add_duepay_visit() throws Exception {
+		final SimpleDateFormat sdf = new SimpleDateFormat(
+				utils.FORMAT_SHORT_DATE);
+		final DecimalFormat df = new DecimalFormat(Channelplus3Application
+				.getInstance().getFrmUserLogin().FORMAT_MONEY);
+
+		final Window wx = ControlsFactory.CreateWindow("500px", "450px", true,
+				true);
+		wx.setCaption("Due Payment");
+		FormLayoutManager frm = new FormLayoutManager("100%", "-1px");
+		wx.setContent(frm);
+		frm.setSpacing(true);
+		frm.setMargin(true);
+		Date dt = new Date();
+
+		dt.setTime(System.currentTimeMillis());
+		Calendar cl = Calendar.getInstance();
+		cl.setTimeInMillis(((Date) txtTodayDate.getValue()).getTime());
+		Calendar cl2 = Calendar.getInstance();
+		cl2.setTimeInMillis(dt.getTime());
+		cl.set(Calendar.HOUR_OF_DAY, cl2.get(Calendar.HOUR_OF_DAY));
+		cl.set(Calendar.MINUTE, cl2.get(Calendar.MINUTE));
+		Date dtx = new Date();
+
+		dtx.setTime(cl.getTimeInMillis());
+
+		final String varLocation = QueryExe.getSqlValue(
+				"select repair.getsetupvalue_2('DEFAULT_LOCATION') from dual",
+				con, "")
+				+ "";
+
+		final List<FieldInfo> flds = new ArrayList<FieldInfo>();
+
+		final DateField txtArrival = new DateField("Arrival Date", dtx);
+		final Label lblDue = new Label(df.format(0));
+		final TextField txtpatientName = new TextField("Patient Name");
+		final TextField txtMedicalno = new TextField("Medical #");
+		final TextField txtpatientTel = new TextField("Patient's Tel");
+
+		final TextField txtBalance = ControlsFactory.CreateTextField(null,
+				"DUE", flds, "0.000", Parameter.DATA_TYPE_NUMBER,
+				utils.FORMAT_MONEY, true);
+		final TextField txtLastVisit = new TextField("Last visit");
+
+		final Label txtDaysAgo = new Label();
+		final ComboBox txtProcedure = ControlsFactory
+				.CreateListField(
+						"Procedure",
+						"proc",
+						"select reference,descr from items where itprice4=1 order by descr2",
+						null);
+		final ComboBox txtType1 = ControlsFactory.CreateListField(null,
+				"TYPE_1",
+				"SELECT NO,DESCR FROM INVOICETYPE WHERE LOCATION_CODE='"
+						+ varLocation + "' and accno is not null"
+						+ " order  by no", flds);
+		final ComboBox txtType2 = ControlsFactory.CreateListField(null,
+				"TYPE_2",
+				"SELECT NO,DESCR FROM INVOICETYPE WHERE LOCATION_CODE='"
+						+ varLocation + "' and accno is not null"
+						+ " order  by no", flds);
+
+		final TextField txtAmt1 = ControlsFactory.CreateTextField(null,
+				"AMT_1", flds, "0.000", Parameter.DATA_TYPE_NUMBER,
+				utils.FORMAT_MONEY, true);
+
+		final TextField txtAmt2 = ControlsFactory.CreateTextField(null,
+				"AMT_2", flds, "0.000", Parameter.DATA_TYPE_NUMBER,
+				utils.FORMAT_MONEY, true);
+
+		Button btClose = new Button("Update..");
+
+		NativeButton bt0 = ControlsFactory.CreateToolbarButton("img/find.png",
+				"");
+
+		txtArrival.setDateFormat("dd/mm/rrrr h:m a");
+		txtLastVisit.addStyleName("yellowField");
+
+		frm.addComponentsRow(txtArrival, "width=100px");
+
+		frm.addComponentsRow(txtMedicalno,
+				"caption=Medical No,width=100%,expand=0.8,readonly=true", bt0,
+				"width=100%,expand=0.2", txtpatientName,
+				"width=100%,expand=2,readonly=true", txtpatientTel,
+				"expand=1,width=100%,readonly=true");
+		frm.addComponentsRow(txtBalance,
+				"caption=Due Balance,width=100%,expand=1,readonly=true",
+				txtLastVisit, "width=100%,expand=1,readonly=true", txtDaysAgo,
+				"width=100%,expand=2,style=yellowLabel");
+
+		frm.addComponentsRow(txtProcedure,
+				"caption=Procedure,width=200px,expand=1,enable=false", lblDue,
+				"caption=Keep Balance,expand=2");
+
+		frm.addLine();
+
+		frm.addComponentsRow(new Label("Enter here payment.."),
+				"height=40px,style=title1");
+
+		frm.addComponentsRow("caption=Payment 1,width=100%,expand=.5",
+				txtType1, "expand=1.5", "caption=Amount,expand=.5,", txtAmt1,
+				"width=100%,expand=1.5");
+
+		frm.addComponentsRow("caption=Payment 2,width=100%,expand=.5",
+				txtType2, "expand=1.5", "caption=Amount,expand=.5,", txtAmt2,
+				"width=100%,expand=1.5");
+
+		utilsVaadin.setDefaultValues(flds, true);
+
+		frm.addComponentsRow("caption=.,expand=3", btClose,
+				"width=100%,expand=1");
+
+		txtType1.setImmediate(true);
+		txtType2.setImmediate(true);
+		txtAmt1.setImmediate(true);
+		txtAmt2.setImmediate(true);
+
+		txtType1.focus();
+
+		txtProcedure.setValue(utilsVaadin.findByValue(txtProcedure,
+				Channelplus3Application.getInstance().getFrmUserLogin()
+						.getMapVars().get("DUE_PAY_VISIT")));
+		txtProcedure.setEnabled(false);
+		txtType1.addListener(new ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				try {
+					double amt_tot = utilsVaadin.getFieldInfoDoubleValue(
+							txtBalance, flds);
+					txtType2.setValue(null);
+					txtAmt2.setValue("0.000");
+					txtAmt1.setValue(df.format(amt_tot));
+
+					double due = amt_tot
+							- utilsVaadin
+									.getFieldInfoDoubleValue(txtAmt1, flds);
+					lblDue.setValue(df.format(due));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+		txtType2.addListener(new ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (txtType2.getValue() == null) {
+					txtAmt2.setValue("0.000");
+					return;
+				}
+
+				if (txtType1.getValue() == null) {
+					txtType2.setValue(null);
+					return;
+				}
+
+				try {
+					double amt_tot = utilsVaadin.getFieldInfoDoubleValue(
+							txtBalance, flds);
+					double due = amt_tot
+							- utilsVaadin
+									.getFieldInfoDoubleValue(txtAmt1, flds);
+					lblDue.setValue(df.format(due));
+					txtAmt2.setValue(df.format(due));
+					lblDue.setValue(df.format(0.0f));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+		txtAmt2.addListener(new ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				try {
+					double amt_tot = utilsVaadin.getFieldInfoDoubleValue(
+							txtBalance, flds);
+
+					double due = amt_tot
+							- (utilsVaadin.getFieldInfoDoubleValue(txtAmt1,
+									flds) + utilsVaadin
+									.getFieldInfoDoubleValue(txtAmt2, flds));
+					lblDue.setValue(df.format(due));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+		txtAmt1.addListener(new ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				try {
+					double amt_tot = utilsVaadin.getFieldInfoDoubleValue(
+							txtBalance, flds);
+					txtType2.setValue(null);
+					txtAmt2.setValue("0.000");
+					txtAmt2.setValue(df.format(0));
+
+					double due = amt_tot
+							- utilsVaadin
+									.getFieldInfoDoubleValue(txtAmt1, flds);
+					lblDue.setValue(df.format(due));
+
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+
+		bt0.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				try {
+					final Window wnd2 = ControlsFactory.CreateWindow("70%",
+							"70%", true, true);
+					utilsVaadin.showSearch(
+							(VerticalLayout) wnd2.getContent(),
+							new TableView.SelectionListener() {
+								public void onSelection(TableView tv) {
+									if (tv.getSelectionValue() < 0) {
+										return;
+									}
+									txtMedicalno.setReadOnly(false);
+									txtpatientName.setReadOnly(false);
+									txtpatientTel.setReadOnly(false);
+									txtBalance.setReadOnly(false);
+									txtLastVisit.setReadOnly(false);
+									double bal = 0;
+									String lastvisit = "";
+
+									String mn = tv.getData().getFieldValue(
+											tv.getSelectionValue(),
+											"MEDICAL_NO")
+											+ "";
+									try {
+										bal = Double.valueOf(QueryExe
+												.getSqlValue(
+														"select "
+																+ "nvl(sum(debit-credit),0) from"
+																+ " acvoucher2 where cust_code='"
+																+ mn + "'",
+														con, "0")
+												+ "");
+										lastvisit = QueryExe
+												.getSqlValue(
+														"select nvl(max(to_char(date_of_arrival,'dd/mm/rrrr')),'') from clq_visits "
+																+ " where kov='DR' and  medical_no='"
+																+ mn + "'",
+														con, "")
+												+ "";
+									} catch (NumberFormatException
+											| SQLException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+
+									txtMedicalno.setValue(mn);
+									txtpatientName.setValue(tv.getData()
+											.getFieldValue(
+													tv.getSelectionValue(),
+													"PATIENT_NAME"));
+									txtpatientTel.setValue(tv.getData()
+											.getFieldValue(
+													tv.getSelectionValue(),
+													"TEL")
+											+ "");
+									txtBalance
+											.setValue((new DecimalFormat(
+													Channelplus3Application
+															.getInstance()
+															.getFrmUserLogin().FORMAT_MONEY))
+													.format(bal));
+									txtLastVisit.setValue(lastvisit);
+									txtDaysAgo.setValue("");
+									if (!lastvisit.isEmpty()) {
+										try {
+											Date dt = sdf.parse(lastvisit);
+											Date nowdt = new Date(System
+													.currentTimeMillis());
+											int d = utils
+													.daysBetween(dt, nowdt);
+											txtDaysAgo.setValue(d
+													+ "  days ago !");
+											System.out.println(d);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+
+									}
+
+									utilsVaadin.showMessage("Balance " + bal
+											+ " ");
+									txtMedicalno.setReadOnly(true);
+									txtpatientName.setReadOnly(true);
+									txtpatientTel.setReadOnly(true);
+									txtBalance.setReadOnly(true);
+									txtLastVisit.setReadOnly(true);
+
+									if (Channelplus3Application.getInstance()
+											.getMainWindow().getChildWindows()
+											.contains(wnd2)) {
+										Channelplus3Application.getInstance()
+												.getMainWindow()
+												.removeWindow(wnd2);
+									}
+
+								}
+							},
+							con,
+							"select p.e_first_nm||' '||p.e_second_nm||' '||p.e_family_nm patient_name , "
+									+ "p.medical_no,p.tel,p.mobile_no,p.id_no,p.e_mother_nm,  "
+									+ "sum(v.debit-v.credit) Due from clq_patients p,acvoucher2 v"
+									+ " where  v.cust_code=p.medical_no "
+									+ " group by "
+									+ " p.e_first_nm||' '||p.e_second_nm||' '||p.e_family_nm , "
+									+ " p.medical_no,p.tel,p.mobile_no,p.id_no,p.e_mother_nm  "
+									+ " having sum(v.debit-v.credit)>0 "
+									+ " order by p.medical_no", true);
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+
+			}
+		});
+
+		btClose.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					if (txtMedicalno.getValue() == null
+							|| txtMedicalno.getValue().toString().isEmpty())
+						throw new Exception("Patient not selected ! ");
+
+					double amt1 = utilsVaadin.getFieldInfoDoubleValue(txtAmt1,
+							flds);
+					double amt2 = utilsVaadin.getFieldInfoDoubleValue(txtAmt2,
+							flds);
+					if (txtType1.getValue() == null)
+						throw new Exception("Pay Type not selected ! ");
+					if (amt1 <= 0)
+						throw new Exception("Amount must be >0  !");
+
+					String mn = QueryExe.getSqlValue(
+							"select medical_no from clq_patients where medical_no='"
+									+ txtMedicalno.getValue() + "'", con, "")
+							+ "";
+
+					double kf = Double.valueOf(QueryExe.getSqlValue(
+							"select nvl(max(keyfld),0)+1 from clq_visits", con,
+							"1")
+							+ "");
+
+					if (mn.isEmpty())
+						throw new Exception(
+								"Patient may have been removed by another user !");
+					if (txtProcedure.getValue() == null)
+						throw new Exception(
+								"Must have assign medication visit item in SETUP");
+
+					String sqlClq = "begin INSERT INTO CLQ_VISITS  (KEYFLD, TIME_OF_ARRIVAL, MEDICAL_NO, "
+							+ "DATE_OF_ARRIVAL, DRNO, FOLLOWUP_ITEM, FLAG, "
+							+ " FOLLOWUP_FEES,FOLLOWUP_INV_TYPE,MEDICAL_INV_TYPE , FOLLOWUP_DISC, KOV ) values ("
+							+ " :KEYFLD  , :TIME_OF_ARRIVAL, :MEDICAL_NO, "
+							+ ":DATE_OF_ARRIVAL, :DRNO, :FOLLOWUP_ITEM, '1_CREATED', "
+							+ " :PRICE ,:FOLLOWUP_INV_TYPE , :MEDICAL_INV_TYPE  , :FOLLOWUP_DISC , :KOV ); "
+							+ "update clq_patients set last_visit_date=:DATE_OF_ARRIVAL,"
+							+ "last_doc=:DRNO where medical_no=:MEDICAL_NO ;  end; ";
+
+					String sqlIns = "insert into order1(PERIODCODE,LOCATION_CODE,ORD_NO,ORD_CODE,ORD_TYPE,ORD_DISCAMT,ORD_SHPDT,"
+							+ "LCNO, ORD_EMPNO, REMARKS, SALEINV , LAST_MODIFIED_TIME ,ORD_FLAG ,ORD_DATE ,ORD_REF, ORD_REFNM ,ORD_AMT)  VALUES "
+							+ "( :PERIODCODE,:LOCATION_CODE,:ORD_NO , :ORD_CODE , :ORD_TYPE, :ORD_DISCAMT, :ORD_SHPDT, "
+							+ " :LCNO, :ORD_EMPNO, :REMARKS, :SALEINV , :LAST_MODIFIED_DATE , :ORD_FLAG , :ORD_DATE, :ORD_REF, :ORD_REFNM, :ORD_AMT )";
+
+					String sqlItems = "insert into order2 (PERIODCODE,LOCATION_CODE, ORD_DATE, ORD_NO,ORD_CODE,ORD_TYPE,ORD_POS,ORD_REFER,DESCR,ORD_PRICE,"
+							+ "ORD_PKQTY, ORD_ALLQTY, ORD_PACK, ORD_PACKD, ORD_UNITD, ORD_FLAG ,SALEINV) VALUES "
+							+ "(:PERIODCODE,:LOCATION_CODE, :ORD_DATE, :ORD_NO, :ORD_CODE,:ORD_TYPE,"
+							+ "(select nvl(max(ord_pos),0)+1 from order2 where ord_code=111 and ord_no=:ORD_NO and location_code=:LOCATION_CODE) ,"
+							+ ":ORD_REFER,:DESCR,:ORD_PRICE,"
+							+ ":ORD_PKQTY, :ORD_ALLQTY, :ORD_PACK, :ORD_PACKD, :ORD_UNITD, :ORD_FLAG ,:SALEINV)";
+
+					QueryExe qe = new QueryExe(sqlClq, con);
+					qe.setParaValue("KEYFLD", kf);
+					qe.setParaValue("TIME_OF_ARRIVAL", new java.sql.Timestamp(
+							((Date) txtArrival.getValue()).getTime()));
+					qe.setParaValue("MEDICAL_NO", txtMedicalno.getValue());
+					qe.setParaValue("DATE_OF_ARRIVAL", txtArrival.getValue());
+					qe.setParaValue("DRNO", txtDrNo.getValue());
+					qe.setParaValue("FOLLOWUP_ITEM", txtProcedure.getValue());
+					qe.setParaValue("PRICE", 0);
+					qe.setParaValue("FOLLOWUP_INV_TYPE", 1);
+					qe.setParaValue("MEDICAL_INV_TYPE", 1);
+					qe.setParaValue("FOLLOWUP_DISC", 0);
+					qe.setParaValue("KOV", "DUEPAY_VISIT");
+					qe.execute();
+					qe.close();
+
+					qe = new QueryExe("update clq_visits set PAY_TYPE_1= :P1 ,"
+							+ "PAY_TYPE_2= :P2 ," + "PAY_AMT_1= :A1 , "
+							+ "PAY_AMT_2= :A2 where keyfld= :KF", con);
+
+					qe.setParaValue("P1", txtType1.getValue());
+					qe.setParaValue("P2", txtType2.getValue());
+					qe.setParaValue("A1",
+							utilsVaadin.getFieldInfoDoubleValue(txtAmt1, flds));
+					qe.setParaValue("A2",
+							utilsVaadin.getFieldInfoDoubleValue(txtAmt2, flds));
+					qe.setParaValue("KF", kf);
+					qe.execute();
+					qe.close();
+
+					event.getButton().setEnabled(false);
+					load_data();
+					int loc1 = data_visit.locate("KEYFLD", ((int) kf) + "",
+							localTableModel.FIND_EXACT);
+					tbl_visit.setValue(loc1);
+
+					save_data(false);
+					String pk = utils.nvl(QueryExe.getSqlValue(
+							"select pay_keyfld from clq_visits where keyfld='"
+									+ kf + "'", con, ""), "");
+					if (pk.isEmpty())
+						throw new Exception(
+								"Unable to create JV for RECEIPT...");
+
+					QueryExe.execute(
+							"update clq_visits set saleinv=-1 where keyfld='"
+									+ kf + "'", con);
+					con.commit();
+					Channelplus3Application.getInstance().getMainWindow()
+							.removeWindow(wx);
+					load_data();
+
+					utilsVaadin.showMessage(Channelplus3Application
+							.getInstance().getMainWindow(),
+							"Successfully paid & posted..",
+							Notification.TYPE_HUMANIZED_MESSAGE);
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					utilsVaadin.showMessage(wx, ex.getMessage(),
+							Notification.TYPE_ERROR_MESSAGE);
+					try {
+						con.rollback();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+
+			}
+		});
+
+	}
+
 	public void add_update_visit(final boolean isadd) {
+
 		if (!isadd && tbl_visit.getValue() == null) {
 			parentLayout.getWindow().showNotification(
-					"must select employee first !");
+					"must select patient first !");
 			return;
 		}
 		final DecimalFormat df = new DecimalFormat(Channelplus3Application
@@ -1321,7 +2331,7 @@ public class frmClinicMain implements transactionalForm {
 												+ "");
 										lastvisit = QueryExe
 												.getSqlValue(
-														"select nvl(max(to_char(date_of_arrival,'dd/mm/rrrr')),'') from clq_visits where medical_no='"
+														"select nvl(max(to_char(date_of_arrival,'dd/mm/rrrr')),'') from clq_visits where kov='DR' and medical_no='"
 																+ mn + "'",
 														con, "")
 												+ "";
@@ -1556,8 +2566,8 @@ public class frmClinicMain implements transactionalForm {
 		if (tbl_visit.getValue() == null)
 			return;
 		final Integer rn = (Integer) tbl_visit.getValue();
-		if (data_visit.getFieldValue(rn, "SALEINV") != null
-				&& !data_visit.getFieldValue(rn, "SALEINV").toString()
+		if (data_visit.getFieldValue(rn, "PAY_KEYFLD") != null
+				&& !data_visit.getFieldValue(rn, "PAY_KEYFLD").toString()
 						.isEmpty())
 			throw new SQLException("Posted invoice !");
 
@@ -2001,7 +3011,6 @@ public class frmClinicMain implements transactionalForm {
 			s = rs.getDouble("SALEINV");
 		if (rs.getString("ORD_NO") != null && !rs.getString("ORD_NO").isEmpty())
 			s_m = rs.getDouble("ORD_NO");
-
 		rs.close();
 
 		ramt = Double.valueOf(QueryExe.getSqlValue(
@@ -2093,6 +3102,7 @@ public class frmClinicMain implements transactionalForm {
 										+ " delete from clq_visits where keyfld = :KF ; "
 										+ " end;  ", con, new Parameter("KF",
 										kf), new Parameter("ON", on));
+
 						rs.close();
 						con.commit();
 						load_data();

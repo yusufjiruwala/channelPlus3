@@ -84,13 +84,16 @@ public class frmJobOrder implements transactionalForm {
 
 	private FormLayoutManager basicInfoLayout = new FormLayoutManager("100%",
 			"-1px");
+
 	private FormLayoutManager basicInfoLayout2 = new FormLayoutManager("100%",
 			"-1px");
 
 	private TabSheet tbs = new TabSheet();
 
 	private List<FieldInfo> lstfldinfo = new ArrayList<FieldInfo>();
+
 	private List<FieldInfo> lstfldinfo2 = new ArrayList<FieldInfo>();
+
 	private NativeButton cmdSave = ControlsFactory.CreateCustomButton("Save",
 			"img/save.png", "Save", "");
 	private NativeButton cmdDelete = ControlsFactory.CreateCustomButton(
@@ -1360,7 +1363,7 @@ public class frmJobOrder implements transactionalForm {
 		mapActionStrs.put("pays", "DE  Payments Handling..");
 
 		mapActionStrs.put("create_sr", "Create Sales Return ");
-		mapActionStrs.put("create_pr", "Create Purchase Return ");		
+		mapActionStrs.put("create_pr", "Create Purchase Return ");
 
 		con = Channelplus3Application.getInstance().getFrmUserLogin().getDbc()
 				.getDbConnection();
@@ -1824,8 +1827,7 @@ public class frmJobOrder implements transactionalForm {
 			((frmPurOrd) frm).show_stand_alone(wnd, "2", jobno + "", on);
 		if (frm instanceof frmSaleReturn)
 			((frmSaleReturn) frm).show_stand_alone(wnd, "2", jobno + "", on);
-		
-		
+
 	}
 
 	public void setParentLayout(AbstractLayout parentLayout) {

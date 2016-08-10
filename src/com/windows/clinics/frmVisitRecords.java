@@ -178,7 +178,6 @@ public class frmVisitRecords implements transactionalForm {
 					"Zoom Out.."),
 			ControlsFactory.CreateToolbarButton("img/collapse.png",
 					"Zoom Out..") };
-
 	private NativeButton picsCmdLists[] = {
 			ControlsFactory.CreateToolbarButton("img/details.png", "List"),
 			ControlsFactory.CreateToolbarButton("img/details.png", "List"),
@@ -197,6 +196,7 @@ public class frmVisitRecords implements transactionalForm {
 	}
 
 	// -1 for all
+
 	public void resetPicLayout(int pn) {
 		int frompg = (pn < 0 ? 0 : pn);
 		int topg = (pn < 0 ? 4 : pn + 1);
