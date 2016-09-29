@@ -38,7 +38,7 @@ public class TableView implements Views, Serializable {
 	}
 
 	public static final String SELECT_TITLE = "Select";
-
+	
 	private localTableModel data = null;
 	private boolean filtering = false;
 	private AbstractLayout parentPanel = null;
@@ -106,7 +106,7 @@ public class TableView implements Views, Serializable {
 	public static interface SelectionListener {
 		public void onSelection(TableView tv);
 	};
-
+	
 	public checkDefaultselectionListner getListnerDefaultSelection() {
 		return listnerDefaultSelection;
 	}

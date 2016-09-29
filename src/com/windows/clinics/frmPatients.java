@@ -94,8 +94,9 @@ public class frmPatients implements transactionalForm {
 	private HorizontalLayout[] otherLayouts = new HorizontalLayout[10];
 
 	private int[] medical_rep_ids = new int[30];
-	private List<FieldInfo> lstfldinfo = new ArrayList<FieldInfo>();
 
+	private List<FieldInfo> lstfldinfo = new ArrayList<FieldInfo>();
+	
 	private TextField txtMedicalNo = ControlsFactory.CreateTextField(
 			"Medical No", "medical_no", lstfldinfo);
 	private TextField txtEFirstName = ControlsFactory.CreateTextField(
@@ -508,19 +509,17 @@ public class frmPatients implements transactionalForm {
 				public void valueChange(ValueChangeEvent event) {
 					try {
 						if (lstLocation.getValue() != null) {
-							utilsVaadin.FillCombo(lstInvType,
+							utilsVaadin.FillCombo(
+									lstInvType,
 									"select no,descr from invoicetype where location_code='"
 											+ ((dataCell) lstLocation
 													.getValue()).getValue()
 											+ "' order by no", con);
-							lstInvType
-									.setValue(utilsVaadin
-											.findByValue(
-													lstInvType,
-													utils
-															.getSqlValue(
-																	"select repair.getsetupvalue_2('DEFAULT_TYPE') from dual",
-																	con)));
+							lstInvType.setValue(utilsVaadin.findByValue(
+									lstInvType,
+									utils.getSqlValue(
+											"select repair.getsetupvalue_2('DEFAULT_TYPE') from dual",
+											con)));
 						} else {
 							lstInvType.removeAllItems();
 						}
@@ -621,10 +620,11 @@ public class frmPatients implements transactionalForm {
 
 				FileOutputStream fos = null; // Output stream to write to
 				File file;
-				file = new File(((WebApplicationContext) Channelplus3Application
-						.getInstance().getContext()).getHttpSession()
-						.getServletContext().getRealPath("/WEB-INF/")
-						+ "/tmp/uploads/" + "tmp.jpeg");
+				file = new File(
+						((WebApplicationContext) Channelplus3Application
+								.getInstance().getContext()).getHttpSession()
+								.getServletContext().getRealPath("/WEB-INF/")
+								+ "/tmp/uploads/" + "tmp.jpeg");
 				try {
 					fos = new FileOutputStream(file);
 				} catch (final java.io.FileNotFoundException e) {
@@ -704,8 +704,8 @@ public class frmPatients implements transactionalForm {
 					// FileInputStream inpstrm = new FileInputStream(file);
 
 					ps.setBinaryStream(4,
-							imageResource.getStream().getStream(), (int) (file
-									.length()));
+							imageResource.getStream().getStream(),
+							(int) (file.length()));
 					ps.execute();
 					ps.close();
 					con.commit();
@@ -751,8 +751,8 @@ public class frmPatients implements transactionalForm {
 		listlayout.addComponent(upload);
 		if (!Channelplus3Application.getInstance().getMainWindow()
 				.getChildWindows().contains(wndList)) {
-			Channelplus3Application.getInstance().getMainWindow().addWindow(
-					wndList);
+			Channelplus3Application.getInstance().getMainWindow()
+					.addWindow(wndList);
 		}
 
 	}
@@ -773,14 +773,13 @@ public class frmPatients implements transactionalForm {
 										try {
 
 											con.setAutoCommit(false);
-											utils
-													.execSql(
-															"delete from clq_pics where medical_no='"
-																	+ txtMedicalNo
-																			.getValue()
-																	+ "' and pos="
-																	+ medical_rep_ids[ii],
-															con);
+											utils.execSql(
+													"delete from clq_pics where medical_no='"
+															+ txtMedicalNo
+																	.getValue()
+															+ "' and pos="
+															+ medical_rep_ids[ii],
+													con);
 
 											con.commit();
 											load_data();
@@ -850,8 +849,8 @@ public class frmPatients implements transactionalForm {
 
 			if (!Channelplus3Application.getInstance().getMainWindow()
 					.getChildWindows().contains(wndList)) {
-				Channelplus3Application.getInstance().getMainWindow().addWindow(
-						wndList);
+				Channelplus3Application.getInstance().getMainWindow()
+						.addWindow(wndList);
 			}
 			wndList.setCaption(tbl.getData().getRows().size()
 					+ " Rows selected");
@@ -878,7 +877,8 @@ public class frmPatients implements transactionalForm {
 									if (tv.getSelectionValue() > -1) {
 										try {
 											int rn = tv.getSelectionValue();
-											QRYSES = tv.getData()
+											QRYSES = tv
+													.getData()
 													.getFieldValue(rn,
 															"MEDICAL_NO")
 													.toString();
@@ -1037,13 +1037,11 @@ public class frmPatients implements transactionalForm {
 				}
 			} else {
 				lstLocation
-						.setValue(utilsVaadin
-								.findByValue(
-										lstLocation,
-										utils
-												.getSqlValue(
-														"select repair.getsetupvalue_2('DEFAULT_LOCATION') from dual",
-														con)));
+						.setValue(utilsVaadin.findByValue(
+								lstLocation,
+								utils.getSqlValue(
+										"select repair.getsetupvalue_2('DEFAULT_LOCATION') from dual",
+										con)));
 				for (int i = 0; i < lstfldinfo.size(); i++) {
 					FieldInfo fl = lstfldinfo.get(i);
 					if (fl.fieldName.startsWith("REP_")) {
@@ -1176,13 +1174,13 @@ public class frmPatients implements transactionalForm {
 
 	public void validate_data() throws SQLException {
 		if (!QRYSES.isEmpty() && !sec_para.canUpdates) {
-			throw new SQLException(utilsVaadin
-					.getMessage("$SECURITY_SHOW_ON_UPDATE"));
+			throw new SQLException(
+					utilsVaadin.getMessage("$SECURITY_SHOW_ON_UPDATE"));
 		}
 
 		if (QRYSES.isEmpty() && !sec_para.canInsert) {
-			throw new SQLException(utilsVaadin
-					.getMessage("$SECURITY_SHOW_ON_INSERT"));
+			throw new SQLException(
+					utilsVaadin.getMessage("$SECURITY_SHOW_ON_INSERT"));
 		}
 
 	}
@@ -1217,13 +1215,11 @@ public class frmPatients implements transactionalForm {
 			for (Iterator iterator = lstfldinfo.iterator(); iterator.hasNext();) {
 				FieldInfo fl = (FieldInfo) iterator.next();
 				if (!(fl.obj instanceof CheckBox)) {
-					qe.setParaValue(fl.fieldName, ((AbstractField) fl.obj)
-							.getValue());
+					qe.setParaValue(fl.fieldName,
+							((AbstractField) fl.obj).getValue());
 				} else {
-					qe
-							.setParaValue(fl.fieldName, (((CheckBox) fl.obj)
-									.booleanValue() ? fl.valueOnTrue
-									: fl.valueOnFalse));
+					qe.setParaValue(fl.fieldName, (((CheckBox) fl.obj)
+							.booleanValue() ? fl.valueOnTrue : fl.valueOnFalse));
 				}
 			}
 			Date dt = new Date(System.currentTimeMillis());
@@ -1296,14 +1292,13 @@ public class frmPatients implements transactionalForm {
 								+ fld.fieldName
 								+ "='"
 								+ ((((TextField) fld.obj).getValue() != null ? ((TextField) fld.obj)
-										.getValue()
-										: "")).toString().replace("'", "''''")
-								+ "'";
+										.getValue() : "")).toString().replace(
+										"'", "''''") + "'";
 
 						txts = txts
 								+ (((TextField) fld.obj).getValue() != null ? ((TextField) fld.obj)
-										.getValue()
-										: "").toString().replace("'", "''''");
+										.getValue() : "").toString().replace(
+										"'", "''''");
 						cnt++;
 					}
 

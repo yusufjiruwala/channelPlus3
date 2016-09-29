@@ -87,9 +87,9 @@ public class frmJobOrder implements transactionalForm {
 
 	private FormLayoutManager basicInfoLayout2 = new FormLayoutManager("100%",
 			"-1px");
-
+	
 	private TabSheet tbs = new TabSheet();
-
+	
 	private List<FieldInfo> lstfldinfo = new ArrayList<FieldInfo>();
 
 	private List<FieldInfo> lstfldinfo2 = new ArrayList<FieldInfo>();

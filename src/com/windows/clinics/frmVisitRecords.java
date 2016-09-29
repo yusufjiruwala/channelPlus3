@@ -1502,12 +1502,9 @@ public class frmVisitRecords implements transactionalForm {
 						((TextField) find_tr(lst, rst.getString("tb_id")).obj)
 								.getValue() + "");
 			}
-			rst.getStatement().close();
-
-			// /reports/rep_medicalreport_1
+			rst.getStatement().close();			
 			utilsVaadin.showReport(repfilename, mapPara, con,
 					Channelplus3Application.getInstance());
 		}
-
 	}
 }
