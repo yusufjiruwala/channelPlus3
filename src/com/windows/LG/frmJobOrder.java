@@ -1775,8 +1775,9 @@ public class frmJobOrder implements transactionalForm {
 							int rn = tv.getSelectionValue();
 							double ord = Double.valueOf(tv.getData()
 									.getFieldValue(rn, "ord_no").toString());
+
 							show_sub_form(new frmPurOrd(),
-									"PURCHASE COSTING / JOB ORDER #" + on, on,
+									"PURCHASE COSTING / JOB ORDER # " + on, on,
 									ord);
 						} catch (Exception ex) {
 							ex.printStackTrace();
@@ -1799,6 +1800,7 @@ public class frmJobOrder implements transactionalForm {
 	}
 
 	private void create_po(double on) {
+
 		show_sub_form(new frmPurOrd(), "PURCHASE ORDER / JOB ORDER #" + on, on,
 				-1);
 

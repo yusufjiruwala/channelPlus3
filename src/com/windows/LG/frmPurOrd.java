@@ -460,6 +460,17 @@ public class frmPurOrd implements transactionalForm {
 
 			((Date) txtDate.getValue()).setTime(System.currentTimeMillis());
 
+			if (standAloneMode
+					&& !standAloneWnd.getCaption().contains("/ CLIENT")) {
+				String custnm = QueryExe.getSqlValue(
+						"select ord_ref||' - '||ord_refnm "
+								+ " from  order1 where ord_no=" + standAloneRef
+								+ " and ord_code=106", con, "")
+						+ "";
+
+				standAloneWnd.setCaption(standAloneWnd.getCaption()
+						+ " / CLIENT : " + custnm);
+			}
 			if (!QRYSES.isEmpty()) {
 				PreparedStatement pstmt = con.prepareStatement(
 						"Select * from order1 where ord_no='" + QRYSES

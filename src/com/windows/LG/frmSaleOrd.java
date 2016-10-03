@@ -650,10 +650,17 @@ public class frmSaleOrd implements transactionalForm {
 									+ " ord_cost_price * items.pack ord_cost_price , "
 									+ " ord_cost_price *ord_allqty  ord_cost_amt"
 									+ " ,items.lsprice,(items.lsprice/items.pack)*ord_allqty "
-									+ "  lsamt from order2,items  where ord_no='"
+									+ "  lsamt ,"
+									+ " (select max(ord_ref||'-'||ord_refnm) from joined_order where ord_code=103"
+									+ " and ord_reference='"
+									+ txtReference.getValue()
+									+ "' "
+									+ " and ord_rcptno=order2.ord_rcptno) SUPPLIER "
+									+ " from order2,items  where ord_no='"
 									+ QRYSES
 									+ "' and items.reference=ord_refer and order2.ord_code="
 									+ varOrdCode + " order by ord_pos", true);
+
 			table.fill_table();
 			doing_query = false;
 		} catch (Exception ex) {
