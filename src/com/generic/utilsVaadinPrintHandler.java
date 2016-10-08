@@ -117,10 +117,14 @@ public class utilsVaadinPrintHandler {
 								+ "where acgrpjvs.vou_code=acvoucher1.vou_code and acgrpjvs.vou_type=acvoucher1.type and acvoucher1.keyfld="
 								+ keyfld, con);
 		String typ = rsx.getString("VOU_TYPE");
-		mapPara.put("COMPANY_NAME", utils.COMPANY_NAME);
-		mapPara.put("COMPANY_SPECS", utils.COMPANY_SPECS);
-		mapPara.put("COMPANY_NAMEA", utils.COMPANY_NAMEA);
-		mapPara.put("COMPANY_SPECSA", utils.COMPANY_SPECSA);
+		mapPara.put("COMPANY_NAME", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_NAME);
+		mapPara.put("COMPANY_SPECS", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_SPECS);
+		mapPara.put("COMPANY_NAMEA", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_NAMEA);
+		mapPara.put("COMPANY_SPECSA", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_SPECSA);
 
 		mapPara.put("VOU_TITLE", rsx.getString("NAME"));
 		mapPara.put("VOU_TITLEA", rsx.getString("NAMEA"));
@@ -185,9 +189,12 @@ public class utilsVaadinPrintHandler {
 	public static void printClqVoucher(String keyfld, Connection con)
 			throws Exception {
 		Map<String, Object> mapPara = new HashMap<String, Object>();
-		mapPara.put("COMPANY_NAME", utils.COMPANY_NAME);
-		mapPara.put("COMPANY_SPECS", utils.COMPANY_SPECS);
-		mapPara.put("COMPANY_SPECSA", utils.COMPANY_SPECSA);
+		mapPara.put("COMPANY_NAME", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_NAME);
+		mapPara.put("COMPANY_SPECS", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_SPECS);
+		mapPara.put("COMPANY_SPECSA", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_SPECSA);
 		mapPara.put("INVOICE_KEYFLD", keyfld);
 		utilsVaadin.showReport("/reports/rptClqVoucher.jasper", mapPara, con,
 				Channelplus3Application.getInstance());
@@ -196,9 +203,13 @@ public class utilsVaadinPrintHandler {
 	public static void printClqOrder(String on, Connection con)
 			throws Exception {
 		Map<String, Object> mapPara = new HashMap<String, Object>();
-		mapPara.put("COMPANY_NAME", utils.COMPANY_NAME);
-		mapPara.put("COMPANY_SPECS", utils.COMPANY_SPECS);
-		mapPara.put("COMPANY_SPECSA", utils.COMPANY_SPECSA);
+
+		mapPara.put("COMPANY_NAME", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_NAME);
+		mapPara.put("COMPANY_SPECS", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_SPECS);
+		mapPara.put("COMPANY_SPECSA", Channelplus3Application.getInstance()
+				.getFrmUserLogin().COMPANY_SPECSA);
 		mapPara.put("ORDER_NO", on);
 		ResultSet rst = utils
 				.getSqlRS(

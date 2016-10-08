@@ -57,6 +57,10 @@ public class UserLogin extends VerticalLayout {
 	public String CURRENT_MENU_CODE = "";
 	public String CURRENT_MENU_NAME = "";
 	public String CURRENT_MENU_MODULE = "";
+	public String COMPANY_NAME="";
+	public String COMPANY_NAMEA="";
+	public String COMPANY_SPECS="";
+	public String COMPANY_SPECSA="";
 
 	public Button getCmdLogon() {
 		return cmdLogon;
@@ -250,6 +254,11 @@ public class UserLogin extends VerticalLayout {
 			utils.COMPANY_NAMEA = rst.getString("NAMEA");
 			utils.COMPANY_SPECS = rst.getString("SPECIFICATION");
 			utils.COMPANY_SPECSA = rst.getString("SPECIFICATIONA");
+			COMPANY_NAME = rst.getString("NAME");
+			COMPANY_NAMEA = rst.getString("NAMEA");
+			COMPANY_SPECS = rst.getString("SPECIFICATION");
+			COMPANY_SPECSA = rst.getString("SPECIFICATIONA");
+
 			rst.close();
 
 		} catch (SQLException e) {

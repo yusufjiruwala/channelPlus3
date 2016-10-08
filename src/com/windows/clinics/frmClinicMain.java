@@ -79,7 +79,7 @@ public class frmClinicMain implements transactionalForm {
 	private HorizontalLayout basicLayout = new HorizontalLayout();
 	private HorizontalLayout basic1Layout = new HorizontalLayout();
 	private VerticalLayout basic2Layout = new VerticalLayout();
-	
+
 	private HorizontalLayout detailsLayout = new HorizontalLayout();
 	private VerticalLayout details1Layout = new VerticalLayout();
 	private VerticalLayout details2Layout = new VerticalLayout();
@@ -859,7 +859,7 @@ public class frmClinicMain implements transactionalForm {
 											.getValue())
 									+ "  and v.FOLLOWUP_INV_TYPE=T.NO and "
 									+ " V.MEDICAL_INV_TYPE=TM.NO AND "
-									+ " i.reference=V.FOLLOWUP_ITEM order by v.time_of_arrival",
+									+ " i.reference=V.FOLLOWUP_ITEM order by v.keyfld",
 							true);
 			fill_visits_table();
 		} catch (SQLException ex) {
@@ -2744,7 +2744,7 @@ public class frmClinicMain implements transactionalForm {
 					double due = amt_tot
 							- utilsVaadin
 									.getFieldInfoDoubleValue(txtAmt1, flds);
-					lblDue.setValue(df.format(due));				
+					lblDue.setValue(df.format(due));
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
