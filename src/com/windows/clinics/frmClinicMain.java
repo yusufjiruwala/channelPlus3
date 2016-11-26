@@ -1339,13 +1339,13 @@ public class frmClinicMain implements transactionalForm {
 																+ mn + "'",
 														con, "0")
 												+ "");
-										lastvisit = QueryExe
-												.getSqlValue(
-														"select nvl(max(to_char(date_of_arrival,'dd/mm/rrrr')),'') from clq_visits "
+										lastvisit = utils.nvl(
+												QueryExe.getSqlValue(
+														"select to_char(max(date_of_arrival),'dd/mm/rrrr') from clq_visits "
 																+ " where kov='DR' and  medical_no='"
 																+ mn + "'",
-														con, "")
-												+ "";
+														con, ""), "");
+
 									} catch (NumberFormatException
 											| SQLException e) {
 										// TODO Auto-generated catch block
@@ -1378,7 +1378,7 @@ public class frmClinicMain implements transactionalForm {
 											int d = utils
 													.daysBetween(dt, nowdt);
 											txtDaysAgo.setValue(d
-													+ "  days ago !");
+													+ "  days ago !!!");
 											System.out.println(d);
 										} catch (Exception e) {
 											e.printStackTrace();
@@ -1878,13 +1878,13 @@ public class frmClinicMain implements transactionalForm {
 																+ mn + "'",
 														con, "0")
 												+ "");
-										lastvisit = QueryExe
-												.getSqlValue(
-														"select nvl(max(to_char(date_of_arrival,'dd/mm/rrrr')),'') from clq_visits "
+										lastvisit = utils.nvl(
+												QueryExe.getSqlValue(
+														"select to_char(max(date_of_arrival),'dd/mm/rrrr') from clq_visits "
 																+ " where kov='DR' and  medical_no='"
 																+ mn + "'",
-														con, "")
-												+ "";
+														con, ""), "");
+
 									} catch (NumberFormatException
 											| SQLException e) {
 										// TODO Auto-generated catch block
@@ -1917,7 +1917,7 @@ public class frmClinicMain implements transactionalForm {
 											int d = utils
 													.daysBetween(dt, nowdt);
 											txtDaysAgo.setValue(d
-													+ "  days ago !");
+													+ "  days ago !!");
 											System.out.println(d);
 										} catch (Exception e) {
 											e.printStackTrace();
@@ -2329,12 +2329,12 @@ public class frmClinicMain implements transactionalForm {
 																+ mn + "'",
 														con, "0")
 												+ "");
-										lastvisit = QueryExe
-												.getSqlValue(
-														"select nvl(max(to_char(date_of_arrival,'dd/mm/rrrr')),'') from clq_visits where kov='DR' and medical_no='"
+										lastvisit = utils.nvl(
+												QueryExe.getSqlValue(
+														"select to_char(max(date_of_arrival),'dd/mm/rrrr') from clq_visits "
+																+ " where kov='DR' and  medical_no='"
 																+ mn + "'",
-														con, "")
-												+ "";
+														con, ""), "");
 									} catch (NumberFormatException
 											| SQLException e) {
 										// TODO Auto-generated catch block
@@ -2367,7 +2367,7 @@ public class frmClinicMain implements transactionalForm {
 											int d = utils
 													.daysBetween(dt, nowdt);
 											txtDaysAgo.setValue(d
-													+ "  days ago !");
+													+ "  days ago !!!!");
 											System.out.println(d);
 										} catch (Exception e) {
 											e.printStackTrace();
