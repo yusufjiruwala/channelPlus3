@@ -335,7 +335,8 @@ public class frmPurOrd implements transactionalForm {
 				if (rsr.first()) {
 					String rn = rsr.getString("ord_rcptno");
 					rsr.close();
-					throw new Exception("Recipt no found duplicate # " + rn);
+					throw new Exception("Recipt no found duplicate # " + rn
+							+ " in same Job order ");
 				} else
 					rsr.close();
 			}
@@ -1131,7 +1132,7 @@ public class frmPurOrd implements transactionalForm {
 			});
 			cmdSave.addListener(new ClickListener() {
 				public void buttonClick(ClickEvent event) {
-					save_data();
+					check_recipts();
 				}
 			});
 			cmdCls.addListener(new ClickListener() {
@@ -1266,6 +1267,32 @@ public class frmPurOrd implements transactionalForm {
 			listnerAdded = true;
 
 		}
+
+	}
+
+	protected void check_recipts() {
+		ResultSet rsr;
+		try {
+			rsr = QueryExe.getSqlRS(
+					"select ord_rcptno,nvl(count(*),0) cnt from joined_order "
+							+ "  where ord_code=" + varOrdCode + " ord_ref='"
+							+ txtCust.getValue() + "' and ord_rcptno in "
+							+ " (select ord_rcptno from order2 where ord_code="
+							+ varOrdCode + " and ord_no=" + txtNo.getValue()
+							+ ") " + " group by ord_rcptno,ord_reference,ord "
+							+ " having count(*)>1", con);
+			if (rsr != null) {
+				if (rsr.first()) {
+					String rn = rsr.getString("ord_rcptno");
+					rsr.close();
+				} else
+					rsr.close();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		save_data();
 
 	}
 
@@ -1485,6 +1512,7 @@ public class frmPurOrd implements transactionalForm {
 			if (ord_flg < 0)
 				throw new SQLException(
 						"Not found this order due to delete by other user");
+
 		}
 
 		for (int i = 0; i < table.data.getRows().size(); i++) {
@@ -1545,6 +1573,7 @@ public class frmPurOrd implements transactionalForm {
 			}
 
 		}
+
 	}
 
 	protected String get_item_listSQL() {
