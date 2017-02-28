@@ -546,6 +546,16 @@ public class frmClinicMain implements transactionalForm {
 
 		if (txtDrNo.getItemIds().size() > 0)
 			txtDrNo.setValue(txtDrNo.getItemIds().toArray()[0]);
+		String son = Channelplus3Application.getInstance().getFrmUserLogin()
+				.getMapVars().get("DEFAULT_DR");
+		if (!son.equals("NONE"))
+			txtDrNo.setValue(utilsVaadin.findByValue(txtDrNo, son));
+
+		son = Channelplus3Application.getInstance().getFrmUserLogin()
+				.getMapVars().get("SHOW_ONLY_OWN_BY");
+		if (son.equals("TRUE"))
+			txtDrNo.setEnabled(false);
+
 	}
 
 	protected void do_select() {
@@ -840,6 +850,15 @@ public class frmClinicMain implements transactionalForm {
 	}
 
 	public void fetch_visits() {
+
+		String son = Channelplus3Application.getInstance().getFrmUserLogin()
+				.getMapVars().get("SHOW_ONLY_OWN_BY");
+		String s = "";
+		if (son.equals("TRUE"))
+			s = " and P.CREATED_USER_BY='"
+					+ Channelplus3Application.getInstance().getFrmUserLogin()
+							.getTxtUser().getValue().toString().toUpperCase()
+					+ "'";
 		try {
 			data_visit
 					.executeQuery(
@@ -859,8 +878,8 @@ public class frmClinicMain implements transactionalForm {
 											.getValue())
 									+ "  and v.FOLLOWUP_INV_TYPE=T.NO and "
 									+ " V.MEDICAL_INV_TYPE=TM.NO AND "
-									+ " i.reference=V.FOLLOWUP_ITEM order by v.keyfld",
-							true);
+									+ " i.reference=V.FOLLOWUP_ITEM " + s
+									+ " order by v.keyfld", true);
 			fill_visits_table();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -2301,6 +2320,17 @@ public class frmClinicMain implements transactionalForm {
 				try {
 					final Window wnd2 = ControlsFactory.CreateWindow("70%",
 							"70%", true, true);
+					String son = Channelplus3Application.getInstance()
+							.getFrmUserLogin().getMapVars()
+							.get("SHOW_ONLY_OWN_BY");
+					String s = "";
+					if (son.equals("TRUE"))
+						s = " where clq_patients.CREATED_USER_BY='"
+								+ Channelplus3Application.getInstance()
+										.getFrmUserLogin().getTxtUser()
+										.getValue().toString().toUpperCase()
+								+ "'";
+
 					utilsVaadin.showSearch(
 							(VerticalLayout) wnd2.getContent(),
 							new TableView.SelectionListener() {
@@ -2395,8 +2425,8 @@ public class frmClinicMain implements transactionalForm {
 							},
 							con,
 							"select e_first_nm||' '||e_second_nm||' '||e_family_nm patient_name , "
-									+ "medical_no,tel,mobile_no,id_no,e_mother_nm from clq_patients order by medical_no",
-							true);
+									+ "medical_no,tel,mobile_no,id_no,e_mother_nm from clq_patients "
+									+ s + " order by medical_no ", true);
 				} catch (SQLException ex) {
 					ex.printStackTrace();
 				}

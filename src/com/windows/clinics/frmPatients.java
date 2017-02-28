@@ -96,7 +96,7 @@ public class frmPatients implements transactionalForm {
 	private int[] medical_rep_ids = new int[30];
 
 	private List<FieldInfo> lstfldinfo = new ArrayList<FieldInfo>();
-	
+
 	private TextField txtMedicalNo = ControlsFactory.CreateTextField(
 			"Medical No", "medical_no", lstfldinfo);
 	private TextField txtEFirstName = ControlsFactory.CreateTextField(
@@ -862,6 +862,16 @@ public class frmPatients implements transactionalForm {
 
 	protected void show_list() {
 		try {
+
+			String son = Channelplus3Application.getInstance()
+					.getFrmUserLogin().getMapVars().get("SHOW_ONLY_OWN_BY");
+			String s = "";
+			if (son.equals("TRUE"))
+					s = " where clq_patients.CREATED_USER_BY='"
+							+ Channelplus3Application.getInstance()
+									.getFrmUserLogin().getTxtUser().getValue()
+									.toString().toUpperCase() + "'";
+
 			final Window wnd = new Window();
 			final VerticalLayout la = new VerticalLayout();
 			wnd.setContent(la);
@@ -891,7 +901,7 @@ public class frmPatients implements transactionalForm {
 							},
 							con,
 							"select e_first_nm||' '||e_second_nm||' '||e_family_nm patient_name , "
-									+ "medical_no,tel,mobile_no from clq_patients order by medical_no",
+									+ "medical_no,tel,mobile_no from clq_patients "+s+" order by medical_no",
 							true);
 
 			// "select o.ord_no,o.ord_date,o.ordacc,items.descr,o.lcno serial_no, o.remarks from order1 o ,items"

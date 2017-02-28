@@ -83,8 +83,8 @@ public class frmPurOrd implements transactionalForm {
 	private FormLayoutManager basicLayout = new FormLayoutManager("100%");
 
 	private VerticalLayout mainLayout = new VerticalLayout();
-	// private VerticalLayout basicLayout = new VerticalLayout();
-
+	// private VerticalLayout basicLayout = new VerticalLayout();	
+	
 	private HorizontalLayout buttonLayout = new HorizontalLayout();
 	private HorizontalLayout content1Layout = new HorizontalLayout();
 
