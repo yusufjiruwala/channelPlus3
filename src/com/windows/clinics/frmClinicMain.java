@@ -89,6 +89,7 @@ public class frmClinicMain implements transactionalForm {
 	private NativeButton cmdPatientBasic = ControlsFactory.CreateToolbarButton(
 			"img/patient.png", "Open Patient file");
 
+
 	private NativeButton cmdDelMedi = ControlsFactory.CreateToolbarButton(
 			"img/remove.png", "Remove selected medicine");
 	private NativeButton cmdRefreshMedi = ControlsFactory.CreateToolbarButton(
