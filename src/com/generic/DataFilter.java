@@ -36,7 +36,7 @@ public class DataFilter {
 		boolean result = false;
 		if (filterStr.length() == 0) {
 			return false;
-		}
+		}		
 		int no_of_fnd = 0;
 		for (int i = 0; i < paras.size(); i++) {
 			if (paras.get(i).getValue() != null

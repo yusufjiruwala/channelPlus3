@@ -31,6 +31,7 @@ import com.generic.QueryExe;
 import com.generic.ResourceManager;
 import com.generic.TableLayoutVaadin;
 import com.generic.dataCell;
+import com.generic.localTableModel;
 import com.generic.qryColumn;
 import com.generic.transactionalForm;
 import com.generic.utils;
@@ -46,6 +47,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
@@ -56,6 +58,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -1358,6 +1361,7 @@ public class frmJobOrder implements transactionalForm {
 		mapActionStrs.put("print_so", "Print S.O.");
 		mapActionStrs.put("print_jo", "Print Job Order");
 		mapActionStrs.put("pays", "DE  Payments Handling..");
+		mapActionStrs.put("add_info_so", "Add info. SO..");
 
 		mapActionStrs.put("create_sr", "Create Sales Return ");
 		mapActionStrs.put("create_pr", "Create Purchase Return ");
@@ -1479,6 +1483,8 @@ public class frmJobOrder implements transactionalForm {
 								if (so > 0) {
 									acts.add(new Action(mapActionStrs
 											.get("edit_so")));
+									acts.add(new Action(mapActionStrs
+											.get("add_info_so")));
 
 								}
 								if (po > 0) {
@@ -1527,6 +1533,12 @@ public class frmJobOrder implements transactionalForm {
 							String custnm = qv.getLctb()
 									.getFieldValue(rowno, "ORD_REFNM")
 									.toString();
+
+							if (action.getCaption().equals(
+									mapActionStrs.get("add_info_so"))) {
+								add_info_so(on);
+							}
+
 							if (action.getCaption().equals(
 									mapActionStrs.get("create_po"))) {
 								create_po(on);
@@ -1607,6 +1619,11 @@ public class frmJobOrder implements transactionalForm {
 						}
 
 					});
+				}
+
+				private void add_info_so(double on) {
+					show_add_info_form("", on, on);
+
 				}
 
 				public void beforeQuery() {
@@ -1832,6 +1849,97 @@ public class frmJobOrder implements transactionalForm {
 			((frmPurOrd) frm).show_stand_alone(wnd, "2", jobno + "", on);
 		if (frm instanceof frmSaleReturn)
 			((frmSaleReturn) frm).show_stand_alone(wnd, "2", jobno + "", on);
+
+	}
+
+	public void show_add_info_form(String cap, double jobno, double on) {
+		final Window wnd = ControlsFactory.CreateWindow("500px", "350px", true,
+				true);
+		wnd.center();
+		wnd.setCaption("SO of Job Ord # "+on);
+		// create view...
+		VerticalLayout ly = (VerticalLayout) wnd.getContent();
+		Label vLbl = new Label();
+		List<ColumnProperty> vLc = new ArrayList<ColumnProperty>();
+
+		final localTableModel vData = new localTableModel();
+		HorizontalLayout hz = new HorizontalLayout();
+		HorizontalLayout hz2 = new HorizontalLayout();
+
+		Table vTbl = ControlsFactory.CreatTable(cap, "FRMSALORD.ADD_INFO", vLc);
+		NativeButton vSave = ControlsFactory.CreateCustomButton("Update",
+				"img/save.png", "Save", "");
+		
+		hz.addComponent(vLbl);
+		ly.addComponent(hz);
+		ly.addComponent(vTbl);
+		ly.addComponent(hz2);
+
+		hz2.addComponent(vSave);
+		hz2.setComponentAlignment(vSave, Alignment.MIDDLE_RIGHT);
+		hz2.setWidth("100%");
+		hz.setWidth("100%");
+		vTbl.setWidth("100%");
+		vTbl.setHeight("200px");
+		String vCustCode = "", vCustName = "";
+
+		try {
+
+			vData.createDBClassFromConnection(con);
+			vData.executeQuery(
+					"select *from order1 where ord_code=111 and ord_reference='"
+							+ on + "'", true);
+			vCustCode = utils.nvl(vData.getFieldValue(0, "ORD_REF"), "");
+			vCustName = utils.nvl(vData.getFieldValue(0, "ORD_REFNM"), "");
+			vLbl.setValue(vCustCode + " - " + vCustName);
+			utilsVaadin.query_data2(vTbl, vData, vLc);
+
+			vSave.addListener(new ClickListener() {
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					try {
+						con.setAutoCommit(false);
+						for (int i = 0; i < vData.getRowCount(); i++) {
+							Parameter pmw = new Parameter("WO", utils.nvl(
+									vData.getFieldValue(i, "ORD_TXT_WO"), ""));
+							Parameter pmi = new Parameter("IID", utils.nvl(
+									vData.getFieldValue(i, "ORD_TXT_IID"), ""));
+							String on = utils.nvl(
+									vData.getFieldValue(i, "ORD_NO"), "");
+							String oc = utils.nvl(
+									vData.getFieldValue(i, "ORD_CODE"), "");
+
+							QueryExe.execute(
+									"update order1 set ord_txt_wo = :WO , ord_txt_iid = :IID "
+											+ " where ord_no='" + on
+											+ "' and ord_code='" + oc + "'",
+									con, pmw, pmi);
+						}
+						con.commit();
+
+						if (Channelplus3Application.getInstance()
+								.getMainWindow().getChildWindows()
+								.contains(wnd)) {
+							Channelplus3Application.getInstance()
+									.getMainWindow().removeWindow(wnd);
+							utilsVaadin.showMessage("Saved Successfully");
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+						try {
+							con.rollback();
+						} catch (SQLException e1) {
+						}
+					}
+
+				}
+			});
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
 
 	}
 
