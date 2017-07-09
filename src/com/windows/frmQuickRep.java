@@ -1296,7 +1296,7 @@ public class frmQuickRep implements transactionalForm {
 			if (rs_2.getString("orderno") != null
 					&& rs_2.getString("orderno").length() > 0) {
 				order_by[rs_2.getInt("orderno")] = col + " "
-						+ rs_2.getString("ordertype");
+						+ utils.nvl(rs_2.getString("ordertype"),"ASC");
 			}
 			if ((rs_2.getString("CP_HIDECOL") != null && rs_2.getString(
 					"CP_HIDECOL").length() > 0)) {
