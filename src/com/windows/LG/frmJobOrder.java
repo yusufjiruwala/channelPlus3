@@ -1359,6 +1359,7 @@ public class frmJobOrder implements transactionalForm {
 		mapActionStrs.put("edit_jo", "Edit Job Order");
 		mapActionStrs.put("close_jo", "Close Job Order");
 		mapActionStrs.put("print_so", "Print S.O.");
+		mapActionStrs.put("print_po_all", "Print All P.O.");
 		mapActionStrs.put("print_jo", "Print Job Order");
 		mapActionStrs.put("pays", "DE  Payments Handling..");
 		mapActionStrs.put("add_info_so", "Add info. SO..");
@@ -1490,6 +1491,9 @@ public class frmJobOrder implements transactionalForm {
 								if (po > 0) {
 									acts.add(new Action(mapActionStrs
 											.get("edit_po")));
+									acts.add(new Action(mapActionStrs
+											.get("print_po_all")));
+
 								}
 								acts.add(new Action("-"));
 								if (so > 0)
@@ -1560,6 +1564,10 @@ public class frmJobOrder implements transactionalForm {
 							if (action.getCaption().equals(
 									mapActionStrs.get("edit_po"))) {
 								show_po(on);
+							}
+							if (action.getCaption().equals(
+									mapActionStrs.get("print_po_all"))) {
+								print_all_po(on);
 							}
 
 							if (action.getCaption().equals(
@@ -1770,6 +1778,16 @@ public class frmJobOrder implements transactionalForm {
 
 	}
 
+	private void print_all_po(final double on) {
+
+		try {
+			utilsVaadinPrintHandler.printSO(on, "rptVouPurCostAll", con);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	private void show_po(final double on) {
 
 		try {
@@ -1856,7 +1874,7 @@ public class frmJobOrder implements transactionalForm {
 		final Window wnd = ControlsFactory.CreateWindow("500px", "350px", true,
 				true);
 		wnd.center();
-		wnd.setCaption("SO of Job Ord # "+on);
+		wnd.setCaption("SO of Job Ord # " + on);
 		// create view...
 		VerticalLayout ly = (VerticalLayout) wnd.getContent();
 		Label vLbl = new Label();
@@ -1869,7 +1887,7 @@ public class frmJobOrder implements transactionalForm {
 		Table vTbl = ControlsFactory.CreatTable(cap, "FRMSALORD.ADD_INFO", vLc);
 		NativeButton vSave = ControlsFactory.CreateCustomButton("Update",
 				"img/save.png", "Save", "");
-		
+
 		hz.addComponent(vLbl);
 		ly.addComponent(hz);
 		ly.addComponent(vTbl);

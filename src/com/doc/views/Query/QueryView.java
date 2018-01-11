@@ -128,7 +128,7 @@ public class QueryView extends VerticalLayout {
 	private List<Button> listUserButtons = new ArrayList<Button>();
 	private HorizontalSplitPanel panelSplit = new HorizontalSplitPanel();
 	private VerticalSplitPanel panelGraphSplit = new VerticalSplitPanel();
-
+	
 	Panel menuContainer = new Panel(Channelplus3Application.getInstance()
 			.getFrmUserLogin().CURRENT_MENU_NAME);
 
@@ -234,10 +234,9 @@ public class QueryView extends VerticalLayout {
 		public String command = "";
 		public String descr = "";
 		public ContextMenuItem menu_item = null;
-
 	};
 
-	public void setShowGraphPanel(boolean sh) {
+	public void setShowGraphPanel(boolean sh) {		
 		this.showGraphsPanel = sh;
 	}
 

@@ -100,6 +100,7 @@ public class frmPays implements transactionalForm {
 	private List<ColumnProperty> lstRcpts = new ArrayList<>();
 
 	public List<String> listTargetMode = new ArrayList<String>();
+	
 	private java.sql.Connection con = null;
 
 	private double varSelectedPay = -1;
@@ -485,7 +486,7 @@ public class frmPays implements transactionalForm {
 	private OptionGroup optType = new OptionGroup(null);
 	private TextField txtRfndTrnNo = ControlsFactory
 			.CreateTextField(null, "TRN_NO", lstfldRefunds, "0",
-					Parameter.DATA_TYPE_NUMBER, "", false);
+					Parameter.DATA_TYPE_STRING, "", false);
 
 	private DateField txtRfndDate = ControlsFactory.CreateDateField(null,
 			"TRN_DATE", lstfldRefunds, "100%", utils.FORMAT_SHORT_DATE, null);
@@ -547,7 +548,7 @@ public class frmPays implements transactionalForm {
 
 	private TextField txtPayKeyfld = ControlsFactory.CreateTextField(null,
 			"keyfld", lstfldPays, "0", Parameter.DATA_TYPE_NUMBER,
-			Channelplus3Application.getInstance().getFrmUserLogin().FORMAT_QTY,
+			"",
 			false);
 
 	private DateField txtPayDate = ControlsFactory.CreateDateField(null,
@@ -571,7 +572,7 @@ public class frmPays implements transactionalForm {
 	// PO FORM
 	// ------------------------------------------------------------------------------------------------------------------------------------
 	private TextField txtPONo = ControlsFactory.CreateTextField(null, "ORD_NO",
-			lstfldPO, "0", Parameter.DATA_TYPE_NUMBER, "", false);
+			lstfldPO, "0", Parameter.DATA_TYPE_STRING, "", false);
 
 	private DateField txtPODate = ControlsFactory.CreateDateField(null,
 			"ORD_DATE", lstfldPO, "100%", utils.FORMAT_SHORT_DATE, null);
@@ -1809,9 +1810,17 @@ public class frmPays implements transactionalForm {
 		String location = utils.getSqlValue(
 				"select repair.getsetupvalue_2('DEFAULT_LOCATION') from dual",
 				con);
-		utilsVaadin.setValueByForce(txtPONo, utils.getSqlValue(
-				"select nvl(max(ord_no),0)+1 from order1 where ord_code=103",
-				con));
+		String poExist = utils.getSqlValue(
+				"select nvl(max(ord_no),0) from order1 where ord_code=103 and ord_no='"
+						+ txtPONo.getValue() + "'", con);
+		if (!poExist.trim().equals("0")) {
+			utilsVaadin
+					.setValueByForce(
+							txtPONo,
+							utils.getSqlValue(
+									"select nvl(max(ord_no),0)+1 from order1 where ord_code=103",
+									con));
+		}
 
 		String sq = "insert into order1 "
 				+ "("
@@ -1974,6 +1983,9 @@ public class frmPays implements transactionalForm {
 						"Select nvl(max(TRN_NO),0)+1 from lg_pay" + "" + ""
 								+ "s_refunds where keyfld_pay='" + QRYSES
 								+ "' and trn_no='" + QRYSES_REFUND + "'", con));
+			else
+				varNewk = utilsVaadin.getFieldInfoDoubleValue(txtRfndTrnNo,
+						lstfldRefunds);
 		} else
 			varNewk = utilsVaadin.getFieldInfoDoubleValue(txtRfndTrnNo,
 					lstfldRefunds);

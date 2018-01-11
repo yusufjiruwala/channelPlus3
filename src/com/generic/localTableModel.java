@@ -315,7 +315,7 @@ public class localTableModel implements TableModel, Serializable {
 		mp.clear();
 		for (int i = 0; i < listGroupsBy.size(); i++) {
 			mp.put(listGroupsBy.get(i),
-					getFieldValue(rown, listGroupsBy.get(i)));
+					utils.nvl(getFieldValue(rown, listGroupsBy.get(i)), ""));
 
 		}
 	}
@@ -324,7 +324,8 @@ public class localTableModel implements TableModel, Serializable {
 			Map<String, Object> mp, int rown) {
 		boolean fnd = false;
 		for (int i = 0; i < listGroupsBy.size(); i++) {
-			Object o = getFieldValue(rown, listGroupsBy.get(i));
+			Object o = utils.nvlObj(getFieldValue(rown, listGroupsBy.get(i)),
+					"");
 			if (o == null && mp.get(listGroupsBy.get(i)) != null) {
 				return true;
 			}
