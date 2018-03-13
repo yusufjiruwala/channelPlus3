@@ -381,6 +381,9 @@ public class frmSaleOrd implements transactionalForm {
 		save_successed = false;
 
 		try {
+			if (!QRYSES.isEmpty() && !utilsVaadin.canEditTrans("LGSO", con))
+				throw new Exception("Update Denied !");
+
 			validateData();
 			con.setAutoCommit(false);
 			DecimalFormat df = new DecimalFormat(strCurrencyFormat);
@@ -1482,6 +1485,9 @@ public class frmSaleOrd implements transactionalForm {
 
 				public void buttonClick(ClickEvent event) {
 					try {
+						if (!QRYSES.isEmpty() && !utilsVaadin.canEditTrans("LGSO", con))
+							throw new SQLException("Deleteion Denied !");
+
 						int ord_flg = Integer.valueOf(utils.getSqlValue(
 								"select nvl(max(ord_flag),-1) from order1 where ord_code="
 										+ varOrdCode + " and ord_no=" + QRYSES,

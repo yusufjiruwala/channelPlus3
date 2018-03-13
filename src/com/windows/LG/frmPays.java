@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -100,7 +101,7 @@ public class frmPays implements transactionalForm {
 	private List<ColumnProperty> lstRcpts = new ArrayList<>();
 
 	public List<String> listTargetMode = new ArrayList<String>();
-	
+
 	private java.sql.Connection con = null;
 
 	private double varSelectedPay = -1;
@@ -156,6 +157,7 @@ public class frmPays implements transactionalForm {
 	private TextField txtInfoInitPay = new TextField();
 	private TextField txtInfoUPay = new TextField();
 	private TextField txtInfoURefund = new TextField();
+	private TextField txtInfoURate = new TextField();
 	private TextField txtInfoBalance = new TextField();
 	private TextField txtInfoSaleable = new TextField();
 	private TextField txtInfoDueBal = new TextField();
@@ -165,6 +167,7 @@ public class frmPays implements transactionalForm {
 	private double varInfoURefund = 0;
 	private double varInfoBal = 0;
 	private double varInfoSaleBal = 0;
+	private double varInfoRate = 1;
 
 	// ------------------------------------------------------------------------------------------------------------------------------------
 	// command buttons
@@ -292,10 +295,8 @@ public class frmPays implements transactionalForm {
 			});
 
 	private NativeButton cmdRefundRepaidDel = ControlsFactory
-			.CreateCustomButton(
-
-			"Delete this Refund ", "", "Delete this Refund.", "link",
-					new ClickListener() {
+			.CreateCustomButton("Delete this Refund ", "",
+					"Delete this Refund.", "link", new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
 
@@ -303,7 +304,6 @@ public class frmPays implements transactionalForm {
 								return;
 
 							Callback cb = new Callback() {
-
 								@Override
 								public void onDialogResult(boolean resultIsYes) {
 									if (resultIsYes) {
@@ -372,6 +372,11 @@ public class frmPays implements transactionalForm {
 
 					if (QRYSES.isEmpty())
 						return;
+					if (!QRYSES.isEmpty()
+							&& !utilsVaadin.canDeleteTrans("LGPAYS", con)) {
+						utilsVaadin.showMessage("Deleting Denied !");
+						return;
+					}
 
 					Callback cb = new Callback() {
 
@@ -500,10 +505,22 @@ public class frmPays implements transactionalForm {
 					+ QRYSES + "' AND FLAG=1 ORDER BY RCPT_NO", "RCPT_NO",
 			"DESCR");
 	private TextField txtRfndAmt = ControlsFactory
-			.CreateTextField(null, "AMT", lstfldRefunds, "0",
+			.CreateTextField(null, "AMT_FC", lstfldRefunds, "0",
 					Parameter.DATA_TYPE_NUMBER, Channelplus3Application
 							.getInstance().getFrmUserLogin().FORMAT_MONEY,
 					false);
+
+	private TextField txtRfndRate = ControlsFactory.CreateTextField(null,
+			"RATE", lstfldRefunds, "1", Parameter.DATA_TYPE_NUMBER, "", false);
+	private TextField txtRfndCurrency = ControlsFactory.CreateTextField(null,
+			"CURRENCY", lstfldRefunds, "USD", Parameter.DATA_TYPE_STRING, "",
+			false);
+
+	private TextField txtRfndAmtLC = ControlsFactory
+			.CreateTextField(null, "AMT", lstfldRefunds, "0",
+					Parameter.DATA_TYPE_STRING, Channelplus3Application
+							.getInstance().getFrmUserLogin().FORMAT_MONEY, true);
+
 	private TextField txtRfndDrAc = ControlsFactory.CreateTextField(null, "",
 			lstfldRefunds, "100%", "");
 
@@ -547,9 +564,7 @@ public class frmPays implements transactionalForm {
 	// ------------------------------------------------------------------------------------------------------------------------------------
 
 	private TextField txtPayKeyfld = ControlsFactory.CreateTextField(null,
-			"keyfld", lstfldPays, "0", Parameter.DATA_TYPE_NUMBER,
-			"",
-			false);
+			"keyfld", lstfldPays, "0", Parameter.DATA_TYPE_NUMBER, "", false);
 
 	private DateField txtPayDate = ControlsFactory.CreateDateField(null,
 			"DATE_JV", lstfldPays, "100%", utils.FORMAT_SHORT_DATE, null);
@@ -561,10 +576,19 @@ public class frmPays implements transactionalForm {
 			"BANK_TITLE", lstfldPays, "100%", "");
 
 	private TextField txtPayAmt = ControlsFactory
+			.CreateTextField(null, "AMT_JV_FC", lstfldPays, "0",
+					Parameter.DATA_TYPE_NUMBER, "", false);
+	private TextField txtPayRate = ControlsFactory.CreateTextField(null,
+			"RATE", lstfldPays, "1", Parameter.DATA_TYPE_NUMBER, "", false);
+	private TextField txtPayCurrency = ControlsFactory.CreateTextField(null,
+			"CURRENCY", lstfldPays, "USD", Parameter.DATA_TYPE_STRING, "",
+			false);
+
+	private TextField txtPayAmtLC = ControlsFactory
 			.CreateTextField(null, "AMT_JV", lstfldPays, "0",
 					Parameter.DATA_TYPE_NUMBER, Channelplus3Application
-							.getInstance().getFrmUserLogin().FORMAT_MONEY,
-					false);
+							.getInstance().getFrmUserLogin().FORMAT_MONEY, true);
+
 	private CheckBox chkPrint = ControlsFactory.CreateCheckField(null, "", "N",
 			"Y", null, "", Boolean.TRUE);
 
@@ -594,6 +618,12 @@ public class frmPays implements transactionalForm {
 					Parameter.DATA_TYPE_NUMBER, Channelplus3Application
 							.getInstance().getFrmUserLogin().FORMAT_MONEY,
 					false);
+
+	private TextField txtPurRate = ControlsFactory.CreateTextField(null,
+			"RATE", lstfldPO, "1", Parameter.DATA_TYPE_NUMBER, "", false);
+	private TextField txtPurCurrency = ControlsFactory.CreateTextField(null,
+			"CURRENCY", lstfldPO, "USD", Parameter.DATA_TYPE_STRING, "", false);
+
 	private TextField txtInv = ControlsFactory.CreateTextField(null, "ATTN",
 			lstfldPO);
 	private SearchField txtPOSupplier = ControlsFactory
@@ -706,7 +736,6 @@ public class frmPays implements transactionalForm {
 		resetLayout();
 		tbs.addTab(pnlList, "Select the Payments for PO ..");
 		tbs.setSelectedTab(pnlList);
-
 		cmdFinish.setEnabled(false);
 		cmdBack.setEnabled(false);
 		cmdNext.setEnabled(true);
@@ -792,6 +821,12 @@ public class frmPays implements transactionalForm {
 			f.addComponentsRow("caption=.,width=100%,expand=2.5",
 					"caption=Amount #,width=100%,align=end,expand=.5",
 					txtPurAmt, "expand=1,width=100%");
+			f.addComponentsRow(
+					"caption=Curr.Rate,align=end,width=100%,expand=.5",
+					txtPurRate, "expand=1.5,width=100%,align_text=end",
+					"caption=Currency,align=end,width=100%,expand=.5",
+					txtPurCurrency,
+					"caption=Curr.Rate,align=end,width=100%,expand=1.5");
 
 			utilsVaadin.applyColumns("LG_PAY_RCPT_3", tbl_rcpt3.getTable(),
 					tbl_rcpt3.listFields, con);
@@ -867,8 +902,20 @@ public class frmPays implements transactionalForm {
 				"caption=Main Cash #,width=100%,align=end,expand=.5",
 				txtPayMainCrAc, "expand=3.5,width=100%");
 		f.addComponentsRow("caption=.,width=100%,align=end,expand=2",
-				"caption=Paid Amount,align=end,width=100%,expand=.5",
-				txtPayAmt, "expand=1.5,width=100%,style=yellow");
+				"caption=Paid Amount FC,align=end,width=100%,expand=.7",
+				txtPayAmt, "expand=1.3,width=100%,style=yellow");
+
+		f.addComponentsRow("caption=.,width=100%,align=end,expand=2.3",
+				"caption=Curr.Rate,align=end,width=100%,expand=.7", txtPayRate,
+				"expand=1,width=100%,align_text=end");
+
+		f.addComponentsRow("caption=.,width=100%,align=end,expand=2.3",
+				"caption=Paid Amount,align=end,width=100%,expand=.7",
+				txtPayCurrency, "expand=1,width=100%");
+		f.addComponentsRow("caption=.,width=100%,align=end,expand=2.3",
+				"caption=Paid Amount in LC,align=end,width=100%,expand=.7",
+				txtPayAmtLC,
+				"expand=1,width=100%,style=yellow,readonly=true,align_text=end");
 
 		f.addLine();
 		f.addComponentsRow("caption=Additional Predicted info");
@@ -876,6 +923,7 @@ public class frmPays implements transactionalForm {
 		f.addComponentsRow("caption=.,width=100%,align=end,expand=1.5",
 				"caption=Estimate Refund Amount,align=end,width=100%,expand=1",
 				txtPayEstRefundAmt, "expand=1.5,width=100%");
+
 		f.addComponentsRow("caption=.,width=100%,align=end,expand=1.5",
 				"caption=Completion on,align=end,width=100%,expand=1",
 				txtPayExpiryDate, "expand=1.5,width=100%");
@@ -922,6 +970,19 @@ public class frmPays implements transactionalForm {
 
 				"caption=Amount,align=end,width=100%,expand=.5", txtRfndAmt,
 				"expand=1.5,width=100%,style=yellow");
+
+		f.addComponentsRow("caption=.,width=100%,align=end,expand=2.3",
+				"caption=Curr.Rate,align=end,width=100%,expand=.7",
+				txtRfndRate, "expand=1,width=100%,align_text=end,readonly=true");
+
+		f.addComponentsRow("caption=.,width=100%,align=end,expand=2.3",
+				"caption=Paid Amount,align=end,width=100%,expand=.7",
+				txtRfndCurrency, "expand=1,width=100%,readonly=true");
+		f.addComponentsRow("caption=.,width=100%,align=end,expand=2.3",
+				"caption=Paid Amount in LC,align=end,width=100%,expand=.7",
+				txtRfndAmtLC,
+				"expand=1,width=100%,style=yellow,readonly=true,align_text=end");
+
 		f.addLine();
 		f.addComponentsRow("caption=Attached information");
 		f.addComponentsRow(
@@ -995,6 +1056,7 @@ public class frmPays implements transactionalForm {
 				"caption=Saleable,align=end,width=100%,expand=.5",
 				txtInfoSaleable,
 				"expand=1,width=100%,readonly=true,style=numberStyle");
+
 		f.addComponentsRow("caption=U.Refund,width=100%,align=end,expand=.5",
 				txtInfoURefund,
 				"expand=1,width=100%,readonly=true,style=numberStyle",
@@ -1002,6 +1064,12 @@ public class frmPays implements transactionalForm {
 				"caption=Due Bal,align=end,width=100%,expand=.5",
 				txtInfoDueBal,
 				"expand=1,width=100%,readonly=true,style=numberStyle yellowField");
+
+		f.addComponentsRow("caption=U.Refund,width=100%,align=end,expand=.5",
+				txtInfoURate,
+				"expand=1,width=100%,readonly=true,style=numberStyle",
+				"caption=.,width=100%,expand=1",
+				"caption=Due Bal,align=end,width=100%,expand=1.5");
 		f.addComponentsRow("caption=.,width=100%,align=end,expand=3",
 				new Label("(negative Due is re-pay)"), "expand=1,width=100%");
 
@@ -1389,6 +1457,26 @@ public class frmPays implements transactionalForm {
 			utilsVaadin.setValueByForce(txtTotRepay, dcf.format(trp));
 			utilsVaadin.setValueByForce(txtTotClosed, dcf.format(tclos));
 
+			ResultSet rs = QueryExe
+					.getSqlRS(
+							"select sum(R.amt_ACTUAL) amt,P.currency from LG_PAYS_RCPT R,"
+									+ "	lg_pays P where P.KEYFLD=R.KEYFLD_PAY AND r.job_ord_no='"
+									+ QRYSES_ON
+									+ "' AND r.FLAG=2 group by p.currency", con);
+			if (rs != null) {
+				rs.beforeFirst();
+				inf.addLine();
+				while (rs.next()) {
+
+					inf.addComponentsRow(
+							new Label(rs.getString("currency")
+									+ ": " + dcf.format(rs.getDouble("amt"))),
+							"width=100%,align=start,expand=4");
+
+				}
+				rs.close();
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1566,6 +1654,56 @@ public class frmPays implements transactionalForm {
 						e.printStackTrace();
 					}
 
+				}
+			});
+			ValueChangeListener pyv = new ValueChangeListener() {
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					DecimalFormat dcf = new DecimalFormat(
+							Channelplus3Application.getInstance()
+									.getFrmUserLogin().FORMAT_MONEY);
+
+					try {
+						double amt = utilsVaadin.getFieldInfoDoubleValue(
+								txtPayAmt, lstfldPays);
+						double rate = utilsVaadin.getFieldInfoDoubleValue(
+								txtPayRate, lstfldPays);
+						utilsVaadin.setValueByForce(txtPayAmtLC,
+								dcf.format(amt * rate));
+					} catch (Exception e) {
+						e.printStackTrace();
+						utilsVaadin.showMessage(Channelplus3Application
+								.getInstance().getMainWindow(), e.getMessage(),
+								Notification.TYPE_ERROR_MESSAGE);
+
+					}
+				}
+			};
+			txtPayRate.addListener(pyv);
+			txtPayAmt.addListener(pyv);
+
+			txtRfndAmt.addListener(new ValueChangeListener() {
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					DecimalFormat dcf = new DecimalFormat(
+							Channelplus3Application.getInstance()
+									.getFrmUserLogin().FORMAT_MONEY);
+
+					try {
+						double amt = utilsVaadin.getFieldInfoDoubleValue(
+								txtRfndAmt, lstfldRefunds);
+						double rate = utilsVaadin.getFieldInfoDoubleValue(
+								txtRfndRate, lstfldRefunds);
+						utilsVaadin.setValueByForce(txtRfndAmtLC,
+								dcf.format(amt * rate));
+					} catch (Exception e) {
+						e.printStackTrace();
+						utilsVaadin.showMessage(Channelplus3Application
+								.getInstance().getMainWindow(), e.getMessage(),
+								Notification.TYPE_ERROR_MESSAGE);
+					}
 				}
 			});
 
@@ -1829,14 +1967,14 @@ public class frmPays implements transactionalForm {
 				+ " ORD_FLAG, YEAR, REMARKS,"
 				+ " ATTN, DELIVEREDQTY, ORDERDQTY, ONAME,"
 				+ " LOCATION_CODE, ORD_TYPE, RECIPT_KEYFLD,"
-				+ " PUR_KEYFLD, LCNO, ORDACC, ORD_REFERENCE , STRA , PAY_KEYFLD ,ORD_FC_DESCR)"
+				+ " PUR_KEYFLD, LCNO, ORDACC, ORD_REFERENCE , STRA ,"
+				+ " PAY_KEYFLD ,ORD_FC_DESCR ,ORD_FC_RATE )"
 				+ " VALUES  ( "
 				+ ":PERIODCODE, :ORD_NO, :ORD_CODE, :ORD_REF, :ORD_REFNM,"
 				+ ":ORD_DATE, :ORD_AMT, :ORD_DISCAMT,"
 				+ ":ORD_FLAG, '2003', :REMARKS, :ATTN, 0, 0, 'DE',"
 				+ ":LOCATION_CODE, 2, null,"
-				+ "	null, null, :ORDACC, :ORD_REFERENCE, :STRA, :PK, (SELECT NVL(MAX(VALUE),'KWD')"
-				+ "      FROM CP_USER_PROFILES WHERE VARIABLE='DEFAULT_CURRENCY') )";
+				+ "	null, null, :ORDACC, :ORD_REFERENCE, :STRA, :PK, :CURRENCY , :RATE )";
 
 		String sq2 = " INSERT INTO ORDER2 ( "
 				+ " PERIODCODE, ORD_NO, ORD_CODE,"
@@ -1880,6 +2018,10 @@ public class frmPays implements transactionalForm {
 		qe.setParaValue("ORD_REFERENCE", QRYSES_ON);
 		qe.setParaValue("STRA", utilsVaadin.getMapVars().get("DEFAULT_STORE"));
 		qe.setParaValue("PK", QRYSES);
+		qe.setParaValue("CURRENCY", txtPurCurrency.getValue());
+		qe.setParaValue("RATE",
+				utilsVaadin.getFieldInfoDoubleValue(txtPurRate, lstfldPO));
+
 		qe.execute();
 
 		QueryExe qe2 = new QueryExe(sq2, con);
@@ -2063,6 +2205,9 @@ public class frmPays implements transactionalForm {
 		validate_data();
 		Map<String, Object> mapVarDBs = new HashMap<String, Object>();
 		Date dt = new Date(System.currentTimeMillis());
+		if (!QRYSES.isEmpty() && !utilsVaadin.canEditTrans("LGPAYS", con))
+			throw new Exception("Editing Denied !");
+
 		if (QRYSES.isEmpty()) {
 			if (QueryExe.getSqlValue(
 					"select 1 from lg_pays where keyfld='"
@@ -2276,17 +2421,23 @@ public class frmPays implements transactionalForm {
 	}
 
 	private void load_PO() throws SQLException {
+
 		tbl_rcpt3.data
 				.executeQuery(
-						"select L.* , (l.amt_actual+l.amt_repaid) -amt_refund "
+						"select L.* , ((l.amt_actual+l.amt_repaid) -amt_refund) "
 								+ " AMT_SALEABLE from lg_pays_rcpt L where KEYFLD_PAY IN ("
 								+ QRYSES + ") ORDER BY KEYFLD_PAY,RCPT_NO",
 						true);
+
 		for (int i = 0; i < tbl_rcpt3.data.getRowCount(); i++) {
 
 			double slr = ((BigDecimal) tbl_rcpt3.data.getFieldValue(i,
 					"AMT_SALEABLE")).doubleValue();
 
+			double amt = ((BigDecimal) tbl_rcpt3.data.getFieldValue(i,
+					"AMT_ACTUAL")).doubleValue();
+			tbl_rcpt3.data.setFieldValue(i, "AMT_ACTUAL",
+					BigDecimal.valueOf(amt));
 			tbl_rcpt3.data.setFieldValue(i, "NEW_AMT", BigDecimal.valueOf(slr));
 			double slnw = ((BigDecimal) tbl_rcpt3.data.getFieldValue(i,
 					"NEW_AMT")).doubleValue();
@@ -2301,6 +2452,10 @@ public class frmPays implements transactionalForm {
 				"select nvl(max(ord_no),0)+1 from order1 where ord_code=103 ",
 				con));
 		String cd = utilsVaadin.getMapVars().get("LG_RCPT_SUPPLIER_CODE");
+		String cur = utilsVaadin.getMapVars().get("LG_DEFAULT_CURRENCY");
+		double rat = Double.valueOf(utilsVaadin.getMapVars().get(
+				"LG_DEFAULT_RATE"));
+
 		if (cd != null && !cd.isEmpty()) {
 			String cdnm = QueryExe
 					.getSqlValue("select name from c_ycust where code='" + cd
@@ -2309,6 +2464,10 @@ public class frmPays implements transactionalForm {
 			txtPOSupplier.setDisplayValue(cd, cdnm);
 
 		}
+		if (cur != null && !cur.isEmpty())
+			utilsVaadin.setValueByForce(txtPurCurrency, cur);
+
+		utilsVaadin.setValueByForce(txtPurRate, rat);
 
 		if (txtPODate.getValue() == null)
 			txtPODate.setValue(new Date());
@@ -2332,8 +2491,11 @@ public class frmPays implements transactionalForm {
 					"select *from lg_pays where keyfld='" + QRYSES + "'", con);
 			varRfndCrAc = rs.getString("AC_EMP_DR");
 			varRfndDrAc = rs.getString("AC_MAIN_CR");
-
+			double rate = rs.getDouble("RATE");
+			String currency = rs.getString("CURRENCY");
 			rs.close();
+			utilsVaadin.setValueByForce(txtRfndRate, rate);
+			utilsVaadin.setValueByForce(txtRfndCurrency, currency);
 			utilsVaadin.setValueByForce(
 					txtRfndDrAc,
 					varRfndDrAc
@@ -2383,29 +2545,35 @@ public class frmPays implements transactionalForm {
 	private void load_closing() {
 		DecimalFormat dcf = new DecimalFormat(Channelplus3Application
 				.getInstance().getFrmUserLogin().FORMAT_MONEY);
+		varInfoRate = 1;
 		try {
+
+			varInfoRate = Double.valueOf(QueryExe.getSqlValue(
+					"select rate from lg_pays where job_ord_no='" + QRYSES_ON
+							+ "' AND KEYFLD=" + QRYSES, con, "0").toString());
+
 			varInfoInitPay = Double.valueOf(QueryExe.getSqlValue(
-					"select sum(amt_jv) from lg_pays where job_ord_no='"
+					"select sum(amt_jv_fc) from lg_pays where job_ord_no='"
 							+ QRYSES_ON + "' AND KEYFLD=" + QRYSES, con, "0")
 					.toString());
 
 			varInfoUpay = Double
 					.valueOf(QueryExe
 							.getSqlValue(
-									"select nvl(sum(AMT),0) from LG_PAYS_REFUNDS where rcpt_no is null and TRANS_CODE=2 AND job_ord_no="
+									"select nvl(sum(AMT_fc),0) from LG_PAYS_REFUNDS where rcpt_no is null and TRANS_CODE=2 AND job_ord_no="
 											+ QRYSES_ON
 											+ " and keyfld_pay="
 											+ QRYSES, con, "").toString());
 			varInfoURefund = Double
 					.valueOf(QueryExe
 							.getSqlValue(
-									"select nvl(sum(AMT),0) from LG_PAYS_REFUNDS where rcpt_no is null and TRANS_CODE=1 AND job_ord_no="
+									"select nvl(sum(AMT_FC),0) from LG_PAYS_REFUNDS where rcpt_no is null and TRANS_CODE=1 AND job_ord_no="
 											+ QRYSES_ON
 											+ " and keyfld_pay="
 											+ QRYSES, con, "").toString());
 
 			varInfoBal = (varInfoInitPay + varInfoUpay) - varInfoURefund;
-
+			utilsVaadin.setValueByForce(txtInfoURate, varInfoRate + "");
 			utilsVaadin.setValueByForce(txtInfoInitPay,
 					dcf.format(varInfoInitPay));
 			utilsVaadin.setValueByForce(txtInfoBalance, dcf.format(varInfoBal));

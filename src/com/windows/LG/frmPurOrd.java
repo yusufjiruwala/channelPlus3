@@ -239,12 +239,16 @@ public class frmPurOrd implements transactionalForm {
 		}
 
 		try {
+			if (!QRYSES.isEmpty() && !utilsVaadin.canEditTrans("LGPO", con))
+				throw new Exception("Editing Denied !");
+			
 			if (!varPayKeyflds.isEmpty())
 				throw new Exception("Payment Receipt is existed # "
 						+ varPayKeyflds);
 
 			if (!QRYSES.isEmpty() && check_any_qty_issued() > 0)
 				throw new Exception("Issued qty on this purchase !");
+
 
 			validateData();
 			DecimalFormat df = new DecimalFormat(strCurrencyFormat);
@@ -1145,6 +1149,9 @@ public class frmPurOrd implements transactionalForm {
 
 				public void buttonClick(ClickEvent event) {
 					try {
+						if (!QRYSES.isEmpty() && !utilsVaadin.canDeleteTrans("LGPO", con))
+							throw new Exception("Deletion Denied !");
+						
 						int ord_flg = Integer.valueOf(utils.getSqlValue(
 								"select nvl(max(ord_flag),-1) from order1 where ord_code="
 										+ varOrdCode + " and ord_no=" + QRYSES,

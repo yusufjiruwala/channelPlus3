@@ -400,6 +400,9 @@ public class frmJobOrder implements transactionalForm {
 							load_data();
 							return;
 						}
+						if (!QRYSES.isEmpty() && !utilsVaadin.canDeleteTrans("LGJO", con))
+							throw new SQLException("Deletion Denied.. !");
+
 						int n = Integer.valueOf(utils.nvl(
 								utils.getSqlValue(
 										"select nvl(count(*),0) from order1 ox"
@@ -1207,6 +1210,9 @@ public class frmJobOrder implements transactionalForm {
 	private void save_data(boolean cls) {
 		saved_successed = false;
 		try {
+			if (!QRYSES.isEmpty() && !utilsVaadin.canEditTrans("LGJO", con))
+				throw new Exception("Editing Denied !");
+
 			validate_data();
 			con.setAutoCommit(false);
 			DecimalFormat df = new DecimalFormat(Channelplus3Application

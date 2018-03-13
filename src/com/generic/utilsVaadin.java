@@ -1245,7 +1245,7 @@ public class utilsVaadin {
 								.setTime((((Date) data.getFieldValue(rowno,
 										columnProperty.colname)).getTime()));
 					}
-					
+
 					((DateField) o).setResolution(DateField.RESOLUTION_DAY);
 					if (columnProperty.display_format
 							.equals("SHORT_DATE_FORMAT")) {
@@ -2158,4 +2158,23 @@ public class utilsVaadin {
 
 		return vl;
 	}
+
+	public static  boolean canDeleteTrans(String frm, Connection con) {
+		String f = getMapVars().get("LG_ALL_DEL_ALLOW");
+		if (f.equals("FALSE"))
+			return false;
+
+		return true;
+	}
+
+	public static boolean canEditTrans(String frm, Connection con) {
+		String f = getMapVars().get("LG_ALL_EDIT_ALLOW");
+		if (f.equals("FALSE"))
+			return false;
+
+		return true;
+	}
+	
+	
+	
 }

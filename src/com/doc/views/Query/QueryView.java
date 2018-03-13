@@ -1153,9 +1153,10 @@ public class QueryView extends VerticalLayout {
 		drb.setUseFullPageWidth(true);
 		drb.setPrintColumnNames(true);
 		drb.setIgnorePagination(true);
+		
 		DynamicReport dr = drb.build();
 		DynamicJasperHelper.generateJRXML(dr, new ClassicLayoutManager(),
-				parameter, "UTF-8", fl + ".jrxml");
+				parameter, "UTF-8", fl + ".jrxml");		
 		JasperCompileManager.compileReportToFile(fl + ".jrxml", fl + ".jasper");
 		StreamResource.StreamSource source = new StreamResource.StreamSource() {
 
