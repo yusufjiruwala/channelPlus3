@@ -337,6 +337,16 @@
 	padding-left: 4px;
 }
 
+.v-label-blinker {
+	animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
 .v-label-rtl {
 	direction: rtl;
 }

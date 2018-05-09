@@ -130,7 +130,7 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 	public final static String FORM_LG_CONTRACT = "FORM_LG_CONTRACT";
 
 	private Label lblCompanyName = new Label(utils.textCompanyName);
-	private Label lblLogonUser = new Label("Logon User: " + utils.CPUSER);
+	private Label lblLogonUser = new Label("Logon User: " + utils.CPUSER+" - Master :"+utils.DBUSER);
 	private Label specifiecation = new Label(utils.textSpec1);
 	private Label specifiecation2 = new Label(utils.textSpec2);
 	public Map<String, transactionalForm> mapForms = new HashMap<String, transactionalForm>();
@@ -383,7 +383,7 @@ public class frmMainMenus extends VerticalLayout implements ValueChangeListener 
 		ResourceManager.addComponent(root, profileBar);
 
 		lblCompanyName.addStyleName("title");
-		lblLogonUser.addStyleName("title2");
+		lblLogonUser.addStyleName("blinker");
 		specifiecation.addStyleName("title1");
 		specifiecation2.addStyleName("title2");
 

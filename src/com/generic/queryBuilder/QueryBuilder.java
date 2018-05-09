@@ -453,8 +453,8 @@ public class QueryBuilder {
 				}
 				centralPanel.getWindow().showNotification(
 						"Query Code: " + sqlId + " Tables :  " + sqlView
-								+ " total rows shown :"
-								+ qv.getTable().getItemIds().size());
+								+ " total details rows displayed :"
+								+ qv.data.getRowCount());
 			}
 
 			public void beforeQuery() {

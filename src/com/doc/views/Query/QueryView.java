@@ -116,7 +116,7 @@ public class QueryView extends VerticalLayout {
 	private String sqlquery = "";
 	private String graphID = "";
 	private DBClass dbc = null;
-	private localTableModel data = new localTableModel();
+	public localTableModel data = new localTableModel();
 	private PreparedStatement ps_data = null;
 	private ResultSet rs_data = null;
 	Map<String, Parameter> mapParameters = new HashMap<String, Parameter>();

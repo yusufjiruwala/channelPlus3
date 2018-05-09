@@ -48,6 +48,7 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
@@ -66,6 +67,7 @@ import com.vaadin.ui.Window.Notification;
 import com.windows.Masters.Purchase.frmPurchaseCost;
 
 public class frmJobOrder implements transactionalForm {
+
 	private Connection con = null;
 	private Window wndList = new Window();
 	private VerticalLayout lstLayout = new VerticalLayout();
@@ -400,7 +402,8 @@ public class frmJobOrder implements transactionalForm {
 							load_data();
 							return;
 						}
-						if (!QRYSES.isEmpty() && !utilsVaadin.canDeleteTrans("LGJO", con))
+						if (!QRYSES.isEmpty()
+								&& !utilsVaadin.canDeleteTrans("LGJO", con))
 							throw new SQLException("Deletion Denied.. !");
 
 						int n = Integer.valueOf(utils.nvl(
@@ -1520,6 +1523,12 @@ public class frmJobOrder implements transactionalForm {
 
 								acts.add(new Action(mapActionStrs
 										.get("print_jo")));
+
+								acts.add(new Action(mapActionStrs
+										.get("print_so")));
+								acts.add(new Action(mapActionStrs
+										.get("print_po_all")));
+
 							}
 
 							Action[] ac_ar = new Action[acts.size()];
@@ -1666,39 +1675,232 @@ public class frmJobOrder implements transactionalForm {
 	}
 
 	private void do_close_jo(final double on) {
-		Callback cb = new Callback() {
+		/*
+		 * Callback cb = new Callback() {
+		 * 
+		 * public void onDialogResult(boolean resultIsYes) { if (!resultIsYes)
+		 * return; try { con.setAutoCommit(false);
+		 * utils.execSql("update order1 set ord_flag=1 where ord_no='" + on +
+		 * "' and " + "ord_code=" + varOrdCode, con); con.commit();
+		 * parentLayout.getWindow().showNotification("",
+		 * "Closed Successfully..."); resetFormLayout(); showInitView(); } catch
+		 * (SQLException ex) { ex.printStackTrace();
+		 * parentLayout.getWindow().showNotification("", ex.getMessage(),
+		 * Notification.TYPE_ERROR_MESSAGE); try { con.rollback(); } catch
+		 * (SQLException e) { e.printStackTrace(); }
+		 * 
+		 * } } };
+		 * 
+		 * parentLayout.getWindow().addWindow( new YesNoDialog("Confirmation",
+		 * "Do you want to close order no # " + on + " ?", cb, "250px",
+		 * "-1px"));
+		 */
 
-			public void onDialogResult(boolean resultIsYes) {
-				if (!resultIsYes)
-					return;
+		final Window wnd = ControlsFactory.CreateWindow("500px", "600px", true,
+				true);
+		wnd.center();
+		wnd.setCaption("Close Job Order");
+		VerticalLayout la = (VerticalLayout) wnd.getContent();
+		VerticalLayout tbll = new VerticalLayout();
+		HorizontalLayout hz = new HorizontalLayout();
+		HorizontalLayout thz = new HorizontalLayout();
+		final TableLayoutVaadin tblv = new TableLayoutVaadin(tbll);
+		final DateField fromdt = new DateField();
+		final DateField todt = new DateField();
+		Button btnExe = new Button("Execute");
+		Button btnSave = new Button("Save");
+		Button btnCancel = new Button("Cancel");
+		Button btnSelectAll = new Button("Select All");
+		Button btnUnSelectAll = new Button("Un Sel All");
+
+		fromdt.setDateFormat(utils.FORMAT_SHORT_DATE);
+		todt.setDateFormat(utils.FORMAT_SHORT_DATE);
+		fromdt.setResolution(DateField.RESOLUTION_DAY);
+		todt.setResolution(DateField.RESOLUTION_DAY);
+
+		fromdt.setValue(new Date());
+		todt.setValue(new Date());
+
+		la.addComponent(thz);
+		la.addComponent(tblv);
+		la.addComponent(hz);
+		la.setExpandRatio(thz, .25f);
+		la.setExpandRatio(tblv, 3.5f);
+		la.setExpandRatio(hz, .25f);
+
+		hz.addComponent(btnSave);
+		hz.addComponent(btnCancel);
+		hz.addComponent(btnSelectAll);
+		hz.addComponent(btnUnSelectAll);
+
+		thz.addComponent(fromdt);
+		thz.addComponent(todt);
+		;
+		thz.addComponent(btnExe);
+
+		tblv.createView();
+		tblv.hideToolbar();
+
+		ColumnProperty cp = new ColumnProperty();
+		cp.colname = "SELECTION";
+		cp.descr = "Select";
+		cp.data_type = Parameter.DATA_TYPE_STRING;
+		cp.col_class = CheckBox.class;
+		cp.display_format = "NONE";
+		cp.defaultValue = "N";
+		cp.onCheckValue = "Y";
+		cp.onUnCheckValue = "N";
+		cp.pos = 1;
+		cp.display_width = 50;
+		tblv.listFields.add(cp);
+
+		cp = new ColumnProperty();
+		cp.colname = "ORD_NO";
+		cp.descr = "JOB ORD";
+		cp.col_class = Label.class;
+		cp.data_type = Parameter.DATA_TYPE_STRING;
+		cp.display_format = "NONE";
+		cp.pos = 2;
+		cp.display_width = 150;
+		tblv.listFields.add(cp);
+
+		cp = new ColumnProperty();
+		cp.colname = "ORD_DATE";
+		cp.descr = "Close Date ";
+		cp.col_class = DateField.class;
+		cp.data_type = Parameter.DATA_TYPE_DATETIME;
+		cp.display_format = utils.FORMAT_SHORT_DATE;
+		cp.pos = 3;
+		cp.display_width = 150;
+		tblv.listFields.add(cp);
+
+		cp = new ColumnProperty();
+		cp.colname = "LAST_DATE";
+		cp.descr = "Last Close Date ";
+		cp.col_class = Label.class;
+		cp.data_type = Parameter.DATA_TYPE_DATETIME;
+		cp.display_format = utils.FORMAT_SHORT_DATE;
+		cp.pos = 3;
+		cp.display_width = 150;
+		tblv.listFields.add(cp);
+
+		btnExe.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					tblv.data
+							.executeQuery(
+									"select 'Y' SELECTION, "
+											+ " to_char(o1.ORD_NO) ORD_NO,(select nvl(max(ord_date),sysdate) "
+											+ " from order1 where ord_reference=o1.ord_no "
+											+ "  and ord_code=111) ord_date,sysdate LAST_DATE "
+											+ " from order1 o1"
+											+ " where ord_code=106 and ord_flag=2 and ord_date>="
+											+ utils.getOraDateValue((Date) fromdt
+													.getValue())
+											+ " and  "
+											+ "ord_date<="
+											+ utils.getOraDateValue((Date) todt
+													.getValue()) + " "
+											+ " order by ord_no   ", true);
+
+					for (int i = 0; i < tblv.data.getRowCount(); i++) {
+						long tm = ((Date) tblv.data
+								.getFieldValue(i, "ORD_DATE")).getTime();
+						((Date) tblv.data.getFieldValue(i, "LAST_DATE"))
+								.setTime(tm);
+					}
+					tblv.fill_table();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					parentLayout.getWindow().showNotification("",
+							e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+					e.printStackTrace();
+				}
+			}
+		});
+
+		btnSave.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
 				try {
 					con.setAutoCommit(false);
-					utils.execSql("update order1 set ord_flag=1 where ord_no='"
-							+ on + "' and " + "ord_code=" + varOrdCode, con);
+					for (int i = 0; i < tblv.data.getRowCount(); i++) {
+						long tm = ((Date) tblv.data
+								.getFieldValue(i, "ORD_DATE")).getTime();
+						long tml = ((Date) tblv.data.getFieldValue(i,
+								"LAST_DATE")).getTime();
+						Date od = new Date(tm);
+						Date ld = new Date(tml);
+						String on = tblv.data.getFieldValue(i, "ORD_NO")
+								.toString();
+						String sel = tblv.data.getFieldValue(i, "SELECTION")
+								.toString();
+						if (!sel.equals("Y"))
+							continue;
+						if (od.before(ld))
+							throw new SQLException("Last Date for JO # " + on
+									+ "Last selling  Date : " + ld);
+
+						String sql = "update order1 "
+								+ " set ord_flag=1,ord_shpdt="
+								+ utils.getOraDateValue(od) + " where ord_no='"
+								+ on + "' and ord_code=" + varOrdCode;
+
+						QueryExe.execute(sql, con);
+
+					}
 					con.commit();
 					parentLayout.getWindow().showNotification("",
-							"Closed Successfully...");
-					resetFormLayout();
-					showInitView();
-				} catch (SQLException ex) {
-					ex.printStackTrace();
+							"Closed Successfully !",
+							Notification.TYPE_HUMANIZED_MESSAGE);
+
+					Channelplus3Application.getInstance().getMainWindow()
+							.removeWindow(wnd);
+
+				} catch (SQLException e) {
+					utilsVaadin.showMessage(e.getMessage());
+					e.printStackTrace();
 					parentLayout.getWindow().showNotification("",
-							ex.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+							e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+
 					try {
 						con.rollback();
-					} catch (SQLException e) {
-						e.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 
 				}
+
 			}
-		};
+		});
 
-		parentLayout.getWindow().addWindow(
-				new YesNoDialog("Confirmation",
-						"Do you want to close order no # " + on + " ?", cb,
-						"250px", "-1px"));
+		btnSelectAll.addListener(new ClickListener() {
 
+			@Override
+			public void buttonClick(ClickEvent event) {
+				for (int i = 0; i < tblv.data.getRowCount(); i++)
+					tblv.data.setFieldValue(i, "SELECTION", "Y");
+
+				tblv.fill_table();
+
+			}
+		});
+
+		btnUnSelectAll.addListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				for (int i = 0; i < tblv.data.getRowCount(); i++)
+					tblv.data.setFieldValue(i, "SELECTION", "N");
+
+				tblv.fill_table();
+
+			}
+		});
 	}
 
 	private void print_so(final double on) {
