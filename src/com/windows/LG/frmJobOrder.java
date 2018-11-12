@@ -1372,6 +1372,8 @@ public class frmJobOrder implements transactionalForm {
 		mapActionStrs.put("print_jo", "Print Job Order");
 		mapActionStrs.put("pays", "DE  Payments Handling..");
 		mapActionStrs.put("add_info_so", "Add info. SO..");
+		mapActionStrs.put("print_dn", "Print DR note..");
+		//mapActionStrs.put("print_cn", "Print CR note");
 
 		mapActionStrs.put("create_sr", "Create Sales Return ");
 		mapActionStrs.put("create_pr", "Create Purchase Return ");
@@ -1502,13 +1504,17 @@ public class frmJobOrder implements transactionalForm {
 											.get("edit_po")));
 									acts.add(new Action(mapActionStrs
 											.get("print_po_all")));
+									acts.add(new Action(mapActionStrs
+											.get("print_cn")));
 
 								}
 								acts.add(new Action("-"));
-								if (so > 0)
+								if (so > 0) {
 									acts.add(new Action(mapActionStrs
 											.get("print_so")));
-
+									acts.add(new Action(mapActionStrs
+											.get("print_dn")));
+								}
 								acts.add(new Action(mapActionStrs
 										.get("print_jo")));
 
@@ -1584,11 +1590,20 @@ public class frmJobOrder implements transactionalForm {
 									mapActionStrs.get("print_po_all"))) {
 								print_all_po(on);
 							}
-
+							
+							if (action.getCaption().equals(
+									mapActionStrs.get("print_cn"))) {
+								print_po(on,"_cn");
+							}
 							if (action.getCaption().equals(
 									mapActionStrs.get("print_so"))) {
-								print_so(on);
+								print_so(on,"");
 							}
+							if (action.getCaption().equals(
+									mapActionStrs.get("print_dn"))) {
+								print_so(on,"_dn");
+							}
+
 							if (action.getCaption().equals(
 									mapActionStrs.get("print_jo"))) {
 								try {
@@ -1903,7 +1918,7 @@ public class frmJobOrder implements transactionalForm {
 		});
 	}
 
-	private void print_so(final double on) {
+	private void print_so(final double on,final String ext) {
 
 		try {
 			String sq = "select ord_no,ord_refnm ,ord_ref,ord_date,ord_amt-ord_discamt Net_amt from order1  where ord_code=111"
@@ -1936,7 +1951,7 @@ public class frmJobOrder implements transactionalForm {
 									.toUpperCase();
 
 							utilsVaadinPrintHandler.printSO(ord, "rptVouSO_"
-									+ ss + "_" + s, con);
+									+ ss + "_" + s+ext, con);
 
 						} catch (Exception ex) {
 							ex.printStackTrace();
@@ -1990,6 +2005,15 @@ public class frmJobOrder implements transactionalForm {
 
 		try {
 			utilsVaadinPrintHandler.printSO(on, "rptVouPurCostAll", con);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	private void print_po(final double on,String ext) {
+		try {
+			utilsVaadinPrintHandler.printPO(on, "rptVouPurCost"+ext, con);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

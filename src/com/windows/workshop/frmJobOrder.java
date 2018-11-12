@@ -165,7 +165,7 @@ public class frmJobOrder implements transactionalForm {
 	private Label lblCS = new Label("Commited Summary");
 	private Label txtCS_f = new Label("");
 	private Label txtCS_c = new Label("");
-
+	
 	private String QRYSES = "";
 	private boolean listnerAdded = false;
 

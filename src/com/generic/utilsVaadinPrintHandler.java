@@ -170,7 +170,32 @@ public class utilsVaadinPrintHandler {
 				con, Channelplus3Application.getInstance());
 		
 	}
+	
+	public static void printPO(double on,String templFile, Connection con)
+			throws Exception {
+		Map<String, Object> mapPara = new HashMap<String, Object>();		
+		String cmp = utils
+				.getSqlValue(
+						"select lcno from order1 where ord_code=106 and "
+								+ " ord_no = (select ord_reference from order1 where ord_code=111 and ord_no="
+								+ on + ")", con);
 
+		getCompanyPara(con, mapPara, cmp);
+		mapPara.put("P_ORD", on + "");
+		String fmt = QueryExe.getSqlValue("select max(FORMAT_J2EE) from "
+				+ " currency c,order1 o where ord_code=111 and ord_no=" + on
+				+ " and c.code=o.ord_fc_descr", con, "")
+				+ "";		
+		if (fmt == null || fmt.isEmpty())
+			mapPara.put("CURRENCY_FORMAT", Channelplus3Application
+					.getInstance().getFrmUserLogin().FORMAT_MONEY);
+		else
+			mapPara.put("CURRENCY_FORMAT", fmt);
+		
+		utilsVaadin.showReport("/reports/" + templFile + ".jasper", mapPara,
+				con, Channelplus3Application.getInstance());
+		
+	}
 	public static void printLGFRPayment(double kf, Connection con)
 			throws Exception {
 		Map<String, Object> mapPara = new HashMap<String, Object>();
