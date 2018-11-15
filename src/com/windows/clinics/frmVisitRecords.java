@@ -385,6 +385,18 @@ public class frmVisitRecords implements transactionalForm {
 			picsMainlayout[i].setExpandRatio(picspnl[i], 3.9f);
 
 			final int pn = i;
+			String addrep = utils.nvl(Channelplus3Application.getInstance()
+					.getFrmUserLogin().getMapVars().get("ADD_MED_REPORT"),
+					"FALSE");
+			String delrep = utils.nvl(Channelplus3Application.getInstance()
+					.getFrmUserLogin().getMapVars().get("DEL_MED_REPORT"),
+					"FALSE");
+
+			if (addrep.equals("FALSE"))
+				picsCmdAdd[i].setEnabled(false);
+
+			if (delrep.equals("FALSE"))
+				picsCmdDel[i].setEnabled(false);
 
 			utilsVaadin.FillCombo(picsList[i],
 					"select descr,descr d from relists where idlist='MEDICAL_REPORT_"
@@ -670,6 +682,10 @@ public class frmVisitRecords implements transactionalForm {
 		clinicalLayout.removeAllComponents();
 		consultLayout.addComponent(cmdPrintConsultation);
 		planLayout.addComponent(cmdPrintPlan);
+		
+		String edt = utils.nvl(Channelplus3Application.getInstance()
+				.getFrmUserLogin().getMapVars().get("EDIT_MED_TEXT"),"FALSE");
+
 
 		try {
 			fetch_texts("C", lstConsultTxts);
@@ -716,7 +732,7 @@ public class frmVisitRecords implements transactionalForm {
 				tf.setInputPrompt("Double click here to show list , check list "
 						+ tr.list_name);
 				tf.setImmediate(true);
-
+				
 				bt.addListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
@@ -728,6 +744,11 @@ public class frmVisitRecords implements transactionalForm {
 						f.showStandAlone(tr.list_name);
 					}
 				});
+				
+				if (!edt.equals("TRUE")) {
+					tf.setReadOnly(true);
+				}
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -826,7 +847,8 @@ public class frmVisitRecords implements transactionalForm {
 				if (mp.get(rs.getString("TB_ID")).obj != null) {
 					TextField tf = ((TextField) mp.get(rs.getString("TB_ID")).obj);
 					String pv = parse_texts(mp.get(rs.getString("TB_ID")).default_value);
-					tf.setValue(utils.nvl(rs.getString("TB_VALUE"), pv));
+					utilsVaadin.setValueByForce(tf,
+							utils.nvl(rs.getString("TB_VALUE"), pv));
 					mp.get(rs.getString("TB_ID")).value = utils.nvl(
 							rs.getString("TB_VALUE"), pv);
 
@@ -1268,6 +1290,7 @@ public class frmVisitRecords implements transactionalForm {
 				fetch_texts_values("P", mapPlanTxts);
 				fetch_texts_values("L", mapClinicExamTxts);
 				ps.close();
+
 				String s = "";
 				ResultSet rsx = utils.getSqlRS(
 						"select group_name,descr,count(*) cnts from clq_pics where medical_no='"
@@ -1502,7 +1525,7 @@ public class frmVisitRecords implements transactionalForm {
 						((TextField) find_tr(lst, rst.getString("tb_id")).obj)
 								.getValue() + "");
 			}
-			rst.getStatement().close();			
+			rst.getStatement().close();
 			utilsVaadin.showReport(repfilename, mapPara, con,
 					Channelplus3Application.getInstance());
 		}

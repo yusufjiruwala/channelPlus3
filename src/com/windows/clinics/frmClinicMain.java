@@ -513,6 +513,8 @@ public class frmClinicMain implements transactionalForm {
 						return;
 					}
 
+					
+
 					int rowno = Integer.valueOf(tbl_visit.getValue() + "");
 					double kfld = Double.valueOf(utils.nvl(
 							data_visit.getFieldValue(rowno, "KEYFLD"), "-1"));
@@ -554,6 +556,8 @@ public class frmClinicMain implements transactionalForm {
 
 		son = Channelplus3Application.getInstance().getFrmUserLogin()
 				.getMapVars().get("SHOW_ONLY_OWN_BY");
+		
+		
 		if (son.equals("TRUE"))
 			txtDrNo.setEnabled(false);
 
@@ -592,11 +596,12 @@ public class frmClinicMain implements transactionalForm {
 			qe.setParaValue("KF", data_visit.getFieldValue(rn, "KEYFLD"));
 			qe.setParaValue("FLG", s);
 			qe.setParaValue("DR", txtDrNo.getValue());
-
+			
 			qe.execute();
 			qe.close();
 			con.commit();
 			load_data();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			try {
@@ -3153,6 +3158,18 @@ public class frmClinicMain implements transactionalForm {
 				}
 			}
 		};
+		
+		String son = utils.nvl(Channelplus3Application.getInstance().getFrmUserLogin()
+				.getMapVars().get("CAN_DELETE_VISIT"),"FALSE");
+		if (son.equals("FALSE")) {
+			parentLayout.getWindow()
+			.showNotification("","Deletion Denied !",
+					Notification.TYPE_ERROR_MESSAGE);
+			return;
+
+		}
+			
+		
 		String pn = utils
 				.nvl(data_visit.getFieldValue(rn, "PATIENTS_NAME"), "");
 		parentLayout.getWindow().addWindow(
