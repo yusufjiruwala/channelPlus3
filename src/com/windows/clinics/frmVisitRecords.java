@@ -92,7 +92,7 @@ public class frmVisitRecords implements transactionalForm {
 	private VerticalLayout labLayout = new VerticalLayout();
 	private VerticalLayout medLayout = new VerticalLayout();
 	private VerticalLayout otherLayout = new VerticalLayout();
-	private Timer tm = null;
+	private Timer tm = null; 
 
 	private Label lbl_txts = new Label("", Label.CONTENT_XHTML);
 
